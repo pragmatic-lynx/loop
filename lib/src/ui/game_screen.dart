@@ -10,6 +10,7 @@ import 'package:piecemeal/piecemeal.dart';
 import '../content/tiles.dart';
 import '../debug.dart';
 import '../engine.dart';
+import '../engine/loop/loop_manager.dart';
 import '../hues.dart';
 import 'direction_dialog.dart';
 import 'exit_popup.dart';
@@ -33,6 +34,7 @@ import 'skill_dialog.dart';
 import 'storage.dart';
 import 'target_dialog.dart';
 import 'wizard_dialog.dart';
+import 'loop_reward_screen.dart';
 
 class GameScreen extends Screen<Input> {
   final Game game;
@@ -43,6 +45,12 @@ class GameScreen extends Screen<Input> {
   final HeroSave _previousSave;
 
   final Storage _storage;
+  
+  /// Loop manager for roguelite system (null for normal play)
+  final LoopManager? _loopManager;
+  
+  /// Getter for loop manager (needed by sidebar panel)
+  LoopManager? get loopManager => _loopManager;
   final LogPanel _logPanel;
   final ItemPanel itemPanel;
   late final SidebarPanel _sidebarPanel;
@@ -119,8 +127,9 @@ class GameScreen extends Screen<Input> {
     return ash;
   }
 
-  GameScreen(this._storage, this.game)
-      : _previousSave = game.hero.save.clone(),
+  GameScreen(this._storage, this.game, {LoopManager? loopManager})
+      : _loopManager = loopManager,
+        _previousSave = game.hero.save.clone(),
         _logPanel = LogPanel(game.log),
         itemPanel = ItemPanel(game) {
     _sidebarPanel = SidebarPanel(this);
@@ -151,6 +160,19 @@ class GameScreen extends Screen<Input> {
     for (var _ in game.generate()) {}
 
     return GameScreen(storage, game);
+  }
+  
+  /// Builds a GameScreen for roguelite loop play at a specific depth
+  factory GameScreen.loop(Storage storage, Content content, HeroSave save, 
+      LoopManager loopManager, int depth) {
+    print("GameScreen.loop: Creating game at depth $depth for hero ${save.name}");
+    var game = Game(content, depth, save, width: 60, height: 34);
+    
+    print("GameScreen.loop: Generating dungeon...");
+    for (var _ in game.generate()) {}
+    print("GameScreen.loop: Dungeon generated, creating GameScreen");
+    
+    return GameScreen(storage, game, loopManager: loopManager);
   }
 
   /// Draws [Glyph] at [x], [y] in [Stage] coordinates onto the stage panel.
@@ -372,9 +394,39 @@ class GameScreen extends Screen<Input> {
 
     var result = game.update();
 
+    // Track moves for loop system
+    if (_loopManager != null && result.madeProgress) {
+      // Count any action that the hero performs as a "move"
+      var heroTurnTaken = false;
+      
+      // Check if the hero took a turn (moved, attacked, used item, etc.)
+      if (game.hero.energy.canTakeTurn == false) {
+        // Hero just finished a turn
+        heroTurnTaken = true;
+      }
+      
+      if (heroTurnTaken) {
+        _loopManager!.recordMove();
+        print("Hero move recorded. Total moves: ${_loopManager!.moveCount}");
+        
+        // Check if it's time for reward selection
+        if (_loopManager!.isRewardSelection) {
+          print("Time for reward selection!");
+          ui.goTo(LoopRewardScreen(game.content, _storage, _loopManager!, game.hero.save));
+          return;
+        }
+      }
+    }
+
     // See if the hero died.
     if (!game.hero.isAlive) {
-      ui.goTo(GameOverScreen(_storage, game.hero.save, _previousSave));
+      if (_loopManager != null) {
+        // In loop mode, just restart the loop
+        _loopManager!.reset();
+        ui.goTo(GameOverScreen(_storage, game.hero.save, _previousSave));
+      } else {
+        ui.goTo(GameOverScreen(_storage, game.hero.save, _previousSave));
+      }
       return;
     }
 

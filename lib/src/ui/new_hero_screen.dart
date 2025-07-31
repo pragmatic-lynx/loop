@@ -193,6 +193,51 @@ class NewHeroScreen extends Screen<Input> {
     return false;
   }
 
+  void _startLoopMode(HeroSave hero) {
+    print("Starting loop mode for new hero: ${hero.name}");
+    
+    // Give the hero some starting gold and basic equipment for loop mode
+    hero.gold = 1500;
+    
+    // Add some basic starting equipment
+    try {
+      var club = _content.tryFindItem("Club");
+      if (club != null) {
+        var clubItem = Item(club, 1);
+        hero.equipment.equip(clubItem);
+      }
+      
+      var robe = _content.tryFindItem("Robe");
+      if (robe != null) {
+        var robeItem = Item(robe, 1);
+        hero.equipment.equip(robeItem);
+      }
+      
+      var healingPotion = _content.tryFindItem("Healing Potion");
+      if (healingPotion != null) {
+        var potionItem = Item(healingPotion, 3);
+        hero.inventory.tryAdd(potionItem);
+      }
+    } catch (e) {
+      print("Error adding items: $e");
+    }
+    
+    // Create loop manager and start at depth 3
+    var loopManager = LoopManager();
+    loopManager.currentLoop = 1;
+    loopManager.isLoopActive = true;
+    loopManager.moveCount = 0;
+    
+    print("Creating game at depth 3...");
+    var game = Game(_content, 3, hero, width: 60, height: 34);
+    
+    print("Generating dungeon...");
+    for (var _ in game.generate()) {}
+    
+    print("Going to game screen with loop manager...");
+    ui.goTo(GameScreen(_storage, game, loopManager: loopManager));
+  }
+
   @override
   bool keyDown(int keyCode, {required bool shift, required bool alt}) {
     if (_controls[_focus].keyDown(keyCode, shift: shift, alt: alt)) {
@@ -211,7 +256,9 @@ class NewHeroScreen extends Screen<Input> {
             heroClass: _content.classes[_class.selected],
             permadeath: _death.selected == 1);
         _storage.add(hero);
-        ui.goTo(GameScreen.town(_storage, _content, hero, newHero: true));
+        
+        // Start loop mode immediately instead of going to town
+        _startLoopMode(hero);
         return true;
 
       case KeyCode.tab:

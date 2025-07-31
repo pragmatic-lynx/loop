@@ -31,6 +31,17 @@ class SidebarPanel extends Panel {
   final GameScreen _gameScreen;
 
   SidebarPanel(this._gameScreen);
+  
+  int _drawLoopInfo(Terminal terminal, int y) {
+    var loopManager = _gameScreen.loopManager!;
+    var status = loopManager.getStatus();
+    
+    terminal.writeAt(1, y, "Loop ${status['currentLoop']}", UIHue.secondary);
+    terminal.writeAt(1, y + 1, "Moves: ${status['moveCount']}/${status['moveCount'] + status['movesRemaining']}", UIHue.text);
+    terminal.writeAt(1, y + 2, "Depth: ${status['currentDepth']}", UIHue.disabled);
+    
+    return y + 2;
+  }
 
   @override
   void renderPanel(Terminal terminal) {
@@ -43,11 +54,18 @@ class SidebarPanel extends Panel {
     terminal.writeAt(1, 2, "${hero.save.race.name} ${hero.save.heroClass.name}",
         UIHue.primary);
 
-    _drawStats(hero, terminal, 4);
+    // Show loop information if in loop mode
+    var yOffset = 4;
+    if (_gameScreen.loopManager != null) {
+      yOffset = _drawLoopInfo(terminal, yOffset);
+      yOffset++;
+    }
+
+    _drawStats(hero, terminal, yOffset);
 
     // TODO: Decide on a consistent set of colors for attributes and use them
     // consistently through the UI.
-    _drawHealth(hero, terminal, 7);
+    _drawHealth(hero, terminal, yOffset + 3);
     _drawLevel(hero, terminal, 8);
     _drawGold(hero, terminal, 9);
 

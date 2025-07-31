@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:piecemeal/piecemeal.dart';
 
+import '../../content/action/detection.dart';
 import '../action/action.dart';
 import '../hero/hero.dart';
 import '../hero/hero_save.dart';
@@ -75,6 +76,18 @@ class Game {
   void initHero(Vec heroPos) {
     hero.setPosition(this, heroPos);
     _stage.refreshView();
+    
+    // Automatically apply "Find Nearby Items" effect when level loads
+    _applyAutoDetection();
+  }
+  
+  /// Automatically applies item detection when a level loads, simulating
+  /// the effect of a "Scroll of Find Nearby Items"
+  void _applyAutoDetection() {
+    // Import the detection action at the top of the file
+    final detectionAction = DetectAction([DetectType.item], 20);
+    detectionAction.bind(this, hero);
+    addAction(detectionAction);
   }
 
   GameResult update() {

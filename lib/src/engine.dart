@@ -43,3 +43,6 @@ export 'engine/stage/pathfinder.dart';
 export 'engine/stage/sound.dart';
 export 'engine/stage/stage.dart';
 export 'engine/stage/tile.dart';
+export 'engine/loop/loop_manager.dart';
+export 'engine/loop/loop_reward.dart';
+export 'engine/loop/hero_preset.dart';

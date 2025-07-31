@@ -13,6 +13,7 @@ import 'input.dart';
 import 'new_hero_screen.dart';
 import 'storage.dart';
 
+
 const _chars = [
   r"_____ _____                 ____                     ____",
   r"\ . / \  ./                 \ .|                     \  |",
@@ -81,7 +82,31 @@ class MainMenuScreen extends Screen<Input> {
   /// How far down in the list of heroes the user has scrolled.
   int _scroll = 0;
 
+  final LoopManager loopManager = LoopManager();
+  
   MainMenuScreen(this.content) : storage = Storage(content);
+
+  void _startLoopModeWithExistingHero(HeroSave hero) {
+    print("Starting loop mode with existing hero: ${hero.name}");
+    
+    // Reset hero to loop starting state
+    hero.gold = max(hero.gold, 1500); // Ensure minimum gold
+    
+    // Create loop manager and start at depth 3
+    var loopManager = LoopManager();
+    loopManager.currentLoop = 1;
+    loopManager.isLoopActive = true;
+    loopManager.moveCount = 0;
+    
+    print("Creating game at depth 3...");
+    var game = Game(content, 3, hero, width: 60, height: 34);
+    
+    print("Generating dungeon...");
+    for (var _ in game.generate()) {}
+    
+    print("Going to game screen with loop manager...");
+    ui.push(GameScreen(storage, game, loopManager: loopManager));
+  }
 
   @override
   bool handleInput(Input input) {
@@ -102,7 +127,7 @@ class MainMenuScreen extends Screen<Input> {
         if (selectedHero < storage.heroes.length) {
           var save = storage.heroes[selectedHero];
           _isActive = false;
-          ui.push(GameScreen.town(storage, content, save));
+          _startLoopModeWithExistingHero(save);
         }
         return true;
     }
@@ -140,6 +165,8 @@ class MainMenuScreen extends Screen<Input> {
         _isActive = false;
         ui.push(NewHeroScreen(content, storage));
         return true;
+        
+
     }
 
     return false;
@@ -232,7 +259,7 @@ class MainMenuScreen extends Screen<Input> {
       }
     }
 
-    centerTerminal.writeAt(3, 18, 'Which hero shall you play?', UIHue.text);
+    centerTerminal.writeAt(3, 18, 'Which hero shall you play? v0.2', UIHue.text);
 
     Draw.hLine(centerTerminal, 3, 20, centerTerminal.width - 6);
     Draw.hLine(centerTerminal, 3, 29, centerTerminal.width - 6);

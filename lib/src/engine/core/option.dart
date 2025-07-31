@@ -10,7 +10,7 @@ class Option {
   static const heroPunchDamage = 3;
 
   /// The amount of gold a new hero starts with.
-  static const heroGoldStart = 60;
+  static const heroGoldStart = 10000;
 
   static const heroMaxStomach = 400;
 
