@@ -29371,20 +29371,26 @@
   };
   A.LoopManager.prototype = {
     recordMove$0() {
-      var allRewards, _this = this;
-      if (!_this.isLoopActive)
+      var _this = this;
+      if (!_this.isLoopActive) {
+        A.print("recordMove called but loop not active. isLoopActive: false, isRewardSelection: " + _this.isRewardSelection);
         return;
-      if (++_this.moveCount >= 50) {
-        _this.isLoopActive = false;
-        _this.isRewardSelection = true;
-        allRewards = A._setArrayType([B.DamageBoostReward_5fE, B.DamageBoostReward_xxS, B.ArmorBoostReward_DYH, B.ArmorBoostReward_3Zf, B.HealthBoostReward_jwh, B.HealthBoostReward_479, B.HealingSupplyReward_ngq, B.FoodSupplyReward_O61, B.ScrollSupplyReward_TOU, B.GoldReward_jSt, B.GoldReward_VUY, B.LightRadiusReward_eQB, B.MovementSpeedReward_gv6, B.LuckyFindsReward_Z7p], type$.JSArray_LoopReward);
-        B.JSArray_methods.shuffle$0(allRewards);
-        _this.currentRewardOptions = A.SubListIterable$(allRewards, 0, A.checkNotNullable(3, "count", type$.int), type$.LoopReward).toList$0(0);
-        A.print("Loop " + _this.currentLoop + " complete! " + _this.moveCount + " moves made. Time for rewards!");
       }
+      A.print("Move recorded: " + ++_this.moveCount + "/50 (Loop " + _this.currentLoop + ")");
+      if (_this.moveCount >= 50)
+        _this.triggerRewardSelection$0();
+    },
+    triggerRewardSelection$0() {
+      var allRewards, _this = this;
+      _this.isLoopActive = false;
+      _this.isRewardSelection = true;
+      allRewards = A._setArrayType([B.DamageBoostReward_5fE, B.DamageBoostReward_xxS, B.ArmorBoostReward_DYH, B.ArmorBoostReward_3Zf, B.HealthBoostReward_jwh, B.HealthBoostReward_479, B.HealingSupplyReward_ngq, B.FoodSupplyReward_O61, B.ScrollSupplyReward_TOU, B.GoldReward_jSt, B.GoldReward_VUY, B.LightRadiusReward_eQB, B.MovementSpeedReward_gv6, B.LuckyFindsReward_Z7p], type$.JSArray_LoopReward);
+      B.JSArray_methods.shuffle$0(allRewards);
+      _this.currentRewardOptions = A.SubListIterable$(allRewards, 0, A.checkNotNullable(3, "count", type$.int), type$.LoopReward).toList$0(0);
+      A.print("Loop " + _this.currentLoop + " complete! " + _this.moveCount + " moves made. Time for rewards!");
     },
     selectReward$1(reward) {
-      var t1, _this = this;
+      var t1, t2, t3, _this = this;
       if (!_this.isRewardSelection) {
         A.print("Warning: selectReward called but not in reward selection phase");
         return;
@@ -29394,7 +29400,10 @@
       B.JSArray_methods.add$1(_this.activeRewards, reward);
       _this.isRewardSelection = false;
       _this.moveCount = 0;
-      A.print("Selected reward: " + t1 + ". Threat level now: " + ++_this.threatLevel + ", Loop: " + ++_this.currentLoop);
+      t2 = ++_this.threatLevel;
+      t3 = ++_this.currentLoop;
+      _this.isLoopActive = true;
+      A.print("Selected reward: " + t1 + ". Threat level now: " + t2 + ", Loop: " + t3);
       A.print("Next depth will be: " + _this.getCurrentDepth$0());
     },
     getCurrentDepth$0() {
@@ -32306,11 +32315,15 @@
           t2 === $ && A.throwLateFieldNI("_stage");
           t3 = t1.hero;
           t4 = t3._pos;
-          if (t2.tiles.$get$2(t4.get$x(t4), t4.get$y(t4)).type.portal === B.TilePortal_exit) {
-            t2 = _this._ui;
-            t2.toString;
-            t2.push$1(A.ExitPopup$(_this._previousSave, t1));
-          } else {
+          if (t2.tiles.$get$2(t4.get$x(t4), t4.get$y(t4)).type.portal === B.TilePortal_exit)
+            if (_this._loopManager != null)
+              _this._handleLoopExit$0();
+            else {
+              t2 = _this._ui;
+              t2.toString;
+              t2.push$1(A.ExitPopup$(_this._previousSave, t1));
+            }
+          else {
             t3.save.log.add$5(0, B.LogType_1, "You are not standing on an exit.", _null, _null, _null);
             _this.dirty$0();
           }
@@ -32498,6 +32511,18 @@
       if (action != null)
         _this.game.hero._behavior = new A.ActionBehavior(action);
       return true;
+    },
+    _handleLoopExit$0() {
+      var t2, t3, _this = this,
+        t1 = _this._loopManager;
+      if (t1 == null)
+        return;
+      A.print("Loop exit triggered! Completing current loop...");
+      t1.triggerRewardSelection$0();
+      t2 = _this._game_screen$_storage;
+      t2.save$0(0);
+      t3 = _this.game;
+      _this._ui.goTo$1(new A.LoopRewardScreen(t3.content, t2, t1, t3.hero.save, t1.currentRewardOptions));
     },
     activate$2(popped, result) {
       var t3, t4, game, _this = this,
