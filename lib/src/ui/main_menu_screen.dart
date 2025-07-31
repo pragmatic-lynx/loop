@@ -12,7 +12,7 @@ import 'game_screen.dart';
 import 'input.dart';
 import 'new_hero_screen.dart';
 import 'storage.dart';
-import '../engine/loop/loop_manager.dart';
+
 
 const _chars = [
   r"_____ _____                 ____                     ____",
@@ -86,6 +86,28 @@ class MainMenuScreen extends Screen<Input> {
   
   MainMenuScreen(this.content) : storage = Storage(content);
 
+  void _startLoopModeWithExistingHero(HeroSave hero) {
+    print("Starting loop mode with existing hero: ${hero.name}");
+    
+    // Reset hero to loop starting state
+    hero.gold = max(hero.gold, 1500); // Ensure minimum gold
+    
+    // Create loop manager and start at depth 3
+    var loopManager = LoopManager();
+    loopManager.currentLoop = 1;
+    loopManager.isLoopActive = true;
+    loopManager.moveCount = 0;
+    
+    print("Creating game at depth 3...");
+    var game = Game(content, 3, hero, width: 60, height: 34);
+    
+    print("Generating dungeon...");
+    for (var _ in game.generate()) {}
+    
+    print("Going to game screen with loop manager...");
+    ui.push(GameScreen(storage, game, loopManager: loopManager));
+  }
+
   @override
   bool handleInput(Input input) {
     switch (input) {
@@ -105,7 +127,7 @@ class MainMenuScreen extends Screen<Input> {
         if (selectedHero < storage.heroes.length) {
           var save = storage.heroes[selectedHero];
           _isActive = false;
-          ui.push(GameScreen.town(storage, content, save));
+          _startLoopModeWithExistingHero(save);
         }
         return true;
     }
@@ -144,52 +166,7 @@ class MainMenuScreen extends Screen<Input> {
         ui.push(NewHeroScreen(content, storage));
         return true;
         
-      case KeyCode.l:
-        print("L key pressed - Starting simple loop!");
-        _isActive = false;
-        
-        // Create a simple warrior hero directly
-        var heroSave = content.createHero("Loop Warrior");
-        heroSave.gold = 1500;
-        
-        // Add some basic starting equipment
-        try {
-          var club = content.tryFindItem("Club");
-          if (club != null) {
-            var clubItem = Item(club, 1);
-            heroSave.equipment.equip(clubItem);
-          }
-          
-          var robe = content.tryFindItem("Robe");
-          if (robe != null) {
-            var robeItem = Item(robe, 1);
-            heroSave.equipment.equip(robeItem);
-          }
-          
-          var healingPotion = content.tryFindItem("Healing Potion");
-          if (healingPotion != null) {
-            var potionItem = Item(healingPotion, 3);
-            heroSave.inventory.tryAdd(potionItem);
-          }
-        } catch (e) {
-          print("Error adding items: $e");
-        }
-        
-        // Start loop directly at depth 3
-        print("Creating game at depth 3...");
-        var game = Game(content, 3, heroSave, width: 60, height: 34);
-        
-        print("Generating dungeon...");
-        for (var _ in game.generate()) {}
-        
-        print("Starting loop manager...");
-        loopManager.currentLoop = 1;
-        loopManager.isLoopActive = true;
-        loopManager.moveCount = 0;
-        
-        print("Going to game screen...");
-        ui.push(GameScreen(storage, game, loopManager: loopManager));
-        return true;
+
     }
 
     return false;
@@ -332,7 +309,6 @@ class MainMenuScreen extends Screen<Input> {
       "↕": "Change selection",
       "N": "Create a new hero",
       "D": "Delete hero",
-      "L": "Start Loop (Warrior @ Depth 3)",
     });
   }
 

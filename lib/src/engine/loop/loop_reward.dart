@@ -1,9 +1,6 @@
 // lib/src/engine/loop/loop_reward.dart
 
-import 'dart:math' as math;
 import '../hero/hero_save.dart';
-import '../items/item.dart';
-import '../core/content.dart';
 
 /// Base class for rewards that provide temporary benefits for the next loop
 abstract class LoopReward {

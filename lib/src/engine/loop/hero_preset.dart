@@ -2,11 +2,8 @@
 
 import '../hero/hero_save.dart';
 import '../hero/hero_class.dart';
-import '../hero/race.dart';
 import '../items/item.dart';
-import '../items/item_type.dart';
 import '../core/content.dart';
-import '../core/option.dart';
 
 /// A preset configuration for quickly setting up heroes for roguelite runs
 class HeroPreset {
