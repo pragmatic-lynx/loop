@@ -18,3 +18,13 @@ license
 *.prompt*
 *.venv*
 *README.md*
+
+#REPO
+Makefile
+*.psd
+*.lock
+pubspec.yaml
+COPYRIGHT
+*.yaml
+test
+*.png

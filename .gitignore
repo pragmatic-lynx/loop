@@ -6,3 +6,4 @@ gh-pages/
 .pub/
 out/
 *venv*
+.claudesync/
