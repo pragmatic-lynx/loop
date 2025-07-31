@@ -231,12 +231,18 @@ class SmartCombat {
   
   /// Check if we have a ranged weapon equipped
   bool _hasRangedWeapon() {
-    var weapon = hero.equipment.weapon;
-    if (weapon == null) return false;
+    var weapons = hero.equipment.weapons;
+    if (weapons.isEmpty) return false;
     
-    return weapon.type.name.toLowerCase().contains('bow') ||
-           weapon.type.name.toLowerCase().contains('dart') ||
-           weapon.type.name.toLowerCase().contains('sling');
+    for (var weapon in weapons) {
+      var weaponName = weapon.type.name.toLowerCase();
+      if (weaponName.contains('bow') ||
+          weaponName.contains('dart') ||
+          weaponName.contains('sling')) {
+        return true;
+      }
+    }
+    return false;
   }
   
   /// Check if hero is in immediate danger
@@ -275,7 +281,7 @@ class SmartCombat {
     
     for (var direction in Direction.all) {
       var newPos = hero.pos + direction;
-      if (!game.stage[newPos].canEnter(Motility.walk)) continue;
+      if (!game.stage[newPos].canEnter(actor!.motility)) continue;
       
       var totalDistance = 0;
       for (var enemyPos in enemyPositions) {

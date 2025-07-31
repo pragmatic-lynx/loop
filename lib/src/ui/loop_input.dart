@@ -84,9 +84,9 @@ class ActionMapping {
   }
 
   static String? _getPrimaryWeapon(dynamic hero) {
-    var weapon = hero.equipment.weapon;
-    if (weapon != null) {
-      return weapon.type.name;
+    var weapons = hero.equipment.weapons;
+    if (weapons.isNotEmpty) {
+      return weapons.first.type.name;
     }
     return null;
   }
