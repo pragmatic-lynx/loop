@@ -5,3 +5,4 @@ gh-pages/
 .idea
 .pub/
 out/
+*venv*
