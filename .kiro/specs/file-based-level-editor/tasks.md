@@ -12,7 +12,12 @@
   - Write unit tests for basic serialization functionality
   - _Requirements: 1.1, 1.2_
 
-- [ ] 2. Implement stage data serialization
+- [x] 2. Implement stage data serialization
+
+
+
+
+
   - Add tile serialization methods to WorldStateManager
   - Implement item position and inventory serialization for stage items
   - Add actor serialization for monsters and hero position

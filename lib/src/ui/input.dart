@@ -68,6 +68,9 @@ class Input {
   /// Open the wizard cheat menu.
   static const wizard = Input("wizard");
 
+  /// Quick level up (debug/cheat).
+  static const levelUp = Input("levelUp");
+
   final String name;
 
   const Input(this.name);

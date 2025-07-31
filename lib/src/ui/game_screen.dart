@@ -290,6 +290,9 @@ class GameScreen extends Screen<Input> {
           game.log.cheat("No cheating in non-debug builds. Cheater.");
           dirty();
         }
+
+      case Input.levelUp:
+        _quickLevelUp();
     }
 
     if (action != null) game.hero.setNextAction(action);
@@ -570,5 +573,16 @@ class GameScreen extends Screen<Input> {
     if (index >= shops.length) return;
 
     ui.push(TownScreen.shop(this, game.hero.save.shops[shops[index]]!));
+  }
+
+  void _quickLevelUp() {
+    if (game.hero.level == Hero.maxLevel) {
+      game.log.message("Already at max level.");
+    } else {
+      game.hero.experience = experienceLevelCost(game.hero.level + 1);
+      game.hero.refreshProperties();
+      game.log.message("Level up! You are now level ${game.hero.level}.");
+    }
+    dirty();
   }
 }
