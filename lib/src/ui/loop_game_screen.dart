@@ -1,7 +1,5 @@
 // lib/src/ui/loop_game_screen.dart
 
-import 'dart:math' as math;
-
 import 'dart:async';
 import 'dart:math' as math;
 
@@ -76,20 +74,20 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   
   @override
   void drawStageGlyph(Terminal terminal, int x, int y, Glyph glyph) {
-    stagePanel.drawGlyph(terminal, x, y, glyph);
+    stagePanel.drawStageGlyph(terminal, x, y, glyph);
   }
-  
-  /// UI display for showing current action mappings
-  bool _showActionHelp = false;
-  
-  /// Pause counter for UI feedback
-  int _pause = 0;
 
   LoopGameScreen(this.game, this._storage, this._loopManager)
       : _smartCombat = SmartCombat(game),
         _logPanel = LogPanel(game.log),
         itemPanel = ItemPanel(game),
         stagePanel = StagePanel(game) {
+    // Initialize action mapping
+    _actionMapping = ActionMapping.fromHero(game.hero, game);
+    
+    // Initialize sidebar panel
+    _sidebarPanel = SidebarPanel(this);
+    
     // Initialize game screen
     game.hero.onGainHear.listen((_) => dirty());
     game.hero.onGainMaxHear.listen((_) => dirty());
@@ -204,12 +202,6 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
 
     return true;
   }
-  
-  /// Handle regular input when not in loop mode (for compatibility)
-  bool handleRegularInput(Input input) {
-    // This allows the screen to work with regular game controls if needed
-    return handleInput(input);
-  }
 
   @override
   void activate(Screen popped, Object? result) {
@@ -263,9 +255,9 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   void resize(Vec size) {
     var leftWidth = 21;
 
-    if (size > 160) {
+    if (size.x > 160) {
       leftWidth = 29;
-    } else if (size > 150) {
+    } else if (size.x > 150) {
       leftWidth = 25;
     }
 
@@ -293,68 +285,74 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     _logPanel.render(terminal);
     _sidebarPanel.render(terminal);
     
+    // Show action help if toggled
+    if (_showActionHelp) {
+      _renderActionHelp(terminal);
+    }
+    
     // Mark as clean after rendering
     _dirty = false;
-  }
-  
-  @override
-  void drawStageGlyph(Terminal terminal, int x, int y, Glyph glyph) {
-    // Delegate to stage panel's draw method
-    stagePanel.drawGlyph(terminal, x, y, glyph);
   }
 
   /// Render the action button help overlay
   void _renderActionHelp(Terminal terminal) {
-    // Draw a semi-transparent overlay
-    terminal.withColor(black.withAlpha(192), () {
-      for (var y = 0; y < terminal.height; y++) {
-        for (var x = 0; x < terminal.width; x++) {
-          terminal.writeAt(x, y, ' ');
-        }
-        terminal.writeAt(x + dx, y + dy, " ", Color.black, Color.darkGray);
-      }
-    }
+    // Clear the terminal for the help screen
+    terminal.clear();
     
-    // Border
-    terminal.writeAt(x, y, "╔", Color.white, Color.darkGray);
-    terminal.writeAt(x + width - 1, y, "╗", Color.white, Color.darkGray);
-    terminal.writeAt(x, y + height - 1, "╚", Color.white, Color.darkGray);
-    terminal.writeAt(x + width - 1, y + height - 1, "╝", Color.white, Color.darkGray);
+    // Help text content
+    final helpText = [
+      '=== LOOP MODE CONTROLS ===',
+      '',
+      'Movement:',
+      '  Arrow Keys/WASD: Move',
+      '  Shift + Direction: Run',
+      '',
+      'Actions:',
+      '  1: ${_actionMapping.action1Label}',
+      '  2: ${_actionMapping.action2Label}',
+      '  3: ${_actionMapping.action3Label}',
+      '  4: ${_actionMapping.action4Label}',
+      '  Space: Wait/Rest',
+      '',
+      'Game:',
+      '  H: Toggle help',
+      '  ESC: Return to menu',
+      '  S: Save game',
+      '  Q: Quit to main menu',
+    ];
+    
+    // Center the help text
+    final startX = (terminal.width - 30) ~/ 2;
+    var y = (terminal.height - helpText.length) ~/ 2;
+    terminal.writeAt(x, y + height - 1, "╚", white, darkGray);
+    terminal.writeAt(x + width - 1, y + height - 1, "╝", white, darkGray);
     
     for (var dx = 1; dx < width - 1; dx++) {
-      terminal.writeAt(x + dx, y, "═", Color.white, Color.darkGray);
-      terminal.writeAt(x + dx, y + height - 1, "═", Color.white, Color.darkGray);
+      terminal.writeAt(x + dx, y, "═", white, darkGray);
+      terminal.writeAt(x + dx, y + height - 1, "═", white, darkGray);
     }
     
     for (var dy = 1; dy < height - 1; dy++) {
-      terminal.writeAt(x, y + dy, "║", Color.white, Color.darkGray);
-      terminal.writeAt(x + width - 1, y + dy, "║", Color.white, Color.darkGray);
+      terminal.writeAt(x, y + dy, "║", white, darkGray);
+      terminal.writeAt(x + width - 1, y + dy, "║", white, darkGray);
     }
     
     // Title
-    terminal.writeAt(x + 2, y + 1, "LOOP MODE CONTROLS", Color.yellow, Color.darkGray);
+    terminal.writeAt(x + 2, y + 1, "LOOP MODE CONTROLS", gold, darkGray);
     
     // Controls
-    terminal.writeAt(x + 2, y + 3, "Arrow Keys/WASD: Move", Color.white, Color.darkGray);
-    terminal.writeAt(x + 2, y + 4, "1: ${_actionMapping.action1Label}", Color.lightBlue, Color.darkGray);
-    terminal.writeAt(x + 2, y + 5, "2: ${_actionMapping.action2Label}", Color.lightGreen, Color.darkGray);
-    terminal.writeAt(x + 2, y + 6, "3: ${_actionMapping.action3Label}", Color.lightRed, Color.darkGray);
-    terminal.writeAt(x + 2, y + 7, "4: ${_actionMapping.action4Label}", Color.lightYellow, Color.darkGray);
+    terminal.writeAt(x + 2, y + 3, "Arrow Keys/WASD: Move", white, darkGray);
+    terminal.writeAt(x + 2, y + 4, "1: ${_actionMapping.action1Label}", lightBlue, darkGray);
+    terminal.writeAt(x + 2, y + 5, "2: ${_actionMapping.action2Label}", lightGreen, darkGray);
+    terminal.writeAt(x + 2, y + 6, "3: ${_actionMapping.action3Label}", lightRed, darkGray);
+    terminal.writeAt(x + 2, y + 7, "4: ${_actionMapping.action4Label}", lightYellow, darkGray);
     
-    terminal.writeAt(x + 2, y + 9, "TAB: Toggle this help", Color.gray, Color.darkGray);
-    terminal.writeAt(x + 2, y + 10, "ESC: Pause", Color.gray, Color.darkGray);
+    terminal.writeAt(x + 2, y + 9, "TAB: Toggle this help", gray, darkGray);
+    terminal.writeAt(x + 2, y + 10, "ESC: Pause", gray, darkGray);
     
     // Move count
     var movesRemaining = LoopManager.movesPerLoop - _loopManager.moveCount;
     terminal.writeAt(x + 2, y + height - 2, 
-      "Moves Remaining: $movesRemaining", Color.orange, Color.darkGray);
+      "Moves: $movesRemaining", orange, darkGray);
   }
-
-  /// Draws [Glyph] at [x], [y] in [Stage] coordinates onto the stage panel.
-  void drawStageGlyph(Terminal terminal, int x, int y, Glyph glyph) {
-    _stagePanel.drawStageGlyph(terminal, x, y, glyph);
-  }
-  
-  /// Getter for loop manager (needed by sidebar panel)
-  LoopManager? get loopManager => _loopManager;
 }

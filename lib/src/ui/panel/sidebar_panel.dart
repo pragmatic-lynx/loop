@@ -5,6 +5,7 @@ import '../../content/elements.dart';
 import '../../debug.dart';
 import '../../engine.dart';
 import '../../hues.dart';
+import '../draw.dart';
 import '../game_screen_interface.dart';
 import '../game_screen.dart';
 import '../item/item_renderer.dart';
@@ -37,9 +38,9 @@ class SidebarPanel extends Panel {
     if (loopManager is! LoopManager) return y;
     var status = loopManager.getStatus();
     
-    terminal.writeAt(1, y, "Loop ${status['currentLoop']}", UIHue.secondary);
-    terminal.writeAt(1, y + 1, "Moves: ${status['moveCount']}/${status['moveCount'] + status['movesRemaining']}", UIHue.text);
-    terminal.writeAt(1, y + 2, "Depth: ${status['currentDepth']}", UIHue.disabled);
+    terminal.writeAt(1, y, "Loop ${status['currentLoop']}", lightBlue);
+    terminal.writeAt(1, y + 1, "Moves: ${status['moveCount']}/${status['moveCount'] + status['movesRemaining']}", ash);
+    terminal.writeAt(1, y + 2, "Depth: ${status['currentDepth']}", coolGray);
     
     return y + 2;
   }
@@ -53,7 +54,7 @@ class SidebarPanel extends Panel {
         label: hero.save.name);
 
     terminal.writeAt(1, 2, "${hero.save.race.name} ${hero.save.heroClass.name}",
-        UIHue.primary);
+        gold);
 
     // Show loop information if in loop mode
     var yOffset = 4;
