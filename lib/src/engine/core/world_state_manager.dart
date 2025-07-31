@@ -29,10 +29,9 @@ class WorldStateManager {
   }
 
   /// Serializes the stage including dimensions, tiles, items, and actors.
+  /// Enhanced with better organization and comprehensive data capture.
   static Map<String, dynamic> _serializeStage(Stage stage) {
     var tiles = <Map<String, dynamic>>[];
-    var items = <Map<String, dynamic>>[];
-    var actors = <Map<String, dynamic>>[];
 
     // Serialize only explored tiles to reduce file size
     for (var y = 0; y < stage.height; y++) {
@@ -47,7 +46,76 @@ class WorldStateManager {
       }
     }
 
-    // Serialize items on the ground
+    return {
+      'width': stage.width,
+      'height': stage.height,
+      'tiles': tiles,
+      'items': _serializeStageItems(stage),
+      'actors': _serializeStageActors(stage),
+    };
+  }
+
+  /// Serializes a single tile with its position and properties.
+  static Map<String, dynamic> _serializeTile(Vec pos, Tile tile) {
+    var result = {
+      'pos': _serializeVec(pos),
+      'type': tile.type.name,
+      'isExplored': tile.isExplored,
+      'isVisible': tile.isVisible,
+    };
+
+    // Include optional tile properties only if they have non-default values
+    if (tile.emanation > 0) result['emanation'] = tile.emanation;
+    if (tile.substance > 0) result['substance'] = tile.substance;
+    if (tile.element.name != 'none') result['element'] = tile.element.name;
+    
+    // Include illumination data for better reconstruction
+    if (tile.floorIllumination > 0) result['floorIllumination'] = tile.floorIllumination;
+    if (tile.actorIllumination > 0) result['actorIllumination'] = tile.actorIllumination;
+    
+    // Include occlusion and fall-off data
+    if (tile.isOccluded) result['isOccluded'] = tile.isOccluded;
+    if (tile.fallOff > 0) result['fallOff'] = tile.fallOff;
+
+    return result;
+  }
+
+  /// Serializes a Vec position to a compact format.
+  /// This is a helper method used throughout the serialization process.
+  static Map<String, int> _serializeVec(Vec pos) {
+    return {'x': pos.x, 'y': pos.y};
+  }
+
+  /// Deserializes a Vec position from serialized data.
+  /// This is the counterpart to _serializeVec for round-trip accuracy.
+  static Vec _deserializeVec(Map<String, dynamic> data) {
+    return Vec(data['x'] as int, data['y'] as int);
+  }
+
+  /// Serializes an item including its type and properties.
+  /// Enhanced to handle all item properties for accurate reconstruction.
+  static Map<String, dynamic> _serializeItem(Item item) {
+    var result = {
+      'type': item.type.name,
+      'count': item.count,
+    };
+
+    // Include affixes if present
+    if (item.prefix != null) result['prefix'] = _serializeAffix(item.prefix!);
+    if (item.suffix != null) result['suffix'] = _serializeAffix(item.suffix!);
+    if (item.intrinsicAffix != null) result['intrinsic'] = _serializeAffix(item.intrinsicAffix!);
+
+    // Include emanation level if the item emits light
+    if (item.emanationLevel > 0) result['emanationLevel'] = item.emanationLevel;
+
+    return result;
+  }
+
+  /// Serializes item positions and inventory data for stage items.
+  /// This method handles the mapping of items to their positions on the stage.
+  static List<Map<String, dynamic>> _serializeStageItems(Stage stage) {
+    var items = <Map<String, dynamic>>[];
+    
     stage.forEachItem((item, pos) {
       items.add({
         'pos': _serializeVec(pos),
@@ -55,49 +123,7 @@ class WorldStateManager {
       });
     });
 
-    // Serialize all actors except the hero
-    for (var actor in stage.actors) {
-      if (actor is Monster) {
-        actors.add(_serializeMonster(actor));
-      }
-    }
-
-    return {
-      'width': stage.width,
-      'height': stage.height,
-      'tiles': tiles,
-      'items': items,
-      'actors': actors,
-    };
-  }
-
-  /// Serializes a single tile with its position and properties.
-  static Map<String, dynamic> _serializeTile(Vec pos, Tile tile) {
-    return {
-      'pos': _serializeVec(pos),
-      'type': tile.type.name,
-      'isExplored': tile.isExplored,
-      'isVisible': tile.isVisible,
-      if (tile.emanation > 0) 'emanation': tile.emanation,
-      if (tile.substance > 0) 'substance': tile.substance,
-      if (tile.element.name != 'none') 'element': tile.element.name,
-    };
-  }
-
-  /// Serializes a Vec position to a compact format.
-  static Map<String, int> _serializeVec(Vec pos) {
-    return {'x': pos.x, 'y': pos.y};
-  }
-
-  /// Serializes an item including its type and properties.
-  static Map<String, dynamic> _serializeItem(Item item) {
-    return {
-      'type': item.type.name,
-      'count': item.count,
-      if (item.prefix != null) 'prefix': _serializeAffix(item.prefix!),
-      if (item.suffix != null) 'suffix': _serializeAffix(item.suffix!),
-      if (item.intrinsicAffix != null) 'intrinsic': _serializeAffix(item.intrinsicAffix!),
-    };
+    return items;
   }
 
   /// Serializes an affix.
@@ -108,28 +134,60 @@ class WorldStateManager {
     };
   }
 
-  /// Serializes a monster actor.
+  /// Serializes a monster actor with complete state information.
+  /// Enhanced to include all necessary monster properties for accurate reconstruction.
   static Map<String, dynamic> _serializeMonster(Monster monster) {
-    return {
+    var result = {
       'type': 'monster',
       'breed': monster.breed.name,
       'pos': _serializeVec(monster.pos),
       'health': monster.health,
       'generation': monster.generation,
-      'isAsleep': monster.isAsleep,
-      'isAfraid': monster.isAfraid,
-      'alertness': monster.alertness,
-      'fear': monster.fear,
     };
+
+    // Include behavioral state
+    if (monster.isAsleep) result['isAsleep'] = monster.isAsleep;
+    if (monster.isAfraid) result['isAfraid'] = monster.isAfraid;
+    if (monster.alertness > 0) result['alertness'] = monster.alertness;
+    if (monster.fear > 0) result['fear'] = monster.fear;
+
+    return result;
+  }
+
+  /// Serializes all actors on the stage including monsters.
+  /// The hero is handled separately in _serializeHero.
+  static List<Map<String, dynamic>> _serializeStageActors(Stage stage) {
+    var actors = <Map<String, dynamic>>[];
+
+    for (var actor in stage.actors) {
+      if (actor is Monster) {
+        actors.add(_serializeMonster(actor));
+      }
+    }
+
+    return actors;
   }
 
   /// Serializes the hero including position and current state.
+  /// Enhanced to capture complete hero state for accurate reconstruction.
   static Map<String, dynamic> _serializeHero(Hero hero) {
-    return {
+    var result = {
       'pos': _serializeVec(hero.pos),
       'health': hero.health,
       'save': _serializeHeroSave(hero.save),
     };
+
+    // Include additional hero state that might differ from save data
+    if (hero.maxHealth != hero.health) {
+      result['maxHealth'] = hero.maxHealth;
+    }
+
+    // Include energy state for turn management
+    if (hero.energy.energy > 0) {
+      result['energy'] = hero.energy.energy;
+    }
+
+    return result;
   }
 
   /// Serializes the hero's persistent save data.
