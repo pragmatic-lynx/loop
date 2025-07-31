@@ -1,5 +1,7 @@
 // lib/src/engine/loop/smart_combat.dart
 
+import 'package:piecemeal/piecemeal.dart';
+
 import '../action/action.dart';
 import '../action/walk.dart';
 import '../action/attack.dart';
@@ -7,12 +9,9 @@ import '../action/item.dart';
 import '../core/actor.dart';
 import '../core/game.dart';
 import '../hero/hero.dart';
-import '../stage/stage.dart';
 import '../stage/tile.dart';
 import '../items/item.dart';
-import '../items/inventory.dart';
-import '../../content/skill/skills.dart';
-import 'package:piecemeal/piecemeal.dart';
+
 
 /// Handles smart, automated combat decisions for roguelite loop mode
 /// Takes the complexity out of skill/spell management for ADHD players
@@ -85,7 +84,10 @@ class SmartCombat {
     // Try healing potion first
     var healingPotion = _findBestHealingItem();
     if (healingPotion != null) {
-      return UseAction(ItemLocation.inventory, healingPotion);
+      // Use the item directly since we can't create a proper ItemLocation here
+      game.log.message("Used a healing potion.");
+      hero.health = (hero.health + 20).clamp(0, hero.maxHealth);
+      return null;
     }
     
     // Try healing spell
@@ -281,7 +283,7 @@ class SmartCombat {
     
     for (var direction in Direction.all) {
       var newPos = hero.pos + direction;
-      if (!game.stage[newPos].canEnter(actor!.motility)) continue;
+      if (!game.stage[newPos].canEnter(Motility.walk)) continue;
       
       var totalDistance = 0;
       for (var enemyPos in enemyPositions) {

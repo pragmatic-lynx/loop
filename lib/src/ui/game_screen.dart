@@ -35,8 +35,9 @@ import 'storage.dart';
 import 'target_dialog.dart';
 import 'wizard_dialog.dart';
 import 'loop_reward_screen.dart';
+import 'game_screen_interface.dart';
 
-class GameScreen extends Screen<Input> {
+class GameScreen extends Screen<Input> implements GameScreenInterface {
   final Game game;
 
   /// When the hero is in the dungeon, this is their save state before entering.
@@ -44,13 +45,15 @@ class GameScreen extends Screen<Input> {
   /// used instead.
   final HeroSave _previousSave;
 
+  @override
+  Storage get storage => _storage;
   final Storage _storage;
   
   /// Loop manager for roguelite system (null for normal play)
   final LoopManager? _loopManager;
-  
-  /// Getter for loop manager (needed by sidebar panel)
-  LoopManager? get loopManager => _loopManager;
+  @override
+  /// The loop manager for the current game, if any.
+  Object? get loopManager => _loopManager;
   final LogPanel _logPanel;
   final ItemPanel itemPanel;
   late final SidebarPanel _sidebarPanel;
@@ -116,8 +119,10 @@ class GameScreen extends Screen<Input> {
     return null;
   }
 
+  @override
   Rect get cameraBounds => _stagePanel.cameraBounds;
 
+  @override
   Color get heroColor {
     var hero = game.hero;
     if (hero.health < hero.maxHealth / 4) return red;
@@ -175,6 +180,7 @@ class GameScreen extends Screen<Input> {
     return GameScreen(storage, game, loopManager: loopManager);
   }
 
+  @override
   /// Draws [Glyph] at [x], [y] in [Stage] coordinates onto the stage panel.
   void drawStageGlyph(Terminal terminal, int x, int y, Glyph glyph) {
     _stagePanel.drawStageGlyph(terminal, x, y, glyph);

@@ -154,10 +154,10 @@ void main() {
   // These will be handled by a separate input handler for loop mode
   // For now, we'll bind them to the existing input system but they'll be
   // intercepted by the loop game screen
-  _ui.keyPress.bind(Input.selectSkill, KeyCode.digit1); // Temporary mapping
-  _ui.keyPress.bind(Input.use, KeyCode.digit2);         // Will be overridden
-  _ui.keyPress.bind(Input.drop, KeyCode.digit3);        // Will be overridden  
-  _ui.keyPress.bind(Input.equip, KeyCode.digit4);       // Will be overridden
+  _ui.keyPress.bind(Input.selectSkill, KeyCode.one);   // Primary action (1)
+  _ui.keyPress.bind(Input.use, KeyCode.two);           // Secondary action (2)
+  _ui.keyPress.bind(Input.drop, KeyCode.three);        // Heal/Consumable (3)
+  _ui.keyPress.bind(Input.equip, KeyCode.four);        // Escape/Move (4)
 
   _ui.push(MainMenuScreen(content));
 
