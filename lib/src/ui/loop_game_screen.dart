@@ -23,9 +23,9 @@ import 'panel/item_panel.dart';
 import 'storage.dart';
 
 // Color constants
-const Color darkerCoolGray = Color(0xFF333333);
-const Color darkWarmGray = Color(0xFF444444);
-const Color ash = Color(0xFF888888);
+final Color darkerCoolGray = Color.rgb(51, 51, 51);
+final Color darkWarmGray = Color.rgb(68, 68, 68);
+final Color ash = Color.rgb(136, 136, 136);
 
 /// Simplified game screen for roguelite loop mode
 /// Focuses on fast, ADHD-friendly gameplay with minimal complexity
@@ -37,7 +37,9 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   final SmartCombat _smartCombat;
   final ActionMapping _actionMapping;
   final LoopManager _loopManager;
-  final Game _game;
+  final Game game;
+  final Storage storage;
+  
   bool _dirty = true;
   
   @override
@@ -45,9 +47,6 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   
   @override
   LoopManager? get loopManager => _loopManager;
-  
-  @override
-  Game get game => _game;
   @override
   final Game game;
   @override
@@ -87,27 +86,22 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     stagePanel.drawStageGlyph(terminal, x, y, glyph);
   }
 
-  LoopGameScreen(Game game, {required HeroSave heroSave})
-      : _game = game,
-        _loopManager = LoopManager(heroSave),
-        _smartCombat = SmartCombat(),
+  LoopGameScreen(this.game, this.storage, {required HeroSave heroSave})
+      : _loopManager = LoopManager(heroSave),
+        _smartCombat = SmartCombat(game),
         _actionMapping = ActionMapping(
           action1Label: 'Attack',
           action2Label: 'Cast',
           action3Label: 'Heal',
           action4Label: 'Escape',
         ),
-        _logPanel = LogPanel(),
-        _sidebarPanel = SidebarPanel() {
-    stagePanel = StagePanel(GameScreen(game));
-    // Initialize other panels and state
-
-    // Initialize panels
-    _sidebarPanel = SidebarPanel(this);
-
-    // Create a minimal GameScreen for the stage panel
-    // We need to cast this to GameScreenInterface since StagePanel expects a GameScreen
-    // but we can't extend GameScreen due to the constructor requirements
+        _logPanel = LogPanel(game),
+        _sidebarPanel = SidebarPanel(game) {
+    // Initialize stage panel with a minimal GameScreen instance
+    stagePanel = StagePanel(GameScreen(game, storage));
+    
+    // Initialize game state
+    _dirty = true;
     stagePanel = StagePanel(this as GameScreen);
   }
 
