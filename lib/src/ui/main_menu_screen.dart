@@ -12,6 +12,8 @@ import 'game_screen.dart';
 import 'input.dart';
 import 'new_hero_screen.dart';
 import 'storage.dart';
+import 'loop_setup_screen.dart';
+import '../engine/loop/loop_manager.dart';
 
 const _chars = [
   r"_____ _____                 ____                     ____",
@@ -81,6 +83,8 @@ class MainMenuScreen extends Screen<Input> {
   /// How far down in the list of heroes the user has scrolled.
   int _scroll = 0;
 
+  final LoopManager loopManager = LoopManager();
+  
   MainMenuScreen(this.content) : storage = Storage(content);
 
   @override
@@ -139,6 +143,11 @@ class MainMenuScreen extends Screen<Input> {
       case KeyCode.n:
         _isActive = false;
         ui.push(NewHeroScreen(content, storage));
+        return true;
+        
+      case KeyCode.l:
+        _isActive = false;
+        ui.push(LoopSetupScreen(content, storage, loopManager));
         return true;
     }
 
@@ -282,6 +291,7 @@ class MainMenuScreen extends Screen<Input> {
       "↕": "Change selection",
       "N": "Create a new hero",
       "D": "Delete hero",
+      "L": "Roguelite Loop",
     });
   }
 
