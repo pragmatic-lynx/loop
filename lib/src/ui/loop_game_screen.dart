@@ -7,15 +7,16 @@ import 'package:malison/malison.dart';
 import 'package:malison/malison_web.dart';
 import 'package:piecemeal/piecemeal.dart';
 
-import '../engine.dart';
-import '../engine/action/action_mapping.dart';
+import '../engine/action/action.dart';
+import '../engine/core/game.dart';
+import '../engine/hero/hero.dart';
 import '../engine/loop/loop_manager.dart';
-import '../engine/loop/smart_combat.dart';
-import '../hues.dart';
-import 'game_over_screen.dart';
-import 'game_screen_interface.dart';
-import 'input.dart';
-import 'input_converter.dart';
+import '../engine/ui/log_panel.dart';
+import '../engine/ui/panel/sidebar_panel.dart';
+import '../engine/ui/panel/stage_panel.dart';
+import 'game_screen.dart';
+import 'item_panel.dart';
+import 'smart_combat.dart';
 import 'loop_input.dart';
 import 'loop_reward_screen.dart';
 import 'panel/item_panel.dart';
@@ -31,7 +32,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   final Game game;
   final Storage _storage;
   final LoopManager _loopManager;
-  final StagePanel stagePanel;
+  late final StagePanel stagePanel;
   final LogPanel _logPanel;
   final ItemPanel itemPanel;
   late final SidebarPanel _sidebarPanel;
@@ -80,20 +81,19 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   LoopGameScreen(this.game, this._storage, this._loopManager)
       : _smartCombat = SmartCombat(game),
         _logPanel = LogPanel(game.log),
-        itemPanel = ItemPanel(game),
-        stagePanel = StagePanel(this as GameScreenInterface) {
+        itemPanel = ItemPanel(game) {
     // Initialize action mapping
     _actionMapping = ActionMapping.fromHero(game.hero, game);
     
-    // Initialize sidebar panel
+    // Initialize panels
     _sidebarPanel = SidebarPanel(this);
     
-    // Initialize game screen event listeners (simplified for loop mode)
-    game.hero.onGainGold.listen((_) => dirty());
-    game.hero.onGainItems.listen((_) => dirty());
-    game.hero.onLoseItems.listen((_) => dirty());
-    game.hero.onEquip.listen((_) => dirty());
-    game.hero.onUnequip.listen((_) => dirty());
+    // Create a minimal GameScreen for the stage panel
+    // We need to cast this to GameScreenInterface since StagePanel expects a GameScreen
+    // but we can't extend GameScreen due to the constructor requirements
+    stagePanel = StagePanel(this as GameScreen);
+    
+    // The game loop will handle dirty state updates
   }
 
   /// Factory constructor creates a game for the current loop
