@@ -9,7 +9,7 @@ import '../engine/loop/loop_manager.dart';
 import '../engine/loop/hero_preset.dart';
 import '../hues.dart';
 import 'draw.dart';
-import 'game_screen.dart';
+import 'loop_game_screen.dart';
 import 'input.dart';
 import 'storage.dart';
 
@@ -66,7 +66,7 @@ class LoopSetupScreen extends Screen<Input> {
     var depth = loopManager.getCurrentDepth();
     print("Starting game at depth: $depth");
     
-    ui.goTo(GameScreen.loop(storage, content, hero, loopManager, depth));
+    ui.goTo(LoopGameScreen.create(storage, content, hero, loopManager));
   }
   
   @override

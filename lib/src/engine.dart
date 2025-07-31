@@ -46,3 +46,4 @@ export 'engine/stage/tile.dart';
 export 'engine/loop/loop_manager.dart';
 export 'engine/loop/loop_reward.dart';
 export 'engine/loop/hero_preset.dart';
+export 'engine/loop/smart_combat.dart';

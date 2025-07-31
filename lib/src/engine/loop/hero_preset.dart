@@ -86,16 +86,16 @@ class HeroPreset {
     raceName: "Human",
     className: "Warrior", 
     startingEquipment: {
-      "Club": 1,
-      "Robe": 1,
+      "Sword": 1,           // Much better weapon
+      "Leather Armor": 1,   // Actual armor
       "Leather Cap": 1,
     },
     startingInventory: {
-      "Healing Potion": 3,
-      "Loaf of Bread": 5,
-      "Tallow Candle": 2,
+      "Healing Potion": 8,   // More healing for fast combat
+      "Loaf of Bread": 3,
+      "Tallow Candle": 5,
     },
-    startingGold: 1500,
+    startingGold: 2000,       // More gold for upgrades
   );
   
   static const _rogue = HeroPreset(
@@ -104,16 +104,16 @@ class HeroPreset {
     raceName: "Human",
     className: "Adventurer",
     startingEquipment: {
-      "Dirk": 1,
-      "Robe": 1,
+      "Rapier": 1,           // Better weapon
+      "Leather Armor": 1,   // Light armor for protection
     },
     startingInventory: {
-      "Scroll of Sidestepping": 4,
-      "Mending Salve": 3,
-      "Loaf of Bread": 3,
-      "Tallow Candle": 3,
+      "Scroll of Sidestepping": 6,  // More mobility
+      "Healing Potion": 5,          // Better healing
+      "Loaf of Bread": 2,
+      "Tallow Candle": 4,
     },
-    startingGold: 800,
+    startingGold: 1500,
   );
   
   static const _mage = HeroPreset(
@@ -126,13 +126,14 @@ class HeroPreset {
       "Robe": 1,
     },
     startingInventory: {
-      "Scroll of Lightning Bolt": 2,
-      "Healing Potion": 3,
-      "Scroll of Mapping": 1,
+      "Scroll of Lightning Bolt": 6,  // More offensive spells
+      "Scroll of Heal": 4,           // Healing magic
+      "Healing Potion": 4,           // Backup healing
+      "Scroll of Teleportation": 2,   // Escape option
       "Loaf of Bread": 2,
-      "Tallow Candle": 4,
+      "Tallow Candle": 6,            // More light for spellcasting
     },
-    startingGold: 500,
+    startingGold: 1000,
   );
   
   static const _ranger = HeroPreset(
@@ -142,14 +143,15 @@ class HeroPreset {
     className: "Adventurer",
     startingEquipment: {
       "Bow": 1,
-      "Robe": 1,
+      "Leather Armor": 1,   // Armor for survivability
+      "Dagger": 1,          // Backup melee weapon
     },
     startingInventory: {
-      "Arrow": 20,
-      "Healing Potion": 2,
-      "Loaf of Bread": 4,
-      "Tallow Candle": 2,
+      "Arrow": 50,           // Plenty of arrows for 50-move battles
+      "Healing Potion": 6,   // More healing
+      "Loaf of Bread": 3,
+      "Tallow Candle": 4,
     },
-    startingGold: 1200,
+    startingGold: 1800,
   );
 }

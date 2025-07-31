@@ -14,3 +14,4 @@ bin/update_docs.dart
 SCOPE.md
 *.py
 __pycache__/
+.windsurfrules

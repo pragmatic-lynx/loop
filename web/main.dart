@@ -150,6 +150,15 @@ void main() {
   _ui.keyPress.bind(Input.wizard, KeyCode.w, shift: true, alt: true);
   _ui.keyPress.bind(Input.levelUp, KeyCode.l, shift: true, alt: true);
 
+  // Loop mode simplified controls (1,2,3,4 action buttons)
+  // These will be handled by a separate input handler for loop mode
+  // For now, we'll bind them to the existing input system but they'll be
+  // intercepted by the loop game screen
+  _ui.keyPress.bind(Input.selectSkill, KeyCode.digit1); // Temporary mapping
+  _ui.keyPress.bind(Input.use, KeyCode.digit2);         // Will be overridden
+  _ui.keyPress.bind(Input.drop, KeyCode.digit3);        // Will be overridden  
+  _ui.keyPress.bind(Input.equip, KeyCode.digit4);       // Will be overridden
+
   _ui.push(MainMenuScreen(content));
 
   _ui.handlingInput = true;
