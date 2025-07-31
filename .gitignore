@@ -7,7 +7,8 @@ gh-pages/
 out/
 *venv*
 .claudesync/
-*.md
 web/debug
 lib/src/debug
 bin/update_docs.dart
+*prompt*
+SCOPE.md
