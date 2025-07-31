@@ -222,14 +222,16 @@ class NewHeroScreen extends Screen<Input> {
       print("Error adding items: $e");
     }
     
-    // Create loop manager and start at depth 3
+    // Create loop manager and start at proper depth
     var loopManager = LoopManager();
     loopManager.currentLoop = 1;
     loopManager.isLoopActive = true;
     loopManager.moveCount = 0;
+    loopManager.threatLevel = 2; // Start at threat level 2 so depth = 1 + 2 = 3
     
-    print("Creating game at depth 3...");
-    var game = Game(_content, 3, hero, width: 60, height: 34);
+    var depth = loopManager.getCurrentDepth();
+    print("Creating game at depth $depth...");
+    var game = Game(_content, depth, hero, width: 60, height: 34);
     
     print("Generating dungeon...");
     for (var _ in game.generate()) {}

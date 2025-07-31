@@ -66,21 +66,29 @@ class LoopManager {
   
   /// Apply a selected reward and prepare for next loop
   void selectReward(LoopReward reward) {
-    if (!isRewardSelection) return;
+    if (!isRewardSelection) {
+      print('Warning: selectReward called but not in reward selection phase');
+      return;
+    }
     
+    print('Selecting reward: ${reward.name}');
     activeRewards.add(reward);
     isRewardSelection = false;
     
     // Prepare for next loop
     moveCount = 0;
     threatLevel++; // Increase difficulty
+    currentLoop++; // Increment loop counter
     
-    print('Selected reward: ${reward.name}. Threat level now: $threatLevel');
+    print('Selected reward: ${reward.name}. Threat level now: $threatLevel, Loop: $currentLoop');
+    print('Next depth will be: ${getCurrentDepth()}');
   }
   
   /// Get current depth for dungeon generation
   int getCurrentDepth() {
-    return startingDepth + threatLevel;
+    var depth = startingDepth + threatLevel;
+    // Ensure depth is always at least 1
+    return depth < 1 ? 1 : depth;
   }
   
   /// Check if hero should be given temporary bonuses

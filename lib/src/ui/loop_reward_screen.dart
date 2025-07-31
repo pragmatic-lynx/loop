@@ -28,12 +28,12 @@ class LoopRewardScreen extends Screen<Input> {
   @override
   bool handleInput(Input input) {
     switch (input) {
-      case Input.w when selectedReward > 0:
+      case Input.n when selectedReward > 0:
         selectedReward--;
         dirty();
         return true;
         
-      case Input.e when selectedReward < rewardOptions.length - 1:
+      case Input.s when selectedReward < rewardOptions.length - 1:
         selectedReward++;
         dirty();
         return true;
@@ -62,6 +62,13 @@ class LoopRewardScreen extends Screen<Input> {
   void _startNextLoop() {
     // Start the next loop at increased depth
     var depth = loopManager.getCurrentDepth();
+    print("Starting next loop at depth: $depth");
+    
+    // Ensure depth is never 0 or negative
+    if (depth <= 0) {
+      print("Warning: depth was $depth, setting to 1");
+      depth = 1;
+    }
     
     ui.goTo(GameScreen.loop(storage, content, hero, loopManager, depth));
   }

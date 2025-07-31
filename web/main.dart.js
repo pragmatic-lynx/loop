@@ -29384,20 +29384,29 @@
       }
     },
     selectReward$1(reward) {
-      var _this = this;
-      if (!_this.isRewardSelection)
+      var t1, _this = this;
+      if (!_this.isRewardSelection) {
+        A.print("Warning: selectReward called but not in reward selection phase");
         return;
+      }
+      t1 = reward.name;
+      A.print("Selecting reward: " + t1);
       B.JSArray_methods.add$1(_this.activeRewards, reward);
       _this.isRewardSelection = false;
       _this.moveCount = 0;
-      A.print("Selected reward: " + reward.name + ". Threat level now: " + ++_this.threatLevel);
+      A.print("Selected reward: " + t1 + ". Threat level now: " + ++_this.threatLevel + ", Loop: " + ++_this.currentLoop);
+      A.print("Next depth will be: " + _this.getCurrentDepth$0());
+    },
+    getCurrentDepth$0() {
+      var t1 = this.threatLevel;
+      return 1 + t1;
     },
     getStatus$0() {
       var _this = this,
         t1 = _this.currentLoop,
         t2 = _this.threatLevel,
         t3 = _this.moveCount;
-      return A.LinkedHashMap_LinkedHashMap$_literal(["currentLoop", t1, "threatLevel", t2, "moveCount", t3, "movesRemaining", 50 - t3, "isActive", _this.isLoopActive, "isRewardSelection", _this.isRewardSelection, "currentDepth", 1 + t2], type$.String, type$.dynamic);
+      return A.LinkedHashMap_LinkedHashMap$_literal(["currentLoop", t1, "threatLevel", t2, "moveCount", t3, "movesRemaining", 50 - t3, "isActive", _this.isLoopActive, "isRewardSelection", _this.isRewardSelection, "currentDepth", _this.getCurrentDepth$0()], type$.String, type$.dynamic);
     }
   };
   A.LoopReward.prototype = {};
@@ -34798,13 +34807,13 @@
   };
   A.LoopRewardScreen.prototype = {
     handleInput$1(input) {
-      var t1, t2, reward, t3, t4, _this = this;
-      if (B.Input_w === input && _this.selectedReward > 0) {
+      var t1, t2, reward, depth, t3, _this = this;
+      if (B.Input_n === input && _this.selectedReward > 0) {
         --_this.selectedReward;
         _this.dirty$0();
         return true;
       }
-      if (B.Input_e === input && _this.selectedReward < _this.rewardOptions.length - 1) {
+      if (B.Input_s === input && _this.selectedReward < _this.rewardOptions.length - 1) {
         ++_this.selectedReward;
         _this.dirty$0();
         return true;
@@ -34819,10 +34828,16 @@
         t2.selectReward$1(reward);
         t1 = _this.hero;
         reward.apply$1(t1);
-        t3 = t2.threatLevel;
-        t4 = _this._ui;
-        t4.toString;
-        t4.goTo$1(A.GameScreen_GameScreen$loop(_this.storage, _this.content, t1, t2, 1 + t3));
+        depth = t2.getCurrentDepth$0();
+        t3 = "" + depth;
+        A.print("Starting next loop at depth: " + t3);
+        if (depth <= 0) {
+          A.print("Warning: depth was " + t3 + ", setting to 1");
+          depth = 1;
+        }
+        t3 = _this._ui;
+        t3.toString;
+        t3.goTo$1(A.GameScreen_GameScreen$loop(_this.storage, _this.content, t1, t2, depth));
         return true;
       }
       return false;
@@ -34892,15 +34907,17 @@
   };
   A.MainMenuScreen.prototype = {
     _startLoopModeWithExistingHero$1(hero) {
-      var t1, loopManager, game, t2, t3;
+      var t1, loopManager, depth, game, t2, t3;
       A.print("Starting loop mode with existing hero: " + hero.name);
       hero.set$gold(Math.max(hero.gold, 1500));
       t1 = type$.JSArray_LoopReward;
       loopManager = new A.LoopManager(A._setArrayType([], t1), A._setArrayType([], t1));
       loopManager.currentLoop = 1;
       loopManager.isLoopActive = true;
-      A.print("Creating game at depth 3...");
-      game = A.Game$(this.content, 3, hero, 34, 60);
+      loopManager.threatLevel = 2;
+      depth = loopManager.getCurrentDepth$0();
+      A.print("Creating game at depth " + depth + "...");
+      game = A.Game$(this.content, depth, hero, 34, 60);
       A.print("Generating dungeon...");
       for (t1 = game.generate$0(), t2 = t1.$ti, t1 = new A._SyncStarIterator(t1._outerHelper(), t2._eval$1("_SyncStarIterator<1>")), t2 = t2._precomputed1; t1.moveNext$0();) {
         t3 = t1._async$_current;
@@ -35231,7 +35248,7 @@
       return false;
     },
     _startLoopMode$1(hero) {
-      var club, clubItem, robe, robeItem, healingPotion, potionItem, e, t1, exception, loopManager, game, t2, t3, _null = null;
+      var club, clubItem, robe, robeItem, healingPotion, potionItem, e, t1, exception, loopManager, depth, game, t2, t3, _null = null;
       A.print("Starting loop mode for new hero: " + hero.name);
       hero.gold = 1500;
       try {
@@ -35259,8 +35276,10 @@
       loopManager = new A.LoopManager(A._setArrayType([], t1), A._setArrayType([], t1));
       loopManager.currentLoop = 1;
       loopManager.isLoopActive = true;
-      A.print("Creating game at depth 3...");
-      game = A.Game$(this._content, 3, hero, 34, 60);
+      loopManager.threatLevel = 2;
+      depth = loopManager.getCurrentDepth$0();
+      A.print("Creating game at depth " + depth + "...");
+      game = A.Game$(this._content, depth, hero, 34, 60);
       A.print("Generating dungeon...");
       for (t1 = game.generate$0(), t2 = t1.$ti, t1 = new A._SyncStarIterator(t1._outerHelper(), t2._eval$1("_SyncStarIterator<1>")), t2 = t2._precomputed1; t1.moveNext$0();) {
         t3 = t1._async$_current;
