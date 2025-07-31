@@ -8,7 +8,7 @@ import 'package:malison/malison_web.dart';
 import 'package:piecemeal/piecemeal.dart';
 
 import '../engine/core/game.dart';
-import '../engine/core/stage.dart';
+import '../engine/stage/stage.dart';
 import '../engine/hero/hero.dart';
 import '../engine/hero/hero_save.dart';
 import '../engine/loop/loop_manager.dart';
@@ -22,10 +22,10 @@ import 'panel/stage_panel.dart';
 import 'panel/item_panel.dart';
 import 'storage.dart';
 
-// Color constants
-final Color darkerCoolGray = Color.rgb(51, 51, 51);
-final Color darkWarmGray = Color.rgb(68, 68, 68);
-final Color ash = Color.rgb(136, 136, 136);
+// Color constants - using ARGB format (0xAARRGGBB)
+final Color darkerCoolGray = Color(0xFF333333);
+final Color darkWarmGray = Color(0xFF444444);
+final Color ash = Color(0xFF888888);
 
 /// Simplified game screen for roguelite loop mode
 /// Focuses on fast, ADHD-friendly gameplay with minimal complexity
