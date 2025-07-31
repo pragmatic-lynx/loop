@@ -29371,33 +29371,51 @@
   };
   A.LoopManager.prototype = {
     recordMove$0() {
-      var allRewards, _this = this;
-      if (!_this.isLoopActive)
+      var _this = this;
+      if (!_this.isLoopActive) {
+        A.print("recordMove called but loop not active. isLoopActive: false, isRewardSelection: " + _this.isRewardSelection);
         return;
-      if (++_this.moveCount >= 50) {
-        _this.isLoopActive = false;
-        _this.isRewardSelection = true;
-        allRewards = A._setArrayType([B.DamageBoostReward_5fE, B.DamageBoostReward_xxS, B.ArmorBoostReward_DYH, B.ArmorBoostReward_3Zf, B.HealthBoostReward_jwh, B.HealthBoostReward_479, B.HealingSupplyReward_ngq, B.FoodSupplyReward_O61, B.ScrollSupplyReward_TOU, B.GoldReward_jSt, B.GoldReward_VUY, B.LightRadiusReward_eQB, B.MovementSpeedReward_gv6, B.LuckyFindsReward_Z7p], type$.JSArray_LoopReward);
-        B.JSArray_methods.shuffle$0(allRewards);
-        _this.currentRewardOptions = A.SubListIterable$(allRewards, 0, A.checkNotNullable(3, "count", type$.int), type$.LoopReward).toList$0(0);
-        A.print("Loop " + _this.currentLoop + " complete! " + _this.moveCount + " moves made. Time for rewards!");
       }
+      A.print("Move recorded: " + ++_this.moveCount + "/50 (Loop " + _this.currentLoop + ")");
+      if (_this.moveCount >= 50)
+        _this.triggerRewardSelection$0();
+    },
+    triggerRewardSelection$0() {
+      var allRewards, _this = this;
+      _this.isLoopActive = false;
+      _this.isRewardSelection = true;
+      allRewards = A._setArrayType([B.DamageBoostReward_5fE, B.DamageBoostReward_xxS, B.ArmorBoostReward_DYH, B.ArmorBoostReward_3Zf, B.HealthBoostReward_jwh, B.HealthBoostReward_479, B.HealingSupplyReward_ngq, B.FoodSupplyReward_O61, B.ScrollSupplyReward_TOU, B.GoldReward_jSt, B.GoldReward_VUY, B.LightRadiusReward_eQB, B.MovementSpeedReward_gv6, B.LuckyFindsReward_Z7p], type$.JSArray_LoopReward);
+      B.JSArray_methods.shuffle$0(allRewards);
+      _this.currentRewardOptions = A.SubListIterable$(allRewards, 0, A.checkNotNullable(3, "count", type$.int), type$.LoopReward).toList$0(0);
+      A.print("Loop " + _this.currentLoop + " complete! " + _this.moveCount + " moves made. Time for rewards!");
     },
     selectReward$1(reward) {
-      var _this = this;
-      if (!_this.isRewardSelection)
+      var t1, t2, t3, _this = this;
+      if (!_this.isRewardSelection) {
+        A.print("Warning: selectReward called but not in reward selection phase");
         return;
+      }
+      t1 = reward.name;
+      A.print("Selecting reward: " + t1);
       B.JSArray_methods.add$1(_this.activeRewards, reward);
       _this.isRewardSelection = false;
       _this.moveCount = 0;
-      A.print("Selected reward: " + reward.name + ". Threat level now: " + ++_this.threatLevel);
+      t2 = ++_this.threatLevel;
+      t3 = ++_this.currentLoop;
+      _this.isLoopActive = true;
+      A.print("Selected reward: " + t1 + ". Threat level now: " + t2 + ", Loop: " + t3);
+      A.print("Next depth will be: " + _this.getCurrentDepth$0());
+    },
+    getCurrentDepth$0() {
+      var t1 = this.threatLevel;
+      return 1 + t1;
     },
     getStatus$0() {
       var _this = this,
         t1 = _this.currentLoop,
         t2 = _this.threatLevel,
         t3 = _this.moveCount;
-      return A.LinkedHashMap_LinkedHashMap$_literal(["currentLoop", t1, "threatLevel", t2, "moveCount", t3, "movesRemaining", 50 - t3, "isActive", _this.isLoopActive, "isRewardSelection", _this.isRewardSelection, "currentDepth", 1 + t2], type$.String, type$.dynamic);
+      return A.LinkedHashMap_LinkedHashMap$_literal(["currentLoop", t1, "threatLevel", t2, "moveCount", t3, "movesRemaining", 50 - t3, "isActive", _this.isLoopActive, "isRewardSelection", _this.isRewardSelection, "currentDepth", _this.getCurrentDepth$0()], type$.String, type$.dynamic);
     }
   };
   A.LoopReward.prototype = {};
@@ -32297,11 +32315,15 @@
           t2 === $ && A.throwLateFieldNI("_stage");
           t3 = t1.hero;
           t4 = t3._pos;
-          if (t2.tiles.$get$2(t4.get$x(t4), t4.get$y(t4)).type.portal === B.TilePortal_exit) {
-            t2 = _this._ui;
-            t2.toString;
-            t2.push$1(A.ExitPopup$(_this._previousSave, t1));
-          } else {
+          if (t2.tiles.$get$2(t4.get$x(t4), t4.get$y(t4)).type.portal === B.TilePortal_exit)
+            if (_this._loopManager != null)
+              _this._handleLoopExit$0();
+            else {
+              t2 = _this._ui;
+              t2.toString;
+              t2.push$1(A.ExitPopup$(_this._previousSave, t1));
+            }
+          else {
             t3.save.log.add$5(0, B.LogType_1, "You are not standing on an exit.", _null, _null, _null);
             _this.dirty$0();
           }
@@ -32489,6 +32511,18 @@
       if (action != null)
         _this.game.hero._behavior = new A.ActionBehavior(action);
       return true;
+    },
+    _handleLoopExit$0() {
+      var t2, t3, _this = this,
+        t1 = _this._loopManager;
+      if (t1 == null)
+        return;
+      A.print("Loop exit triggered! Completing current loop...");
+      t1.triggerRewardSelection$0();
+      t2 = _this._game_screen$_storage;
+      t2.save$0(0);
+      t3 = _this.game;
+      _this._ui.goTo$1(new A.LoopRewardScreen(t3.content, t2, t1, t3.hero.save, t1.currentRewardOptions));
     },
     activate$2(popped, result) {
       var t3, t4, game, _this = this,
@@ -34798,13 +34832,13 @@
   };
   A.LoopRewardScreen.prototype = {
     handleInput$1(input) {
-      var t1, t2, reward, t3, t4, _this = this;
-      if (B.Input_w === input && _this.selectedReward > 0) {
+      var t1, t2, reward, depth, t3, _this = this;
+      if (B.Input_n === input && _this.selectedReward > 0) {
         --_this.selectedReward;
         _this.dirty$0();
         return true;
       }
-      if (B.Input_e === input && _this.selectedReward < _this.rewardOptions.length - 1) {
+      if (B.Input_s === input && _this.selectedReward < _this.rewardOptions.length - 1) {
         ++_this.selectedReward;
         _this.dirty$0();
         return true;
@@ -34819,10 +34853,16 @@
         t2.selectReward$1(reward);
         t1 = _this.hero;
         reward.apply$1(t1);
-        t3 = t2.threatLevel;
-        t4 = _this._ui;
-        t4.toString;
-        t4.goTo$1(A.GameScreen_GameScreen$loop(_this.storage, _this.content, t1, t2, 1 + t3));
+        depth = t2.getCurrentDepth$0();
+        t3 = "" + depth;
+        A.print("Starting next loop at depth: " + t3);
+        if (depth <= 0) {
+          A.print("Warning: depth was " + t3 + ", setting to 1");
+          depth = 1;
+        }
+        t3 = _this._ui;
+        t3.toString;
+        t3.goTo$1(A.GameScreen_GameScreen$loop(_this.storage, _this.content, t1, t2, depth));
         return true;
       }
       return false;
@@ -34892,15 +34932,17 @@
   };
   A.MainMenuScreen.prototype = {
     _startLoopModeWithExistingHero$1(hero) {
-      var t1, loopManager, game, t2, t3;
+      var t1, loopManager, depth, game, t2, t3;
       A.print("Starting loop mode with existing hero: " + hero.name);
       hero.set$gold(Math.max(hero.gold, 1500));
       t1 = type$.JSArray_LoopReward;
       loopManager = new A.LoopManager(A._setArrayType([], t1), A._setArrayType([], t1));
       loopManager.currentLoop = 1;
       loopManager.isLoopActive = true;
-      A.print("Creating game at depth 3...");
-      game = A.Game$(this.content, 3, hero, 34, 60);
+      loopManager.threatLevel = 2;
+      depth = loopManager.getCurrentDepth$0();
+      A.print("Creating game at depth " + depth + "...");
+      game = A.Game$(this.content, depth, hero, 34, 60);
       A.print("Generating dungeon...");
       for (t1 = game.generate$0(), t2 = t1.$ti, t1 = new A._SyncStarIterator(t1._outerHelper(), t2._eval$1("_SyncStarIterator<1>")), t2 = t2._precomputed1; t1.moveNext$0();) {
         t3 = t1._async$_current;
@@ -35231,7 +35273,7 @@
       return false;
     },
     _startLoopMode$1(hero) {
-      var club, clubItem, robe, robeItem, healingPotion, potionItem, e, t1, exception, loopManager, game, t2, t3, _null = null;
+      var club, clubItem, robe, robeItem, healingPotion, potionItem, e, t1, exception, loopManager, depth, game, t2, t3, _null = null;
       A.print("Starting loop mode for new hero: " + hero.name);
       hero.gold = 1500;
       try {
@@ -35259,8 +35301,10 @@
       loopManager = new A.LoopManager(A._setArrayType([], t1), A._setArrayType([], t1));
       loopManager.currentLoop = 1;
       loopManager.isLoopActive = true;
-      A.print("Creating game at depth 3...");
-      game = A.Game$(this._content, 3, hero, 34, 60);
+      loopManager.threatLevel = 2;
+      depth = loopManager.getCurrentDepth$0();
+      A.print("Creating game at depth " + depth + "...");
+      game = A.Game$(this._content, depth, hero, 34, 60);
       A.print("Generating dungeon...");
       for (t1 = game.generate$0(), t2 = t1.$ti, t1 = new A._SyncStarIterator(t1._outerHelper(), t2._eval$1("_SyncStarIterator<1>")), t2 = t2._precomputed1; t1.moveNext$0();) {
         t3 = t1._async$_current;

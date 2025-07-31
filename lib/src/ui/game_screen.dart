@@ -187,7 +187,12 @@ class GameScreen extends Screen<Input> {
       case Input.quit:
         var portal = game.stage[game.hero.pos].portal;
         if (portal == TilePortals.exit) {
-          ui.push(ExitPopup(_previousSave, game));
+          if (_loopManager != null) {
+            // In loop mode, exit triggers reward selection immediately
+            _handleLoopExit();
+          } else {
+            ui.push(ExitPopup(_previousSave, game));
+          }
         } else {
           game.log.error("You are not standing on an exit.");
           dirty();
@@ -320,6 +325,21 @@ class GameScreen extends Screen<Input> {
     if (action != null) game.hero.setNextAction(action);
 
     return true;
+  }
+
+  void _handleLoopExit() {
+    if (_loopManager == null) return;
+    
+    print("Loop exit triggered! Completing current loop...");
+    
+    // Mark the loop as complete and trigger reward selection
+    _loopManager!.triggerRewardSelection();
+    
+    // Save the game state
+    _storage.save();
+    
+    // Go directly to reward selection
+    ui.goTo(LoopRewardScreen(game.content, _storage, _loopManager!, game.hero.save));
   }
 
   @override
