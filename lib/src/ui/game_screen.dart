@@ -393,20 +393,22 @@ class GameScreen extends Screen<Input> {
 
     // Track moves for loop system
     if (_loopManager != null && result.madeProgress) {
-      // Check if the hero took an action that should count as a move
-      var heroActed = false;
-      for (var event in result.events) {
-        if (event.actor == game.hero) {
-          heroActed = true;
-          break;
-        }
+      // Count any action that the hero performs as a "move"
+      var heroTurnTaken = false;
+      
+      // Check if the hero took a turn (moved, attacked, used item, etc.)
+      if (game.hero.energy.canTakeTurn == false) {
+        // Hero just finished a turn
+        heroTurnTaken = true;
       }
       
-      if (heroActed) {
+      if (heroTurnTaken) {
         _loopManager!.recordMove();
+        print("Hero move recorded. Total moves: ${_loopManager!.moveCount}");
         
         // Check if it's time for reward selection
         if (_loopManager!.isRewardSelection) {
+          print("Time for reward selection!");
           ui.goTo(LoopRewardScreen(game.content, _storage, _loopManager!, game.hero.save));
           return;
         }

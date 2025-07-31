@@ -12,7 +12,6 @@ import 'game_screen.dart';
 import 'input.dart';
 import 'new_hero_screen.dart';
 import 'storage.dart';
-import 'loop_setup_screen.dart';
 import '../engine/loop/loop_manager.dart';
 
 const _chars = [
@@ -146,8 +145,50 @@ class MainMenuScreen extends Screen<Input> {
         return true;
         
       case KeyCode.l:
+        print("L key pressed - Starting simple loop!");
         _isActive = false;
-        ui.push(LoopSetupScreen(content, storage, loopManager));
+        
+        // Create a simple warrior hero directly
+        var heroSave = content.createHero("Loop Warrior");
+        heroSave.gold = 1500;
+        
+        // Add some basic starting equipment
+        try {
+          var club = content.tryFindItem("Club");
+          if (club != null) {
+            var clubItem = Item(club, 1);
+            heroSave.equipment.equip(clubItem);
+          }
+          
+          var robe = content.tryFindItem("Robe");
+          if (robe != null) {
+            var robeItem = Item(robe, 1);
+            heroSave.equipment.equip(robeItem);
+          }
+          
+          var healingPotion = content.tryFindItem("Healing Potion");
+          if (healingPotion != null) {
+            var potionItem = Item(healingPotion, 3);
+            heroSave.inventory.tryAdd(potionItem);
+          }
+        } catch (e) {
+          print("Error adding items: $e");
+        }
+        
+        // Start loop directly at depth 3
+        print("Creating game at depth 3...");
+        var game = Game(content, 3, heroSave, width: 60, height: 34);
+        
+        print("Generating dungeon...");
+        for (var _ in game.generate()) {}
+        
+        print("Starting loop manager...");
+        loopManager.currentLoop = 1;
+        loopManager.isLoopActive = true;
+        loopManager.moveCount = 0;
+        
+        print("Going to game screen...");
+        ui.push(GameScreen(storage, game, loopManager: loopManager));
         return true;
     }
 
@@ -241,7 +282,7 @@ class MainMenuScreen extends Screen<Input> {
       }
     }
 
-    centerTerminal.writeAt(3, 18, 'Which hero shall you play? v0.1', UIHue.text);
+    centerTerminal.writeAt(3, 18, 'Which hero shall you play? v0.2', UIHue.text);
 
     Draw.hLine(centerTerminal, 3, 20, centerTerminal.width - 6);
     Draw.hLine(centerTerminal, 3, 29, centerTerminal.width - 6);
@@ -291,7 +332,7 @@ class MainMenuScreen extends Screen<Input> {
       "↕": "Change selection",
       "N": "Create a new hero",
       "D": "Delete hero",
-      "L": "Roguelite Loop",
+      "L": "Start Loop (Warrior @ Depth 3)",
     });
   }
 
