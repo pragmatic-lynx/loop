@@ -12,3 +12,5 @@ lib/src/debug
 bin/update_docs.dart
 *prompt*
 SCOPE.md
+*.py
+__pycache__/

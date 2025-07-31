@@ -3,6 +3,7 @@
 - [-] 1. Create WorldStateManager class with basic serialization
 
 
+
   - Create `lib/src/engine/core/world_state_manager.dart` file
   - Implement `saveWorldState()` method to serialize Game object to JSON
   - Implement basic stage serialization including tiles, dimensions, and metadata
