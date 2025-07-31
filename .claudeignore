@@ -45,3 +45,5 @@ lib/src/content/stage/blob.dart
 lib/src/content/stage/lake.dart
 lib/src/content/action/spawn.dart
 lib/src/attic/aquatic.dart
+
+*.kiro*
