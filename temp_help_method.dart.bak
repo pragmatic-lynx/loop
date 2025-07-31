@@ -1,0 +1,48 @@
+  /// Render the action button help overlay
+  void _renderActionHelp(Terminal terminal) {
+    var width = 30;
+    var height = 12;
+    var x = (terminal.width - width) ~/ 2;
+    var y = (terminal.height - height) ~/ 2;
+    
+    // Draw background
+    for (var dy = 0; dy < height; dy++) {
+      for (var dx = 0; dx < width; dx++) {
+        terminal.writeAt(x + dx, y + dy, " ", darkerCoolGray, darkWarmGray);
+      }
+    }
+    
+    // Border
+    terminal.writeAt(x, y, "╔", ash, darkWarmGray);
+    terminal.writeAt(x + width - 1, y, "╗", ash, darkWarmGray);
+    terminal.writeAt(x, y + height - 1, "╚", ash, darkWarmGray);
+    terminal.writeAt(x + width - 1, y + height - 1, "╝", ash, darkWarmGray);
+    
+    for (var dx = 1; dx < width - 1; dx++) {
+      terminal.writeAt(x + dx, y, "═", ash, darkWarmGray);
+      terminal.writeAt(x + dx, y + height - 1, "═", ash, darkWarmGray);
+    }
+    
+    for (var dy = 1; dy < height - 1; dy++) {
+      terminal.writeAt(x, y + dy, "║", ash, darkWarmGray);
+      terminal.writeAt(x + width - 1, y + dy, "║", ash, darkWarmGray);
+    }
+    
+    // Title
+    terminal.writeAt(x + 2, y + 1, "LOOP MODE CONTROLS", gold, darkWarmGray);
+    
+    // Controls
+    terminal.writeAt(x + 2, y + 3, "Arrow Keys/WASD: Move", ash, darkWarmGray);
+    terminal.writeAt(x + 2, y + 4, "1: ${_actionMapping.action1Label}", lightBlue, darkWarmGray);
+    terminal.writeAt(x + 2, y + 5, "2: ${_actionMapping.action2Label}", lima, darkWarmGray);
+    terminal.writeAt(x + 2, y + 6, "3: ${_actionMapping.action3Label}", pink, darkWarmGray);
+    terminal.writeAt(x + 2, y + 7, "4: ${_actionMapping.action4Label}", yellow, darkWarmGray);
+    
+    terminal.writeAt(x + 2, y + 9, "TAB: Toggle this help", lightWarmGray, darkWarmGray);
+    terminal.writeAt(x + 2, y + 10, "ESC: Pause", lightWarmGray, darkWarmGray);
+    
+    // Current loop info in help
+    var movesRemaining = LoopManager.movesPerLoop - _loopManager.moveCount;
+    terminal.writeAt(x + 2, y + height - 2, 
+      "Loop ${_loopManager.currentLoop}: $movesRemaining moves left", carrot, darkWarmGray);
+  }

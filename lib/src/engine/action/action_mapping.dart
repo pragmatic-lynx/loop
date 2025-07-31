@@ -22,8 +22,9 @@ class ActionMapping {
   factory ActionMapping.fromHero(Hero hero, Game game) {
     // Action 1: Primary attack/interact
     String action1 = "Attack";
-    if (hero.equipment.weapon != null) {
-      action1 = "Use ${hero.equipment.weapon!.nounText}";
+    var weapons = hero.equipment.weapons;
+    if (weapons.isNotEmpty) {
+      action1 = "Use ${weapons.first.nounText}";
     }
 
     // Action 2: Secondary action (spells, special abilities)

@@ -81,18 +81,14 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
       : _smartCombat = SmartCombat(game),
         _logPanel = LogPanel(game.log),
         itemPanel = ItemPanel(game),
-        stagePanel = StagePanel(game) {
+        stagePanel = StagePanel(this as GameScreenInterface) {
     // Initialize action mapping
     _actionMapping = ActionMapping.fromHero(game.hero, game);
     
     // Initialize sidebar panel
     _sidebarPanel = SidebarPanel(this);
     
-    // Initialize game screen
-    game.hero.onGainHear.listen((_) => dirty());
-    game.hero.onGainMaxHear.listen((_) => dirty());
-    game.hero.onGainExperience.listen((_) => dirty());
-    game.hero.onGainLevel.listen((_) => dirty());
+    // Initialize game screen event listeners (simplified for loop mode)
     game.hero.onGainGold.listen((_) => dirty());
     game.hero.onGainItems.listen((_) => dirty());
     game.hero.onLoseItems.listen((_) => dirty());
@@ -310,43 +306,43 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     // Draw background
     for (var dy = 0; dy < height; dy++) {
       for (var dx = 0; dx < width; dx++) {
-        terminal.writeAt(x + dx, y + dy, " ", black, darkGray);
+        terminal.writeAt(x + dx, y + dy, " ", darkerCoolGray, darkWarmGray);
       }
     }
     
     // Border
-    terminal.writeAt(x, y, "╔", white, darkGray);
-    terminal.writeAt(x + width - 1, y, "╗", white, darkGray);
-    terminal.writeAt(x, y + height - 1, "╚", white, darkGray);
-    terminal.writeAt(x + width - 1, y + height - 1, "╝", white, darkGray);
+    terminal.writeAt(x, y, "╔", ash, darkWarmGray);
+    terminal.writeAt(x + width - 1, y, "╗", ash, darkWarmGray);
+    terminal.writeAt(x, y + height - 1, "╚", ash, darkWarmGray);
+    terminal.writeAt(x + width - 1, y + height - 1, "╝", ash, darkWarmGray);
     
     for (var dx = 1; dx < width - 1; dx++) {
-      terminal.writeAt(x + dx, y, "═", white, darkGray);
-      terminal.writeAt(x + dx, y + height - 1, "═", white, darkGray);
+      terminal.writeAt(x + dx, y, "═", ash, darkWarmGray);
+      terminal.writeAt(x + dx, y + height - 1, "═", ash, darkWarmGray);
     }
     
     for (var dy = 1; dy < height - 1; dy++) {
-      terminal.writeAt(x, y + dy, "║", white, darkGray);
-      terminal.writeAt(x + width - 1, y + dy, "║", white, darkGray);
+      terminal.writeAt(x, y + dy, "║", ash, darkWarmGray);
+      terminal.writeAt(x + width - 1, y + dy, "║", ash, darkWarmGray);
     }
     
     // Title
-    terminal.writeAt(x + 2, y + 1, "LOOP MODE CONTROLS", gold, darkGray);
+    terminal.writeAt(x + 2, y + 1, "LOOP MODE CONTROLS", gold, darkWarmGray);
     
     // Controls
-    terminal.writeAt(x + 2, y + 3, "Arrow Keys/WASD: Move", white, darkGray);
-    terminal.writeAt(x + 2, y + 4, "1: ${_actionMapping.action1Label}", lightBlue, darkGray);
-    terminal.writeAt(x + 2, y + 5, "2: ${_actionMapping.action2Label}", lightGreen, darkGray);
-    terminal.writeAt(x + 2, y + 6, "3: ${_actionMapping.action3Label}", lightRed, darkGray);
-    terminal.writeAt(x + 2, y + 7, "4: ${_actionMapping.action4Label}", lightYellow, darkGray);
+    terminal.writeAt(x + 2, y + 3, "Arrow Keys/WASD: Move", ash, darkWarmGray);
+    terminal.writeAt(x + 2, y + 4, "1: ${_actionMapping.action1Label}", lightBlue, darkWarmGray);
+    terminal.writeAt(x + 2, y + 5, "2: ${_actionMapping.action2Label}", lima, darkWarmGray);
+    terminal.writeAt(x + 2, y + 6, "3: ${_actionMapping.action3Label}", pink, darkWarmGray);
+    terminal.writeAt(x + 2, y + 7, "4: ${_actionMapping.action4Label}", yellow, darkWarmGray);
     
-    terminal.writeAt(x + 2, y + 9, "TAB: Toggle this help", gray, darkGray);
-    terminal.writeAt(x + 2, y + 10, "ESC: Pause", gray, darkGray);
+    terminal.writeAt(x + 2, y + 9, "TAB: Toggle this help", lightWarmGray, darkWarmGray);
+    terminal.writeAt(x + 2, y + 10, "ESC: Pause", lightWarmGray, darkWarmGray);
     
     // Current loop info in help
     var movesRemaining = LoopManager.movesPerLoop - _loopManager.moveCount;
     terminal.writeAt(x + 2, y + height - 2, 
-      "Loop ${_loopManager.currentLoop}: $movesRemaining moves left", orange, darkGray);
+      "Loop ${_loopManager.currentLoop}: $movesRemaining moves left", carrot, darkWarmGray);
   }
   
   /// Render prominent move counter in top-right corner
@@ -357,19 +353,19 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     var y = 1;
     
     // Color based on urgency
-    var color = white;
+    var color = ash;
     if (movesRemaining <= 10) {
       color = red;
     } else if (movesRemaining <= 20) {
-      color = orange;
+      color = carrot;
     } else if (movesRemaining <= 30) {
       color = yellow;
     }
     
     // Background for visibility
-    terminal.writeAt(x - 1, y, "[", gray, black);
-    terminal.writeAt(x, y, text, color, black);
-    terminal.writeAt(x + text.length, y, "]", gray, black);
+    terminal.writeAt(x - 1, y, "[", lightWarmGray, darkerCoolGray);
+    terminal.writeAt(x, y, text, color, darkerCoolGray);
+    terminal.writeAt(x + text.length, y, "]", lightWarmGray, darkerCoolGray);
   }
   
   /// Render loop progress bar
@@ -381,21 +377,21 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     
     // Progress bar background
     for (var i = 0; i < barWidth; i++) {
-      terminal.writeAt(x + i, y, "▒", darkGray, black);
+      terminal.writeAt(x + i, y, "▒", darkWarmGray, darkerCoolGray);
     }
     
     // Progress bar fill
     var fillWidth = (progress * barWidth).round();
     for (var i = 0; i < fillWidth; i++) {
       var color = lightBlue;
-      if (progress > 0.8) color = orange;
+      if (progress > 0.8) color = carrot;
       if (progress > 0.9) color = red;
       
-      terminal.writeAt(x + i, y, "█", color, black);
+      terminal.writeAt(x + i, y, "█", color, darkerCoolGray);
     }
     
     // Loop number label
     var loopText = "L${_loopManager.currentLoop}";
-    terminal.writeAt(x - loopText.length - 1, y, loopText, ash, black);
+    terminal.writeAt(x - loopText.length - 1, y, loopText, ash, darkerCoolGray);
   }
 }
