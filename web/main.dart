@@ -148,6 +148,7 @@ void main() {
   _ui.keyPress.bind(Input.fire, KeyCode.numpad5, alt: true);
 
   _ui.keyPress.bind(Input.wizard, KeyCode.w, shift: true, alt: true);
+  _ui.keyPress.bind(Input.levelUp, KeyCode.l, shift: true, alt: true);
 
   _ui.push(MainMenuScreen(content));
 
