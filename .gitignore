@@ -7,3 +7,4 @@ gh-pages/
 out/
 *venv*
 .claudesync/
+*.md

@@ -28,3 +28,6 @@ COPYRIGHT
 *.yaml
 test
 *.png
+note
+doc
+lib\src\debug
