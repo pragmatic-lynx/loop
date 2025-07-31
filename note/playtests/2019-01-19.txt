@@ -1,7 +1,0 @@
-- Too gloomy overall.
-
-- Put more floor treasure, or maybe just more barrels and chests in keeps.
-
-- Shouldn't see wake up effect if not visible to hero.
-
-- Exiting dungeon shouldn't reset health and conditions.
