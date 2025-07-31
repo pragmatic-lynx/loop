@@ -1,13 +1,14 @@
 ## Feature
 
-Save world to JSON, edit file, reload level.
+This feature implements a file-based level editor system that saves the current game world state to a file, allows manual editing of that file, and loads it back into the game. This reuses existing serialization infrastructure for streamlined level creation and testing.
 
 ### 1 – Save World State
 
 * **Story:** Developer saves world for testing.
 * **AC:**
 
-  1. “Save” serializes full game state to JSON.
+  1. “Save” se
+  ializes full game state to JSON.
   2. Include stage size, tiles, items, actors.
   3. Keep hero position, stats, inventory.
   4. Use timestamped filename.
