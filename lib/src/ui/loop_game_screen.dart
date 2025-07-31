@@ -285,6 +285,12 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     _logPanel.render(terminal);
     _sidebarPanel.render(terminal);
     
+    // Always show prominent move counter
+    _renderMoveCounter(terminal);
+    
+    // Show loop progress indicator
+    _renderLoopProgress(terminal);
+    
     // Show action help if toggled
     if (_showActionHelp) {
       _renderActionHelp(terminal);
@@ -296,34 +302,21 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
 
   /// Render the action button help overlay
   void _renderActionHelp(Terminal terminal) {
-    // Clear the terminal for the help screen
-    terminal.clear();
+    var width = 30;
+    var height = 12;
+    var x = (terminal.width - width) ~/ 2;
+    var y = (terminal.height - height) ~/ 2;
     
-    // Help text content
-    final helpText = [
-      '=== LOOP MODE CONTROLS ===',
-      '',
-      'Movement:',
-      '  Arrow Keys/WASD: Move',
-      '  Shift + Direction: Run',
-      '',
-      'Actions:',
-      '  1: ${_actionMapping.action1Label}',
-      '  2: ${_actionMapping.action2Label}',
-      '  3: ${_actionMapping.action3Label}',
-      '  4: ${_actionMapping.action4Label}',
-      '  Space: Wait/Rest',
-      '',
-      'Game:',
-      '  H: Toggle help',
-      '  ESC: Return to menu',
-      '  S: Save game',
-      '  Q: Quit to main menu',
-    ];
+    // Draw background
+    for (var dy = 0; dy < height; dy++) {
+      for (var dx = 0; dx < width; dx++) {
+        terminal.writeAt(x + dx, y + dy, " ", black, darkGray);
+      }
+    }
     
-    // Center the help text
-    final startX = (terminal.width - 30) ~/ 2;
-    var y = (terminal.height - helpText.length) ~/ 2;
+    // Border
+    terminal.writeAt(x, y, "╔", white, darkGray);
+    terminal.writeAt(x + width - 1, y, "╗", white, darkGray);
     terminal.writeAt(x, y + height - 1, "╚", white, darkGray);
     terminal.writeAt(x + width - 1, y + height - 1, "╝", white, darkGray);
     
@@ -350,9 +343,59 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     terminal.writeAt(x + 2, y + 9, "TAB: Toggle this help", gray, darkGray);
     terminal.writeAt(x + 2, y + 10, "ESC: Pause", gray, darkGray);
     
-    // Move count
+    // Current loop info in help
     var movesRemaining = LoopManager.movesPerLoop - _loopManager.moveCount;
     terminal.writeAt(x + 2, y + height - 2, 
-      "Moves: $movesRemaining", orange, darkGray);
+      "Loop ${_loopManager.currentLoop}: $movesRemaining moves left", orange, darkGray);
+  }
+  
+  /// Render prominent move counter in top-right corner
+  void _renderMoveCounter(Terminal terminal) {
+    var movesRemaining = LoopManager.movesPerLoop - _loopManager.moveCount;
+    var text = "$movesRemaining";
+    var x = terminal.width - text.length - 2;
+    var y = 1;
+    
+    // Color based on urgency
+    var color = white;
+    if (movesRemaining <= 10) {
+      color = red;
+    } else if (movesRemaining <= 20) {
+      color = orange;
+    } else if (movesRemaining <= 30) {
+      color = yellow;
+    }
+    
+    // Background for visibility
+    terminal.writeAt(x - 1, y, "[", gray, black);
+    terminal.writeAt(x, y, text, color, black);
+    terminal.writeAt(x + text.length, y, "]", gray, black);
+  }
+  
+  /// Render loop progress bar
+  void _renderLoopProgress(Terminal terminal) {
+    var progress = _loopManager.moveCount / LoopManager.movesPerLoop;
+    var barWidth = 20;
+    var x = terminal.width - barWidth - 5;
+    var y = 2;
+    
+    // Progress bar background
+    for (var i = 0; i < barWidth; i++) {
+      terminal.writeAt(x + i, y, "▒", darkGray, black);
+    }
+    
+    // Progress bar fill
+    var fillWidth = (progress * barWidth).round();
+    for (var i = 0; i < fillWidth; i++) {
+      var color = lightBlue;
+      if (progress > 0.8) color = orange;
+      if (progress > 0.9) color = red;
+      
+      terminal.writeAt(x + i, y, "█", color, black);
+    }
+    
+    // Loop number label
+    var loopText = "L${_loopManager.currentLoop}";
+    terminal.writeAt(x - loopText.length - 1, y, loopText, ash, black);
   }
 }

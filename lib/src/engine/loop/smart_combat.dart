@@ -11,6 +11,7 @@ import '../core/game.dart';
 import '../hero/hero.dart';
 import '../stage/tile.dart';
 import '../items/item.dart';
+import '../items/inventory.dart';
 
 
 /// Handles smart, automated combat decisions for roguelite loop mode
@@ -23,16 +24,22 @@ class SmartCombat {
   
   /// Handle action1 - Primary Attack/Interact
   Action? handlePrimaryAction() {
+    // Auto-pickup any useful items at current position (BEFORE attacking)
+    _autoPickupItems();
+    
     // First check for adjacent enemies to attack
     var target = _findAdjacentEnemy();
     if (target != null) {
       return AttackAction(target);
     }
     
-    // Check for items to pick up at current position
+    // Check for any remaining items to pick up at current position
     var items = game.stage.itemsAt(hero.pos);
     if (items.isNotEmpty) {
-      return PickUpAction(items.first);
+      var item = _findBestItemToPick(items);
+      if (item != null) {
+        return PickUpAction(item);
+      }
     }
     
     // Check for doors/objects to operate
@@ -84,10 +91,8 @@ class SmartCombat {
     // Try healing potion first
     var healingPotion = _findBestHealingItem();
     if (healingPotion != null) {
-      // Use the item directly since we can't create a proper ItemLocation here
-      game.log.message("Used a healing potion.");
-      hero.health = (hero.health + 20).clamp(0, hero.maxHealth);
-      return null;
+      // Create a proper UseAction for the healing item
+      return UseAction(ItemLocation.inventory, healingPotion);
     }
     
     // Try healing spell
@@ -330,5 +335,75 @@ class SmartCombat {
       return AttackAction(targetActor);
     }
     return null;
+  }
+  
+  /// Automatically pick up consumable items at current position
+  void _autoPickupItems() {
+    var items = game.stage.itemsAt(hero.pos).toList();
+    
+    for (var item in items) {
+      if (_shouldAutoPickup(item)) {
+        var result = hero.inventory.tryAdd(item);
+        if (result.added > 0) {
+          game.log.message('Auto-picked up ${item.clone(result.added)}.');
+          
+          if (result.remaining == 0) {
+            game.stage.removeItem(item, hero.pos);
+          }
+          
+          hero.pickUp(game, item);
+        }
+      }
+    }
+  }
+  
+  /// Check if item should be automatically picked up
+  bool _shouldAutoPickup(Item item) {
+    var name = item.type.name.toLowerCase();
+    
+    // Always pickup gold/treasure
+    if (item.isTreasure) return true;
+    
+    // Auto-pickup healing items
+    if (name.contains('healing') || 
+        name.contains('potion') ||
+        name.contains('elixir') ||
+        name.contains('bottle')) return true;
+    
+    // Auto-pickup useful scrolls
+    if (name.contains('scroll')) {
+      if (name.contains('heal') ||
+          name.contains('teleport') ||
+          name.contains('escape') ||
+          name.contains('lightning') ||
+          name.contains('fireball') ||
+          name.contains('ice') ||
+          name.contains('magic') ||
+          name.contains('protection')) {
+        return true;
+      }
+    }
+    
+    // Don't auto-pickup everything else (weapons, armor, etc)
+    return false;
+  }
+  
+  /// Find the best item to manually pick up (non-auto items)
+  Item? _findBestItemToPick(Iterable<Item> items) {
+    // Prioritize weapons and armor for manual pickup
+    for (var item in items) {
+      var name = item.type.name.toLowerCase();
+      if (name.contains('sword') ||
+          name.contains('bow') ||
+          name.contains('armor') ||
+          name.contains('shield') ||
+          name.contains('ring') ||
+          name.contains('cloak')) {
+        return item;
+      }
+    }
+    
+    // If no equipment, just pick the first item
+    return items.isNotEmpty ? items.first : null;
   }
 }
