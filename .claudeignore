@@ -31,3 +31,4 @@ test
 note
 doc
 lib\src\debug
+*.bak
