@@ -5,7 +5,7 @@ import '../../content/elements.dart';
 import '../../debug.dart';
 import '../../engine.dart';
 import '../../hues.dart';
-import '../draw.dart';
+import '../game_screen_interface.dart';
 import '../game_screen.dart';
 import '../item/item_renderer.dart';
 import 'panel.dart';
@@ -28,12 +28,13 @@ class SidebarPanel extends Panel {
     Elements.spirit: "S"
   };
 
-  final GameScreen _gameScreen;
+  final GameScreenInterface _gameScreen;
 
   SidebarPanel(this._gameScreen);
   
   int _drawLoopInfo(Terminal terminal, int y) {
-    var loopManager = _gameScreen.loopManager!;
+    var loopManager = _gameScreen.loopManager;
+    if (loopManager is! LoopManager) return y;
     var status = loopManager.getStatus();
     
     terminal.writeAt(1, y, "Loop ${status['currentLoop']}", UIHue.secondary);

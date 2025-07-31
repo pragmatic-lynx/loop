@@ -54,6 +54,16 @@ class GameScreen extends Screen<Input> implements GameScreenInterface {
   @override
   /// The loop manager for the current game, if any.
   Object? get loopManager => _loopManager;
+  
+  /// Whether the screen needs to be redrawn.
+  bool _dirty = true;
+  
+  @override
+  Screen<Input>? get screen => this;
+  
+  @override
+  void dirty() => _dirty = true;
+
   final LogPanel _logPanel;
   final ItemPanel itemPanel;
   late final SidebarPanel _sidebarPanel;

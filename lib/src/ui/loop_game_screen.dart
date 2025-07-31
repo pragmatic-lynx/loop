@@ -2,40 +2,82 @@
 
 import 'dart:math' as math;
 
+import 'dart:async';
+import 'dart:math' as math;
+
 import 'package:malison/malison.dart';
 import 'package:malison/malison_web.dart';
 import 'package:piecemeal/piecemeal.dart';
 
 import '../engine.dart';
+import '../engine/action/action_mapping.dart';
 import '../engine/loop/loop_manager.dart';
 import '../engine/loop/smart_combat.dart';
 import '../hues.dart';
-import 'loop_input.dart';
+import 'game_over_screen.dart';
+import 'game_screen_interface.dart';
 import 'input.dart';
 import 'input_converter.dart';
-import 'game_over_screen.dart';
+import 'loop_input.dart';
+import 'loop_reward_screen.dart';
 import 'panel/item_panel.dart';
 import 'panel/log_panel.dart';
 import 'panel/sidebar_panel.dart';
 import 'panel/stage_panel.dart';
 import 'storage.dart';
-import 'loop_reward_screen.dart';
 
 /// Simplified game screen for roguelite loop mode
 /// Focuses on fast, ADHD-friendly gameplay with minimal complexity
-class LoopGameScreen extends Screen<Input> {
+class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
+  @override
   final Game game;
   final Storage _storage;
   final LoopManager _loopManager;
-  final SmartCombat _smartCombat;
-  
+  final StagePanel stagePanel;
   final LogPanel _logPanel;
   final ItemPanel itemPanel;
   late final SidebarPanel _sidebarPanel;
-  late final StagePanel _stagePanel;
-
+  final SmartCombat _smartCombat;
+  
   /// Current action button mappings
-  ActionMapping _actionMapping;
+  late final ActionMapping _actionMapping;
+  
+  bool _dirty = true;
+  bool _showActionHelp = false;
+  int _pause = 0;
+  
+  @override
+  Storage get storage => _storage;
+  
+  @override
+  Actor? get currentTargetActor => null; // Not used in loop mode
+  
+  @override
+  Screen<Input>? get screen => this;
+  
+  @override
+  void dirty() => _dirty = true;
+  
+  @override
+  Object? get loopManager => _loopManager;
+  
+  @override
+  Rect get cameraBounds => stagePanel.cameraBounds;
+  
+  @override
+  Color get heroColor {
+    final hero = game.hero;
+    if (hero.health < hero.maxHealth / 4) return red;
+    if (hero.poison.isActive) return peaGreen;
+    if (hero.cold.isActive) return lightBlue;
+    if (hero.health < hero.maxHealth / 2) return pink;
+    return ash;
+  }
+  
+  @override
+  void drawStageGlyph(Terminal terminal, int x, int y, Glyph glyph) {
+    stagePanel.drawGlyph(terminal, x, y, glyph);
+  }
   
   /// UI display for showing current action mappings
   bool _showActionHelp = false;
@@ -43,26 +85,21 @@ class LoopGameScreen extends Screen<Input> {
   /// Pause counter for UI feedback
   int _pause = 0;
 
-  StagePanel get stagePanel => _stagePanel;
-  
-  Rect get cameraBounds => _stagePanel.cameraBounds;
-
-  Color get heroColor {
-    var hero = game.hero;
-    if (hero.health < hero.maxHealth / 4) return red;
-    if (hero.poison.isActive) return peaGreen;
-    if (hero.cold.isActive) return lightBlue;
-    if (hero.health < hero.maxHealth / 2) return pink;
-    return ash;
-  }
-
-  LoopGameScreen(this._storage, this.game, this._loopManager)
+  LoopGameScreen(this.game, this._storage, this._loopManager)
       : _smartCombat = SmartCombat(game),
         _logPanel = LogPanel(game.log),
         itemPanel = ItemPanel(game),
-        _actionMapping = ActionMapping.fromHero(game.hero, game) {
-    _sidebarPanel = SidebarPanel(this);
-    _stagePanel = StagePanel(this);
+        stagePanel = StagePanel(game) {
+    // Initialize game screen
+    game.hero.onGainHear.listen((_) => dirty());
+    game.hero.onGainMaxHear.listen((_) => dirty());
+    game.hero.onGainExperience.listen((_) => dirty());
+    game.hero.onGainLevel.listen((_) => dirty());
+    game.hero.onGainGold.listen((_) => dirty());
+    game.hero.onGainItems.listen((_) => dirty());
+    game.hero.onLoseItems.listen((_) => dirty());
+    game.hero.onEquip.listen((_) => dirty());
+    game.hero.onUnequip.listen((_) => dirty());
   }
 
   /// Factory constructor creates a game for the current loop
@@ -76,7 +113,7 @@ class LoopGameScreen extends Screen<Input> {
     // Generate the dungeon
     for (var _ in game.generate()) {}
     
-    return LoopGameScreen(storage, game, loopManager);
+    return LoopGameScreen(game, storage, loopManager);
   }
 
   @override
@@ -218,7 +255,7 @@ class LoopGameScreen extends Screen<Input> {
     }
 
     // Update panels
-    if (_stagePanel.update(result.events)) dirty();
+    if (stagePanel.update(result.events)) dirty();
     if (result.needsRefresh) dirty();
   }
 
@@ -243,33 +280,37 @@ class LoopGameScreen extends Screen<Input> {
     logHeight = math.min(logHeight, 8); // Smaller log for more focus
 
     _logPanel.show(Rect(leftWidth, 0, centerWidth, logHeight));
-    _stagePanel.show(Rect(leftWidth, logHeight, centerWidth, size.y - logHeight));
+    stagePanel.show(Rect(leftWidth, logHeight, centerWidth, size.y - logHeight));
   }
 
   @override
   void render(Terminal terminal) {
+    // Clear the terminal
     terminal.clear();
-
-    _stagePanel.render(terminal);
+    
+    // Render the stage and UI panels
+    stagePanel.render(terminal);
     _logPanel.render(terminal);
     _sidebarPanel.render(terminal);
     
-    // Render action help overlay if active
-    if (_showActionHelp) {
-      _renderActionHelp(terminal);
-    }
+    // Mark as clean after rendering
+    _dirty = false;
+  }
+  
+  @override
+  void drawStageGlyph(Terminal terminal, int x, int y, Glyph glyph) {
+    // Delegate to stage panel's draw method
+    stagePanel.drawGlyph(terminal, x, y, glyph);
   }
 
   /// Render the action button help overlay
   void _renderActionHelp(Terminal terminal) {
-    var width = 50;
-    var height = 12;
-    var x = (terminal.width - width) ~/ 2;
-    var y = (terminal.height - height) ~/ 2;
-    
-    // Background
-    for (var dy = 0; dy < height; dy++) {
-      for (var dx = 0; dx < width; dx++) {
+    // Draw a semi-transparent overlay
+    terminal.withColor(black.withAlpha(192), () {
+      for (var y = 0; y < terminal.height; y++) {
+        for (var x = 0; x < terminal.width; x++) {
+          terminal.writeAt(x, y, ' ');
+        }
         terminal.writeAt(x + dx, y + dy, " ", Color.black, Color.darkGray);
       }
     }
