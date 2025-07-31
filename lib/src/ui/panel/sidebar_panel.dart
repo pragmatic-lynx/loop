@@ -33,7 +33,7 @@ class SidebarPanel extends Panel {
   SidebarPanel(this._gameScreen);
   
   int _drawLoopInfo(Terminal terminal, int y) {
-    var loopManager = _gameScreen._loopManager!;
+    var loopManager = _gameScreen.loopManager!;
     var status = loopManager.getStatus();
     
     terminal.writeAt(1, y, "Loop ${status['currentLoop']}", UIHue.secondary);
@@ -56,7 +56,7 @@ class SidebarPanel extends Panel {
 
     // Show loop information if in loop mode
     var yOffset = 4;
-    if (_gameScreen._loopManager != null) {
+    if (_gameScreen.loopManager != null) {
       yOffset = _drawLoopInfo(terminal, yOffset);
       yOffset++;
     }

@@ -50,8 +50,11 @@ class LoopSetupScreen extends Screen<Input> {
   void _startLoop() {
     var preset = presets[selectedPreset];
     
+    print("Starting loop with preset: ${preset.name}");
+    
     // Create a temporary hero from the preset
     var hero = preset.createHero("Loop Hero", content);
+    print("Created hero: ${hero.name}, class: ${hero.heroClass.name}");
     
     // Start the loop
     loopManager.startLoop(preset);
@@ -61,6 +64,7 @@ class LoopSetupScreen extends Screen<Input> {
     
     // Start the game at the appropriate depth
     var depth = loopManager.getCurrentDepth();
+    print("Starting game at depth: $depth");
     
     ui.goTo(GameScreen.loop(storage, content, hero, loopManager, depth));
   }
@@ -90,7 +94,7 @@ class LoopSetupScreen extends Screen<Input> {
     Draw.doubleBox(centerTerminal, 0, 0, centerTerminal.width, centerTerminal.height);
     
     // Title
-    centerTerminal.writeAt(3, 2, 'ROGUELITE LOOP', UIHue.title);
+    centerTerminal.writeAt(3, 2, 'ROGUELITE LOOP', UIHue.primary);
     centerTerminal.writeAt(3, 3, 'Choose your configuration for this run', UIHue.text);
     
     // Loop info

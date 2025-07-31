@@ -84,7 +84,7 @@ class LoopRewardScreen extends Screen<Input> {
     
     // Title
     var status = loopManager.getStatus();
-    centerTerminal.writeAt(3, 2, 'LOOP ${status['currentLoop']} COMPLETE!', UIHue.title);
+    centerTerminal.writeAt(3, 2, 'LOOP ${status['currentLoop']} COMPLETE!', UIHue.primary);
     centerTerminal.writeAt(3, 3, 'You made ${status['moveCount']} moves. Choose your reward:', UIHue.text);
     
     Draw.hLine(centerTerminal, 3, 5, centerTerminal.width - 6);

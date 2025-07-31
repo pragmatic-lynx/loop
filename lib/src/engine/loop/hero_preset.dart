@@ -30,12 +30,20 @@ class HeroPreset {
   
   /// Create a hero from this preset
   HeroSave createHero(String heroName, Content content) {
-    // Find race and class
-    var race = content.races.firstWhere((r) => r.name == raceName);
-    var heroClass = content.classes.firstWhere((c) => c.name == className);
+    // Find the correct class
+    HeroClass? heroClass;
+    for (var cls in content.classes) {
+      if (cls.name == className) {
+        heroClass = cls;
+        break;
+      }
+    }
+    heroClass ??= content.classes.first; // Default to first class if not found
     
-    // Create the hero
-    var hero = HeroSave.create(heroName, race, heroClass, permadeath: false);
+    // Create the hero using content.createHero (race defaults to human)
+    var hero = content.createHero(heroName,
+        heroClass: heroClass,
+        permadeath: false);
     
     // Set starting gold
     hero.gold = startingGold;

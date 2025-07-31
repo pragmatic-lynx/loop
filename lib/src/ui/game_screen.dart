@@ -48,6 +48,9 @@ class GameScreen extends Screen<Input> {
   
   /// Loop manager for roguelite system (null for normal play)
   final LoopManager? _loopManager;
+  
+  /// Getter for loop manager (needed by sidebar panel)
+  LoopManager? get loopManager => _loopManager;
   final LogPanel _logPanel;
   final ItemPanel itemPanel;
   late final SidebarPanel _sidebarPanel;
@@ -162,9 +165,12 @@ class GameScreen extends Screen<Input> {
   /// Builds a GameScreen for roguelite loop play at a specific depth
   factory GameScreen.loop(Storage storage, Content content, HeroSave save, 
       LoopManager loopManager, int depth) {
+    print("GameScreen.loop: Creating game at depth $depth for hero ${save.name}");
     var game = Game(content, depth, save, width: 60, height: 34);
     
+    print("GameScreen.loop: Generating dungeon...");
     for (var _ in game.generate()) {}
+    print("GameScreen.loop: Dungeon generated, creating GameScreen");
     
     return GameScreen(storage, game, loopManager: loopManager);
   }

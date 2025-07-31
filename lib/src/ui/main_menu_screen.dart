@@ -241,7 +241,7 @@ class MainMenuScreen extends Screen<Input> {
       }
     }
 
-    centerTerminal.writeAt(3, 18, 'Which hero shall you play?', UIHue.text);
+    centerTerminal.writeAt(3, 18, 'Which hero shall you play? v0.1', UIHue.text);
 
     Draw.hLine(centerTerminal, 3, 20, centerTerminal.width - 6);
     Draw.hLine(centerTerminal, 3, 29, centerTerminal.width - 6);

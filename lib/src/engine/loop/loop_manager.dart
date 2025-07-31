@@ -7,7 +7,7 @@ import 'hero_preset.dart';
 /// Manages the roguelite meta-game loop system
 class LoopManager {
   static const int movesPerLoop = 50; // Number of moves before showing rewards
-  static const int startingDepth = 3; // Starting dungeon depth
+  static const int startingDepth = 1; // Starting dungeon depth
   
   int currentLoop = 0;
   int threatLevel = 0;
