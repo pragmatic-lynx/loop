@@ -1,6 +1,8 @@
 # Implementation Plan
 
-- [-] 1. Create WorldStateManager class with basic serialization
+- [x] 1. Create WorldStateManager class with basic serialization
+
+
 
 
 

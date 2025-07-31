@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:piecemeal/piecemeal.dart';
 
 import '../hero/hero.dart';
+import '../hero/stat.dart';
 import '../items/item.dart';
 import '../monster/monster.dart';
 import '../stage/stage.dart';
@@ -140,8 +141,8 @@ class WorldStateManager {
         'name': heroSave.race.name,
         'seed': heroSave.race.seed,
         'stats': {
-          for (var stat in heroSave.race.stats.keys) 
-            stat.name: heroSave.race.stats[stat]
+          for (var stat in Stat.all) 
+            stat.name: heroSave.race.max(stat)
         }
       },
       'class': heroSave.heroClass.name,

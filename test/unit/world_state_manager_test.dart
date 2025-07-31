@@ -12,10 +12,12 @@ void main() {
     late Content content;
     late Game game;
 
-    setUp(() {
-      // Initialize content for testing
+    setUpAll(() {
+      // Initialize content once for all tests
       content = createContent();
-      
+    });
+
+    setUp(() {
       // Create a test hero save
       var heroSave = content.createHero('TestHero');
       
