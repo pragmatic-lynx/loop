@@ -32,10 +32,16 @@ import 'storage.dart';
 
 /// Panel for displaying loop mode controls
 class ControlsPanel extends Panel {
-  final ActionMapping actionMapping;
+  ActionMapping actionMapping;
   final LoopManager loopManager;
   final Game game;
+  
   ControlsPanel(this.actionMapping, this.loopManager, this.game);
+  
+  void updateActionMapping(ActionMapping newMapping) {
+    actionMapping = newMapping;
+  }
+  
   @override
   void renderPanel(Terminal terminal) {
     Draw.frame(terminal, 0, 0, terminal.width, terminal.height, label: "CONTROLS");
@@ -124,7 +130,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   /// Update action mapping with current game state
   void _updateActionMapping() {
     _actionMapping = ActionMapping.fromSmartCombat(_smartCombat);
-    _controlsPanel = ControlsPanel(_actionMapping, _loopManager, game);
+    _controlsPanel?.updateActionMapping(_actionMapping);
     dirty();
   }
 
