@@ -30,15 +30,13 @@ class InputConverter {
       case Input.ok:
         return LoopInput.wait;
       
-      // Action button mappings (1,2,3,4)
+      // Action button mappings (1,2,3) - Smart UI system
       case Input.selectSkill:  // Mapped to '1' key
         return LoopInput.action1;
       case Input.use:          // Mapped to '2' key  
         return LoopInput.action2;
       case Input.drop:         // Mapped to '3' key
         return LoopInput.action3;
-      case Input.equip:        // Mapped to '4' key
-        return LoopInput.action4;
       
       // Essential controls
       case Input.cancel:
@@ -58,13 +56,11 @@ class InputConverter {
   static String getActionDescription(int actionNumber) {
     switch (actionNumber) {
       case 1:
-        return "Primary Attack/Interact";
+        return "🗡️ Primary Attack/Interact";
       case 2:
-        return "Secondary Attack/Spell";
+        return "⚡ Magic/Secondary Ability";
       case 3:
-        return "Heal/Consumable";
-      case 4:
-        return "Movement/Escape";
+        return "❤️ Heal/Consumable";
       default:
         return "Unknown Action";
     }
@@ -76,11 +72,9 @@ class InputConverter {
       case 1:
         return "Attack";
       case 2:
-        return "Spell";
+        return "Magic";
       case 3:
         return "Heal";
-      case 4:
-        return "Escape";
       default:
         return "Action $actionNumber";
     }
