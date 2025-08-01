@@ -294,9 +294,6 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     
     // Draw the stage
     stagePanel.render(terminal);
-    
-    // Mark as clean after rendering
-    _dirty = false;
 
     // Draw UI elements
     final rightSide = terminal.width - 24;
@@ -339,6 +336,9 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     if (_showActionHelp) {
       _renderActionHelp(terminal);
     }
+    
+    // Mark as clean AFTER all rendering is complete
+    _dirty = false;
   }
 
   /// Render the action button help overlay

@@ -1,0 +1,105 @@
+{
+  "obsolete_files": [
+    {
+      "category": "backup_files",
+      "files": [
+        "lib/src/ui/loop_input_wrapper.dart.bak",
+        "temp_help_method.dart.bak"
+      ]
+    },
+    {
+      "category": "development_prompts", 
+      "files": [
+        "prompt1.md", "prompt2.md", "prompt3.md", "prompt4.md", "prompt5.md",
+        "prompt6.md", "prompt7.md", "prompt8.md", "prompt9.md", "prompt10.md",
+        "prompt11.md", "prompt12.md", "prompt13.md", "prompt14.md", "prompt15.md",
+        "prompt16.md", "prompt17.md", "prompt18.md", "prompt19.md", "prompt20.md",
+        "prompt21.md", "prompt22.md", "prompt23.md", "prompt24.md", "prompt25.md",
+        "prompt26.md", "prompt27.md", "prompt28.md", "prompt29.md", "prompt30.md",
+        "prompt31.md"
+      ]
+    },
+    {
+      "category": "old_ui_files",
+      "files": [
+        "lib/src/ui/game_screen_old.dart"
+      ]
+    },
+    {
+      "category": "complex_dialogs_not_needed_for_loop_mode",
+      "files": [
+        "lib/src/ui/hero_equipment_dialog.dart",
+        "lib/src/ui/hero_info_dialog.dart", 
+        "lib/src/ui/hero_item_lore_dialog.dart",
+        "lib/src/ui/hero_monster_lore_dialog.dart",
+        "lib/src/ui/hero_resistances_dialog.dart",
+        "lib/src/ui/direction_dialog.dart",
+        "lib/src/ui/select_depth_popup.dart",
+        "lib/src/ui/select_skill_dialog.dart",
+        "lib/src/ui/skill_dialog.dart",
+        "lib/src/ui/target_dialog.dart",
+        "lib/src/ui/wizard_dialog.dart",
+        "lib/src/ui/loading_dialog.dart"
+      ]
+    },
+    {
+      "category": "debug_tools_not_needed_for_jam",
+      "files": [
+        "web/debug/affixes.dart", "web/debug/affixes.html",
+        "web/debug/blob.dart", "web/debug/blob.html", 
+        "web/debug/chart.dart", "web/debug/chart.html",
+        "web/debug/dungeon.dart", "web/debug/dungeon.html",
+        "web/debug/generation.dart", "web/debug/generation.html",
+        "web/debug/heft.dart", "web/debug/heft.html",
+        "web/debug/index.html",
+        "web/debug/items.dart", "web/debug/items.html",
+        "web/debug/item_depth.dart", "web/debug/item_depth.html", 
+        "web/debug/melee.dart", "web/debug/melee.html",
+        "web/debug/monster.dart", "web/debug/monster.html",
+        "web/debug/monsters.dart", "web/debug/monsters.html",
+        "web/debug/skills.dart", "web/debug/skills.html",
+        "web/debug/stats.dart", "web/debug/stats.html",
+        "web/debug/styles.css"
+      ]
+    },
+    {
+      "category": "utility_scripts_not_needed_for_jam",
+      "files": [
+        "bin/generate_dungeon.dart",
+        "bin/kills.dart", 
+        "bin/melee.dart",
+        "bin/minions.dart",
+        "bin/monsters.dart",
+        "bin/proficiency.dart", 
+        "bin/progression.dart",
+        "bin/simulator.dart",
+        "bin/stats.dart",
+        "bin/update_docs.dart"
+      ]
+    },
+    {
+      "category": "test_artifacts",
+      "files": [
+        "test_smart_ui/test_smart_actions.dart"
+      ]
+    },
+    {
+      "category": "documentation_files_for_cleanup",
+      "files": [
+        "web/getting-started.html",
+        "web/quick-reference.html"
+      ]
+    },
+    {
+      "category": "python_utilities",
+      "files": [
+        "task_watcher.py",
+        "wirepusher.py",
+        "__pycache__"
+      ]
+    }
+  ],
+  "total_files_to_remove": 75,
+  "estimated_space_saved": "Several MB",
+  "recommendation": "Remove these files to create a clean, focused Loop Mode repository ready for game jam submission"
+}
