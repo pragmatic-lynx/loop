@@ -9,7 +9,7 @@ import '../../debug.dart';
 import '../../engine.dart';
 import '../../hues.dart';
 import '../effect.dart';
-import '../game_screen.dart';
+import '../game_screen_interface.dart';
 import 'panel.dart';
 
 /// The main gameplay area of the screen.
@@ -51,7 +51,7 @@ class StagePanel extends Panel {
     [red, brown]
   ];
 
-  final GameScreen _gameScreen;
+  final GameScreenInterface _gameScreen;
 
   final _effects = <Effect>[];
 

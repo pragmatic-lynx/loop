@@ -1,49 +1,47 @@
 // lib/src/ui/loop_game_screen.dart
 
-import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:malison/malison.dart';
 import 'package:malison/malison_web.dart';
 import 'package:piecemeal/piecemeal.dart';
 
-import '../engine/core/game.dart';
-import '../engine/core/content.dart';
+import '../engine/action/action.dart';
+import '../engine/action/action_mapping.dart';
+import '../engine/action/walk.dart';
 import '../engine/core/actor.dart';
-import '../engine/stage/stage.dart';
-import '../engine/hero/hero.dart';
+import '../engine/core/content.dart';
+import '../engine/core/game.dart';
 import '../engine/hero/hero_save.dart';
 import '../engine/loop/loop_manager.dart';
 import '../engine/loop/smart_combat.dart';
-import '../engine/action/action_mapping.dart';
-import '../engine/action/action.dart';
-import '../engine/action/walk.dart';
-import '../debug.dart';
-// Direction is available from piecemeal package
+import '../hues.dart';
+import 'game_over_screen.dart';
 import 'game_screen_interface.dart';
 import 'input.dart';
-import 'loop_input.dart';
 import 'input_converter.dart';
+import 'loop_input.dart';
+import 'loop_reward_screen.dart';
 import 'panel/log_panel.dart';
 import 'panel/sidebar_panel.dart';
 import 'panel/stage_panel.dart';
 import 'panel/item_panel.dart';
 import 'storage.dart';
-import 'game_screen.dart';
-import 'game_over_screen.dart';
-import 'loop_reward_screen.dart';
-import '../hues.dart';
 
-// Color constants - using RGB format (r, g, b)
+// Color constants for help overlay
 final Color darkerCoolGray = Color(0x33, 0x33, 0x33);
 final Color darkWarmGray = Color(0x44, 0x44, 0x44);
-final Color ash = Color(0x88, 0x88, 0x88);
 
 /// Simplified game screen for roguelite loop mode
 /// Focuses on fast, ADHD-friendly gameplay with minimal complexity
-class LoopGameScreen extends GameScreen {
+class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
+  @override
+  final Game game;
+  final Storage _storage;
   final LogPanel _logPanel;
+  final ItemPanel itemPanel;
   late final SidebarPanel _sidebarPanel;
+  late final StagePanel _stagePanel;
   final SmartCombat _smartCombat;
   late ActionMapping _actionMapping;
   final LoopManager _loopManager;
@@ -53,21 +51,46 @@ class LoopGameScreen extends GameScreen {
   
   @override
   LoopManager? get loopManager => _loopManager;
+  @override
+  StagePanel get stagePanel => _stagePanel;
+  @override
+  Storage get storage => _storage;
+  @override
+  Screen<Input>? get screen => this;
+  
+  @override
+  Rect get cameraBounds => _stagePanel.cameraBounds;
+  
+  @override
+  Color get heroColor {
+    var hero = game.hero;
+    if (hero.health < hero.maxHealth / 4) return red;
+    if (hero.poison.isActive) return peaGreen;
+    if (hero.cold.isActive) return lightBlue;
+    if (hero.health < hero.maxHealth / 2) return pink;
+    return ash;
+  }
+  
+  /// Draws [Glyph] at [x], [y] in [Stage] coordinates onto the stage panel.
+  @override
+  void drawStageGlyph(Terminal terminal, int x, int y, Glyph glyph) {
+    _stagePanel.drawStageGlyph(terminal, x, y, glyph);
+  }
 
   @override
   Actor? get currentTargetActor => null; // No target selection in loop mode
 
-  LoopGameScreen(Storage storage, Game game, {required HeroSave heroSave})
-      : _loopManager = LoopManager(),
-        _smartCombat = SmartCombat(game),
+  LoopGameScreen(this._storage, this.game, this._loopManager)
+      : _smartCombat = SmartCombat(game),
         _logPanel = LogPanel(game.log),
-        super(storage, game) {
+        itemPanel = ItemPanel(game) {
+    
+    // Initialize panels
+    _sidebarPanel = SidebarPanel(this);
+    _stagePanel = StagePanel(this);
     
     // Initialize dynamic action mapping
     _updateActionMapping();
-    
-    // Initialize sidebar panel after constructor
-    _sidebarPanel = SidebarPanel(this);
   }
   
   /// Update action mapping with current game state
@@ -86,7 +109,7 @@ class LoopGameScreen extends GameScreen {
     // Generate the dungeon
     for (var _ in game.generate()) {}
 
-    return LoopGameScreen(storage, game, heroSave: save);
+    return LoopGameScreen(storage, game, loopManager);
   }
 
   @override
@@ -186,19 +209,12 @@ class LoopGameScreen extends GameScreen {
 
   @override
   void update() {
-    print("LoopGameScreen.update() called");
-    
     if (_pause > 0) {
       _pause--;
       return;
     }
 
     var result = game.update();
-
-    // Mark screen as dirty if game made progress (hero moved, etc.)
-    if (result.madeProgress) {
-      dirty();
-    }
 
     // Track moves for loop system
     if (result.madeProgress) {
@@ -209,8 +225,8 @@ class LoopGameScreen extends GameScreen {
         // Check if time for reward selection
         if (_loopManager.isRewardSelection) {
           print("Loop complete! Going to reward selection.");
-          storage.save();
-          ui.goTo(LoopRewardScreen(game.content, storage, _loopManager, game.hero.save));
+          _storage.save();
+          ui.goTo(LoopRewardScreen(game.content, _storage, _loopManager, game.hero.save));
           return;
         }
       }
@@ -220,12 +236,12 @@ class LoopGameScreen extends GameScreen {
     if (!game.hero.isAlive) {
       print("Hero died! Restarting loop.");
       _loopManager.reset();
-      ui.goTo(GameOverScreen(storage, game.hero.save, game.hero.save));
+      ui.goTo(GameOverScreen(_storage, game.hero.save, game.hero.save));
       return;
     }
 
     // Update panels - exactly like the regular GameScreen
-    if (stagePanel.update(result.events)) dirty();
+    if (_stagePanel.update(result.events)) dirty();
     if (result.needsRefresh) dirty();
   }
 
@@ -241,63 +257,32 @@ class LoopGameScreen extends GameScreen {
 
     var centerWidth = size.x - leftWidth;
 
+    // Hide item panel in loop mode for simplicity
+    itemPanel.hide();
+    
+    // Set up panel bounds exactly like the working GameScreen
     _sidebarPanel.show(Rect(0, 0, leftWidth, size.y));
 
     var logHeight = 3 + (size.y - 30) ~/ 2;
     logHeight = math.min(logHeight, 8); // Smaller log for more focus
 
     _logPanel.show(Rect(leftWidth, 0, centerWidth, logHeight));
-    stagePanel.show(Rect(leftWidth, logHeight, centerWidth, size.y - logHeight));
+    _stagePanel.show(Rect(leftWidth, logHeight, centerWidth, size.y - logHeight));
   }
 
   @override
   void render(Terminal terminal) {
-    print("LoopGameScreen.render() called");
-    
     // Clear the terminal first
     terminal.clear();
     
-    // Draw the stage
-    stagePanel.render(terminal);
-
-    // Draw UI elements
-    final rightSide = terminal.width - 24;
-    final bottom = terminal.height - 2;
-
-    // Draw health bar
-    terminal.writeAt(
-        rightSide,
-        0,
-        'Health: ${game.hero.health}/${game.hero.maxHealth}'.padLeft(20),
-        red);
-
-    // Draw gold
-    terminal.writeAt(rightSide, 1, 'Gold: ${game.hero.gold}'.padLeft(20), peaGreen);
-
-    // Draw current floor
-    terminal.writeAt(
-        rightSide, 2, 'Floor: ${game.depth}'.padLeft(20), lightBlue);
-
-    // Draw loop count
-    terminal.writeAt(
-        rightSide, 3, 'Loop: ${_loopManager.currentLoop}'.padLeft(20), pink);
-
-    // Draw action buttons with emojis for clarity
-    terminal.writeAt(rightSide, 5, 'Actions:', ash);
-    terminal.writeAt(rightSide, 6, '1. 🗡️ ${_actionMapping.action1Label}');
-    terminal.writeAt(rightSide, 7, '2. ⚡ ${_actionMapping.action2Label}');
-    terminal.writeAt(rightSide, 8, '3. ❤️ ${_actionMapping.action3Label}');
-
-    // Draw log messages - using a fixed rectangle for now
+    // Render panels in the same order as working GameScreen
+    _stagePanel.render(terminal);
     _logPanel.render(terminal);
+    // Note: render sidebar after stage panel so visible monsters are calculated first
+    _sidebarPanel.render(terminal);
+    itemPanel.render(terminal);
 
-    // Always show prominent move counter
-    _renderMoveCounter(terminal);
-
-    // Show loop progress indicator
-    _renderLoopProgress(terminal);
-
-    // Show action help if toggled
+    // Show action help overlay if toggled
     if (_showActionHelp) {
       _renderActionHelp(terminal);
     }
@@ -348,55 +333,5 @@ class LoopGameScreen extends GameScreen {
     // Current loop info in help
     var movesRemaining = LoopManager.movesPerLoop - _loopManager.moveCount;
     terminal.writeAt(x + 2, y + height - 2, "Loop ${_loopManager.currentLoop}: $movesRemaining moves left", carrot, darkWarmGray);
-  }
-  
-  /// Render prominent move counter in top-right corner
-  void _renderMoveCounter(Terminal terminal) {
-    var movesRemaining = LoopManager.movesPerLoop - _loopManager.moveCount;
-    var text = "$movesRemaining";
-    var x = terminal.width - text.length - 2;
-    var y = 1;
-    
-    // Color based on urgency
-    var color = ash;
-    if (movesRemaining <= 10) {
-      color = red;
-    } else if (movesRemaining <= 20) {
-      color = carrot;
-    } else if (movesRemaining <= 30) {
-      color = yellow;
-    }
-    
-    // Background for visibility
-    terminal.writeAt(x - 1, y, "[", lightWarmGray, darkerCoolGray);
-    terminal.writeAt(x, y, text, color, darkerCoolGray);
-    terminal.writeAt(x + text.length, y, "]", lightWarmGray, darkerCoolGray);
-  }
-  
-  /// Render loop progress bar
-  void _renderLoopProgress(Terminal terminal) {
-    var progress = _loopManager.moveCount / LoopManager.movesPerLoop;
-    var barWidth = 20;
-    var x = terminal.width - barWidth - 5;
-    var y = 2;
-    
-    // Progress bar background
-    for (var i = 0; i < barWidth; i++) {
-      terminal.writeAt(x + i, y, "▒", darkWarmGray, darkerCoolGray);
-    }
-    
-    // Progress bar fill
-    var fillWidth = (progress * barWidth).round();
-    for (var i = 0; i < fillWidth; i++) {
-      var color = lightBlue;
-      if (progress > 0.8) color = carrot;
-      if (progress > 0.9) color = red;
-      
-      terminal.writeAt(x + i, y, "█", color, darkerCoolGray);
-    }
-    
-    // Loop number label
-    var loopText = "L${_loopManager.currentLoop}";
-    terminal.writeAt(x - loopText.length - 1, y, loopText, ash, darkerCoolGray);
   }
 }
