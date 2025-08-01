@@ -15,9 +15,14 @@ import '../engine/core/game.dart';
 import '../engine/hero/hero_save.dart';
 import '../engine/loop/loop_manager.dart';
 import '../engine/loop/smart_combat.dart';
+import '../engine/stage/tile.dart';
+import '../content/tiles.dart';
 import '../hues.dart';
+import 'exit_popup.dart';
 import 'game_over_screen.dart';
 import 'game_screen_interface.dart';
+import 'hero_equipment_dialog.dart';
+import 'item/equip_dialog.dart';
 import 'input.dart';
 import 'input_converter.dart';
 import 'loop_input.dart';
@@ -71,6 +76,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   final LoopManager _loopManager;
   ControlsPanel? _controlsPanel;
   int _pause = 0;
+  HeroSave _previousSave;
   
   @override
   LoopManager? get loopManager => _loopManager;
@@ -105,6 +111,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
 
   LoopGameScreen(this._storage, this.game, this._loopManager)
       : _smartCombat = SmartCombat(game),
+        _previousSave = game.hero.save.clone(),
         _logPanel = LogPanel(game.log),
         itemPanel = ItemPanel(game) {
     
@@ -193,6 +200,19 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
 
       // Smart action buttons
       case LoopInput.action1:
+        // First try to interact with staircase if standing on one
+        var portal = game.stage[game.hero.pos].portal;
+        if (portal == TilePortals.exit) {
+          // Trigger staircase interaction
+          if (_loopManager != null) {
+            _handleLoopExit();
+          } else {
+            ui.push(ExitPopup(_previousSave, game));
+          }
+          return true;
+        }
+        
+        // Otherwise try primary action
         action = _smartCombat.handlePrimaryAction();
         if (action == null) {
           game.log.message("No primary action available.");
@@ -212,6 +232,24 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
           game.log.message("No healing available.");
           dirty();
         }
+
+      case LoopInput.equip:
+        // First try to interact with staircase if standing on one
+        var portal = game.stage[game.hero.pos].portal;
+        if (portal == TilePortals.exit) {
+          // Trigger staircase interaction
+          if (_loopManager != null) {
+            _handleLoopExit();
+          } else {
+            ui.push(ExitPopup(_previousSave, game));
+          }
+          return true;
+        }
+        
+        // For now, just show a message that equipment is not available in loop mode
+        game.log.message("Equipment management not available in loop mode.");
+        dirty();
+        return true;
     }
 
     if (action != null) {
@@ -325,7 +363,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     }
     var centerWidth = terminal.width - leftWidth - rightWidth;
     var x = leftWidth + (centerWidth - text.length) ~/ 2;
-    var y = 1;
+    var y = terminal.height - 2; // Move to bottom
     var color = ash;
     if (movesRemaining <= 10) {
       color = red;
@@ -352,7 +390,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     }
     var centerWidth = terminal.width - leftWidth - rightWidth;
     var x = leftWidth + (centerWidth - barWidth) ~/ 2;
-    var y = 2;
+    var y = terminal.height - 1; // Move to bottom
     for (var i = 0; i < barWidth; i++) {
       terminal.writeAt(x + i, y, "▒", darkWarmGray, darkerCoolGray);
     }
@@ -365,5 +403,11 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     }
     var loopText = "L${_loopManager.currentLoop}";
     terminal.writeAt(x - loopText.length - 1, y, loopText, ash, darkerCoolGray);
+  }
+
+  void _handleLoopExit() {
+    _previousSave = game.hero.save;
+    _loopManager.reset();
+    ui.goTo(GameOverScreen(_storage, _previousSave!, _previousSave!));
   }
 }
