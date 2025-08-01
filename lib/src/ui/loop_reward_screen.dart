@@ -2,15 +2,13 @@
 
 import 'package:malison/malison.dart';
 import 'package:malison/malison_web.dart';
-import 'package:piecemeal/piecemeal.dart';
 
 import '../engine.dart';
-import '../engine/loop/loop_manager.dart';
-import '../engine/loop/loop_reward.dart';
+import '../engine/loop/reward_choice_log.dart';
 import '../hues.dart';
 import 'draw.dart';
-import 'loop_game_screen.dart';
 import 'input.dart';
+import 'loop_game_screen.dart';
 import 'storage.dart';
 
 class LoopRewardScreen extends Screen<Input> {
@@ -54,6 +52,9 @@ class LoopRewardScreen extends Screen<Input> {
   void _selectReward() {
     var reward = rewardOptions[selectedReward];
     
+    // Log the reward choice with archetype context
+    _logRewardChoice(reward);
+    
     // Apply the selected reward to the loop manager
     loopManager.selectReward(reward);
     
@@ -62,6 +63,28 @@ class LoopRewardScreen extends Screen<Input> {
     
     // Continue to next loop
     _startNextLoop();
+  }
+
+  void _logRewardChoice(LoopReward reward) {
+    try {
+      // Get current archetype metadata from loop manager
+      var metadata = loopManager.getArchetypeMetadata();
+      if (metadata != null) {
+        // Generate choice ID from reward name and index
+        var choiceId = '${reward.name.replaceAll(' ', '_').toLowerCase()}_$selectedReward';
+        
+        // Log the choice asynchronously
+        RewardChoiceLogger.logChoiceNow(
+          metadata.loopNumber,
+          metadata.archetype,
+          choiceId,
+        );
+      } else {
+        print('Warning: No archetype metadata available for reward choice logging');
+      }
+    } catch (e) {
+      print('Error logging reward choice: $e');
+    }
   }
   
   void _startNextLoop() {
@@ -152,7 +175,7 @@ class LoopRewardScreen extends Screen<Input> {
       if (currentLine.isEmpty) {
         currentLine = word;
       } else if (currentLine.length + word.length + 1 <= width) {
-        currentLine += ' ' + word;
+        currentLine += ' $word';
       } else {
         terminal.writeAt(x, currentY, currentLine, color);
         currentLine = word;
