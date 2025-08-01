@@ -6,6 +6,7 @@ import 'package:hauberk/src/content.dart';
 import 'package:hauberk/src/debug.dart';
 import 'package:hauberk/src/engine.dart';
 import 'package:hauberk/src/ui/game_screen.dart';
+import 'package:hauberk/src/ui/game_screen_interface.dart';
 import 'package:hauberk/src/ui/input.dart';
 import 'package:hauberk/src/ui/main_menu_screen.dart';
 import 'package:malison/malison.dart';
@@ -186,7 +187,7 @@ void _addFont(String name, int charWidth, [int? charHeight]) {
   if (Debug.enabled) {
     // Clicking a monster toggles its debug pane.
     canvas.onClick.listen((event) {
-      var gameScreen = Debug.gameScreen as GameScreen?;
+      var gameScreen = Debug.gameScreen as GameScreenInterface?;
       if (gameScreen == null) return;
 
       var pixel = Vec(event.offset.x.toInt(), event.offset.y.toInt());
@@ -294,7 +295,7 @@ Future<void> _refreshDebugBoxes() async {
     html.document.body!.children.remove(debugBox);
   }
 
-  var gameScreen = Debug.gameScreen as GameScreen?;
+  var gameScreen = Debug.gameScreen as GameScreenInterface?;
   if (gameScreen == null) return;
 
   _debugMonsters.removeWhere((monster) => !monster.isAlive);
