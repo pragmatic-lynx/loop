@@ -15,9 +15,9 @@ class LoopItemManager {
   LoopItemManager(this.content, {LoopItemConfig? config}) 
     : config = config ?? LoopItemConfig.getDefault();
     
-  /// Create a LoopItemManager with config loaded from file
-  static Future<LoopItemManager> fromFile(Content content, String configPath) async {
-    final config = await LoopItemConfig.loadFromFile(configPath);
+  /// Create a LoopItemManager with config loaded from JSON string
+  static LoopItemManager fromJsonString(Content content, String jsonString) {
+    final config = LoopItemConfig.loadFromJsonString(jsonString);
     return LoopItemManager(content, config: config);
   }
   

@@ -1,7 +1,6 @@
 // lib/src/engine/loop/item/loop_item_config.dart
 
 import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
 import 'item_category.dart';
 
@@ -135,29 +134,14 @@ class LoopItemConfig {
     return selected;
   }
   
-  /// Load configuration from file, falling back to default if file doesn't exist
-  static Future<LoopItemConfig> loadFromFile(String filePath) async {
+  /// Load configuration from JSON string
+  static LoopItemConfig loadFromJsonString(String jsonString) {
     try {
-      final file = File(filePath);
-      if (await file.exists()) {
-        final jsonString = await file.readAsString();
-        return LoopItemConfig.fromJson(jsonString);
-      }
+      return LoopItemConfig.fromJson(jsonString);
     } catch (e) {
-      print('Warning: Could not load loop item config from $filePath: $e');
+      print('Warning: Could not parse loop item config JSON: $e');
       print('Using default configuration instead.');
-    }
-    return getDefault();
-  }
-  
-  /// Save configuration to file
-  Future<void> saveToFile(String filePath) async {
-    try {
-      final file = File(filePath);
-      await file.writeAsString(toJson());
-      print('Saved loop item config to $filePath');
-    } catch (e) {
-      print('Error saving loop item config to $filePath: $e');
+      return getDefault();
     }
   }
   

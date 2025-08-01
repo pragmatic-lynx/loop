@@ -5,6 +5,7 @@ import '../core/content.dart';
 import '../items/item.dart';
 import 'item/loop_item_config.dart';
 import 'item/loop_item_manager.dart';
+import 'item/item_category.dart';
 
 /// Base class for rewards that provide temporary benefits for the next loop
 abstract class LoopReward {
@@ -273,11 +274,11 @@ class ItemLoopReward extends LoopReward {
     
     // Try to equip if appropriate
     if (hero.equipment.canEquip(item) && _shouldAutoEquip(config.category)) {
-      final result = hero.equipment.equip(item);
+      final unequippedItems = hero.equipment.equip(item);
       print('Equipped ${item.nounText} on ${hero.name}');
       
       // Add any unequipped items to inventory
-      for (var unequippedItem in result.unequipped) {
+      for (var unequippedItem in unequippedItems) {
         hero.inventory.tryAdd(unequippedItem);
       }
     } else {
