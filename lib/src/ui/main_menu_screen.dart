@@ -315,7 +315,7 @@ class MainMenuScreen extends Screen<Input> {
     }
 
     Draw.helpKeys(terminal, {
-      "OK": "🗡️⚡❤️ Start Loop Mode",
+      "OK": "Start",
       "↕": "Change selection",
       "N": "Create a new hero",
       "D": "Delete hero",
