@@ -18,12 +18,15 @@ import 'forfeit_popup.dart';
 import 'game_over_screen.dart';
 import 'hero_info_dialog.dart';
 import 'input.dart';
+import 'inventory_dialog.dart';
 import 'item/drop_dialog.dart';
 import 'item/equip_dialog.dart';
 import 'item/item_dialog.dart';
 import 'item/pick_up_dialog.dart';
 import 'item/town_screen.dart';
+import 'level_up_screen.dart';
 import 'loading_dialog.dart';
+import 'loop_reward_screen.dart';
 import 'panel/item_panel.dart';
 import 'panel/log_panel.dart';
 import 'panel/sidebar_panel.dart';
@@ -348,13 +351,26 @@ class GameScreen extends Screen<Input> implements GameScreenInterface {
     
     print("Loop exit triggered! Completing current loop...");
     
+    // Check if we need to show level-up screen first
+    if (game.hero.save.pendingLevels > 0) {
+      // Show level-up screen before reward screen
+      ui.push(LevelUpScreen(
+        hero: game.hero.save,
+        pendingLevels: game.hero.save.pendingLevels,
+        storage: _storage,
+      ));
+      
+      // Clear pending levels after showing screen
+      game.hero.save.pendingLevels = 0;
+    }
+    
     // Mark the loop as complete and trigger reward selection
     _loopManager!.triggerRewardSelection();
     
     // Save the game state
     _storage.save();
     
-    // Go directly to reward selection
+    // Go to reward selection
     ui.goTo(LoopRewardScreen(game.content, _storage, _loopManager!, game.hero.save));
   }
 

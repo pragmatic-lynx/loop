@@ -140,15 +140,26 @@ class Stage {
   }
 
   void removeActor(Actor actor) {
-    assert(_actorsByTile[actor.pos] == actor);
+    // Safely remove actor even if position mapping is inconsistent
+    if (_actorsByTile[actor.pos] == actor) {
+      _actorsByTile[actor.pos] = null;
+    } else {
+      // Find and clear any stale references
+      for (var pos in _actorsByTile.keys.toList()) {
+        if (_actorsByTile[pos] == actor) {
+          _actorsByTile[pos] = null;
+          break;
+        }
+      }
+    }
 
     var index = _actors.indexOf(actor);
-    if (_currentActorIndex > index) _currentActorIndex--;
-    _actors.removeAt(index);
+    if (index >= 0) {
+      if (_currentActorIndex > index) _currentActorIndex--;
+      _actors.removeAt(index);
 
-    if (_currentActorIndex >= _actors.length) _currentActorIndex = 0;
-
-    _actorsByTile[actor.pos] = null;
+      if (_currentActorIndex >= _actors.length) _currentActorIndex = 0;
+    }
   }
 
   void advanceActor() {

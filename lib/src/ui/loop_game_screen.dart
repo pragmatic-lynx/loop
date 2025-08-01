@@ -550,9 +550,9 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     // Award XP bonus for descending stairs
     game.hero.gainExperience(GameConstants.stairXpBonus);
     
-    // Check if we need to show level-up screen
-    if (_loopManager.finishLoop(game.hero.save)) {
-      // Show level-up screen, then continue with loop
+    // Check if we need to show level-up screen before proceeding
+    if (game.hero.save.pendingLevels > 0) {
+      // Show level-up screen, then continue to next level
       ui.push(LevelUpScreen(
         hero: game.hero.save,
         pendingLevels: game.hero.save.pendingLevels,
@@ -563,8 +563,20 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
       game.hero.save.pendingLevels = 0;
     }
     
-    _previousSave = game.hero.save;
-    _loopManager.reset();
-    ui.goTo(GameOverScreen(_storage, _previousSave!, _previousSave!));
+    // Continue to next level instead of ending the game
+    _startNextLevel();
+  }
+
+  /// Start the next level after stairs or level completion
+  void _startNextLevel() {
+    // Increment the loop and continue
+    _loopManager.selectReward(LoopReward.generateRewardOptions(1).first);
+    
+    // Create a new game for the next level
+    var depth = _loopManager.getCurrentDepth();
+    var newGame = GameScreen.createGame(_storage, game.content, game.hero.save, _loopManager, depth);
+    
+    // Replace current screen with new game screen
+    ui.goTo(LoopGameScreen.create(_storage, game.content, game.hero.save, _loopManager));
   }
 }

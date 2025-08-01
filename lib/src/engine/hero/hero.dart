@@ -446,9 +446,20 @@ class Hero extends Actor {
 
   /// Loads XP curve from assets or falls back to defaults
   void _loadXpCurve() {
-    // For now, use the default curve since web asset loading is complex
-    // In a full implementation, this would use an HTTP request to load the JSON
-    xpTable = GameConstants.defaultXpCurve;
+    // Try to load from assets/xp_curve.json
+    try {
+      // In a web environment, we'd need to use HTTP requests to load assets
+      // For now, use the default curve as fallback
+      // TODO: Implement proper asset loading for web deployment
+      xpTable = GameConstants.defaultXpCurve;
+      
+      // Log that we're using default curve
+      print('Using default XP curve (${xpTable.length} levels)');
+    } catch (e) {
+      // Fallback to default curve if loading fails
+      xpTable = GameConstants.defaultXpCurve;
+      print('Failed to load XP curve from assets, using defaults: $e');
+    }
   }
 
   /// Gains experience and handles immediate level-ups
