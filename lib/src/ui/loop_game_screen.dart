@@ -41,68 +41,33 @@ final Color ash = Color(0x88, 0x88, 0x88);
 
 /// Simplified game screen for roguelite loop mode
 /// Focuses on fast, ADHD-friendly gameplay with minimal complexity
-class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
-  @override
-  late final StagePanel stagePanel;
+class LoopGameScreen extends GameScreen {
   final LogPanel _logPanel;
   late final SidebarPanel _sidebarPanel;
   final SmartCombat _smartCombat;
   late ActionMapping _actionMapping;
   final LoopManager _loopManager;
-  final Game game;
-  final Storage storage;
   
-  bool _dirty = true;
   bool _showActionHelp = false;
   int _pause = 0;
-  
-  @override
-  Screen<Input>? get screen => this;
   
   @override
   LoopManager? get loopManager => _loopManager;
 
   @override
-  Rect get cameraBounds => Rect(0, 0, 80, 50);
-
-  @override
-  Color get heroColor => red;
-
-  @override
   Actor? get currentTargetActor => null; // No target selection in loop mode
 
-  @override
-  Stream<Input> get input => _inputController.stream;
-
-  final _inputController = StreamController<Input>();
-
-  @override
-  void dirty() => _dirty = true;
-
-  @override
-  void drawStageGlyph(Terminal terminal, int x, int y, Glyph glyph) {
-    stagePanel.drawStageGlyph(terminal, x, y, glyph);
-  }
-
-  LoopGameScreen(this.game, this.storage, {required HeroSave heroSave})
+  LoopGameScreen(Storage storage, Game game, {required HeroSave heroSave})
       : _loopManager = LoopManager(),
         _smartCombat = SmartCombat(game),
-        _logPanel = LogPanel(game.log) {
+        _logPanel = LogPanel(game.log),
+        super(storage, game) {
     
     // Initialize dynamic action mapping
     _updateActionMapping();
     
     // Initialize sidebar panel after constructor
     _sidebarPanel = SidebarPanel(this);
-    
-    // Initialize stage panel with a minimal GameScreen instance
-    stagePanel = StagePanel(GameScreen(storage, game));
-    
-    // Bind debug screen (important for UI framework)
-    Debug.bindGameScreen(this);
-    
-    // Initialize game state
-    _dirty = true;
   }
   
   /// Update action mapping with current game state
@@ -121,7 +86,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     // Generate the dungeon
     for (var _ in game.generate()) {}
 
-    return LoopGameScreen(game, storage, heroSave: save);
+    return LoopGameScreen(storage, game, heroSave: save);
   }
 
   @override
@@ -287,7 +252,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
 
   @override
   void render(Terminal terminal) {
-    print("LoopGameScreen.render() called, dirty: $_dirty");
+    print("LoopGameScreen.render() called");
     
     // Clear the terminal first
     terminal.clear();
@@ -336,9 +301,6 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     if (_showActionHelp) {
       _renderActionHelp(terminal);
     }
-    
-    // Mark as clean AFTER all rendering is complete
-    _dirty = false;
   }
 
   /// Render the action button help overlay
