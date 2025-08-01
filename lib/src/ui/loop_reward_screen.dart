@@ -24,8 +24,20 @@ class LoopRewardScreen extends Screen<Input> {
   LoopRewardScreen(this.content, this.storage, this.loopManager, this.hero)
       : rewardOptions = loopManager.currentRewardOptions {
     // Ensure loop manager has content for generating item rewards
-    if (!loopManager.currentRewardOptions.isNotEmpty) {
-      loopManager.setContent(content);
+    loopManager.setContent(content);
+    
+    // If no reward options are available, generate them now
+    if (loopManager.currentRewardOptions.isEmpty) {
+      loopManager.triggerRewardSelection();
+      // Update our local reference to the newly generated options
+      rewardOptions.clear();
+      rewardOptions.addAll(loopManager.currentRewardOptions);
+    }
+    
+    // Ensure we have at least one reward option to prevent crashes
+    if (rewardOptions.isEmpty) {
+      print('Warning: No reward options available, using fallback rewards');
+      rewardOptions.addAll(LoopReward.generateRewardOptions(3));
     }
   }
   
@@ -51,6 +63,17 @@ class LoopRewardScreen extends Screen<Input> {
   }
   
   void _selectReward() {
+    // Safety check to prevent index out of bounds
+    if (rewardOptions.isEmpty) {
+      print('Error: No reward options available');
+      return;
+    }
+    
+    if (selectedReward >= rewardOptions.length) {
+      print('Error: Selected reward index $selectedReward is out of bounds (max: ${rewardOptions.length - 1})');
+      selectedReward = 0; // Reset to first option
+    }
+    
     var reward = rewardOptions[selectedReward];
     
     // Log the reward choice with archetype context

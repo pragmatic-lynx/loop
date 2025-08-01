@@ -178,6 +178,22 @@ class LoopManager {
         '${currentArchetypeMetadata!.archetype.name}' : 'unknown';
     print('HERO_DEATH: Loop $currentLoop ($archetypeInfo archetype) - Move $moveCount/${movesPerLoop}');
     _metricsCollector.recordDeath();
+    
+    // Reset loop state after death to prevent getting stuck in reward selection
+    _resetLoopAfterDeath();
+  }
+  
+  /// Reset loop state after hero death to prevent getting stuck
+  void _resetLoopAfterDeath() {
+    // Reset move count and loop state
+    moveCount = 0;
+    isLoopActive = false;
+    isRewardSelection = false;
+    
+    // Clear any pending reward options since the loop was interrupted
+    currentRewardOptions.clear();
+    
+    print('LOOP_RESET_AFTER_DEATH: Loop $currentLoop reset, ready for restart');
   }
   
   /// Check if hero should be given temporary bonuses
