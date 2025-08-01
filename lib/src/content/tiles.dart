@@ -90,13 +90,13 @@ class Tiles {
           .door();
 
   static final openBarredDoor =
-      tile("open barred door", "♂", hellAsh, obsidian)
+      tile("open barred door", "♂", ironGray, obsidian)
           .onOperate(_closeBarredDoor)
           .open();
 
   // TODO: Should be able to see through but not fly through.
   static final closedBarredDoor =
-      tile("closed barred door", "♪", hellAsh, obsidian)
+      tile("closed barred door", "♪", ironGray, obsidian)
           .onOperate(_openBarredDoor)
           .transparentDoor();
 
@@ -105,12 +105,12 @@ class Tiles {
   // TODO: Organize these.
   static final burntFloor = tile("scorched floor", "φ", charcoal).open();
   static final burntFloor2 = tile("scorched floor", "ε", charcoal).open();
-  static final lowWall = tile("low wall", "%", hellAsh).obstacle();
+  static final lowWall = tile("low wall", "%", ironGray).obstacle();
 
   // TODO: Different character that doesn't look like bridge?
   static final stairs =
       tile("hell stairs", "≡", crimson, obsidian).to(TilePortals.exit).open();
-  static final bridge = tile("bone bridge", "≡", hellAsh, charcoal).open();
+  static final bridge = tile("bone bridge", "≡", boneWhite, charcoal).open();
 
   // TODO: Stop glowing when stepped on?
   static final glowingMoss = Tiles.tile("glowing embers", "░", moltenOrange).emanate(128).open();
@@ -132,27 +132,27 @@ class Tiles {
 
   // Decor.
 
-  static final openChest = tile("open chest", "⌠", crimson).obstacle();
-  static final closedChest = tile("closed chest", "⌡", crimson)
+  static final openChest = tile("open chest", "⌠", moltenOrange).obstacle();
+  static final closedChest = tile("closed chest", "⌡", moltenOrange)
       .onOperate((pos) => OpenChestAction(pos))
       .obstacle();
-  static final closedBarrel = tile("closed barrel", "°", crimson)
+  static final closedBarrel = tile("closed barrel", "°", moltenOrange)
       .onOperate((pos) => OpenBarrelAction(pos))
       .obstacle();
-  static final openBarrel = tile("open barrel", "∙", crimson).obstacle();
+  static final openBarrel = tile("open barrel", "∙", moltenOrange).obstacle();
 
-  static final tableTopLeft = tile("table", "┌", charcoal).obstacle();
-  static final tableTop = tile("table", "─", charcoal).obstacle();
-  static final tableTopRight = tile("table", "┐", charcoal).obstacle();
-  static final tableSide = tile("table", "│", charcoal).obstacle();
-  static final tableCenter = tile("table", " ", charcoal).obstacle();
-  static final tableBottomLeft = tile("table", "╘", charcoal).obstacle();
-  static final tableBottom = tile("table", "═", charcoal).obstacle();
-  static final tableBottomRight = tile("table", "╛", charcoal).obstacle();
+  static final tableTopLeft = tile("table", "┌", ironGray).obstacle();
+  static final tableTop = tile("table", "─", ironGray).obstacle();
+  static final tableTopRight = tile("table", "┐", ironGray).obstacle();
+  static final tableSide = tile("table", "│", ironGray).obstacle();
+  static final tableCenter = tile("table", " ", ironGray).obstacle();
+  static final tableBottomLeft = tile("table", "╘", ironGray).obstacle();
+  static final tableBottom = tile("table", "═", ironGray).obstacle();
+  static final tableBottomRight = tile("table", "╛", ironGray).obstacle();
 
-  static final tableLegLeft = tile("table", "╞", charcoal).obstacle();
-  static final tableLeg = tile("table", "╤", charcoal).obstacle();
-  static final tableLegRight = tile("table", "╡", charcoal).obstacle();
+  static final tableLegLeft = tile("table", "╞", ironGray).obstacle();
+  static final tableLeg = tile("table", "╤", ironGray).obstacle();
+  static final tableLegRight = tile("table", "╡", ironGray).obstacle();
 
   // TODO: Animate.
   static final candle = tile("hell candle", "≥", hellFire).emanate(128).obstacle();
@@ -166,10 +166,10 @@ class Tiles {
   static final braziers = multi("hell brazier", "≤", moltenOrange, null, 5,
       (tile, n) => tile.emanate(192 - n * 12).obstacle());
 
-  static final statue = tile("demon statue", "P", hellAsh, obsidian).obstacle();
+  static final statue = tile("demon statue", "P", boneWhite, obsidian).obstacle();
 
   // Make these "monsters" that can be pushed around.
-  static final chair = tile("chair", "π", charcoal).open();
+  static final chair = tile("chair", "π", ironGray).open();
 
   // Stains.
 
@@ -186,10 +186,10 @@ class Tiles {
   static final violetJellyStain =
       tile("soul stain", "·", purple).open();
 
-  static final whiteJellyStain = tile("bone dust", "·", hellAsh).open();
+  static final whiteJellyStain = tile("bone dust", "·", boneWhite).open();
 
   // TODO: Make this do stuff when walked through.
-  static final spiderweb = tile("hell web", "÷", charcoal).open();
+  static final spiderweb = tile("hell web", "÷", ironGray).open();
 
   // Town tiles.
 
