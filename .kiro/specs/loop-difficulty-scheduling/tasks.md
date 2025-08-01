@@ -45,6 +45,7 @@
 
 
 
+
   - [ ] 3.1 Create ArchetypeMetadata class
     - Store archetype, scalars, and loop number
     - Add serialization methods for logging
