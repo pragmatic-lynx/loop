@@ -335,15 +335,25 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
       return;
     }
 
+    // Store hero position before update to track actual movement
+    var heroPosBefore = game.hero.pos;
+    var heroEnergyBefore = game.hero.energy.canTakeTurn;
+    
     var result = game.update();
 
-    // Track moves for loop system
+    // Track moves for loop system - only count actual hero movement
     if (result.madeProgress) {
       // Mark screen as dirty when game makes progress
       dirty();
       
-      // Check if hero took a turn
-      if (game.hero.energy.canTakeTurn == false) {
+      // Only record a move if:
+      // 1. Hero was able to act before the update
+      // 2. Hero can't take a turn now (meaning hero just acted)
+      // 3. Hero actually moved to a different position
+      var heroActedThisTurn = heroEnergyBefore && !game.hero.energy.canTakeTurn;
+      var heroMoved = game.hero.pos != heroPosBefore;
+      
+      if (heroActedThisTurn && heroMoved) {
         _loopManager.recordMove();
 
         // Check if time for reward selection

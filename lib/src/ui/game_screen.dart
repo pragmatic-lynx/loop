@@ -428,20 +428,22 @@ class GameScreen extends Screen<Input> implements GameScreenInterface {
       return;
     }
 
+    // Store hero position before update to track actual movement
+    var heroPosBefore = game.hero.pos;
+    var heroEnergyBefore = game.hero.energy.canTakeTurn;
+    
     var result = game.update();
 
-    // Track moves for loop system
+    // Track moves for loop system - only count actual hero movement
     if (_loopManager != null && result.madeProgress) {
-      // Count any action that the hero performs as a "move"
-      var heroTurnTaken = false;
+      // Only record a move if:
+      // 1. Hero was able to act before the update
+      // 2. Hero can't take a turn now (meaning hero just acted)
+      // 3. Hero actually moved to a different position
+      var heroActedThisTurn = heroEnergyBefore && !game.hero.energy.canTakeTurn;
+      var heroMoved = game.hero.pos != heroPosBefore;
       
-      // Check if the hero took a turn (moved, attacked, used item, etc.)
-      if (game.hero.energy.canTakeTurn == false) {
-        // Hero just finished a turn
-        heroTurnTaken = true;
-      }
-      
-      if (heroTurnTaken) {
+      if (heroActedThisTurn && heroMoved) {
         _loopManager!.recordMove();
         print("Hero move recorded. Total moves: ${_loopManager!.moveCount}");
         
