@@ -57,6 +57,18 @@ class Game {
   
   /// Get the current level's archetype metadata for logging and debugging
   ArchetypeMetadata? getArchetypeMetadata() => archetypeMetadata;
+  
+  /// Get archetype information as a formatted string for debugging
+  String getArchetypeDebugInfo() {
+    if (archetypeMetadata == null) {
+      return 'No archetype metadata available';
+    }
+    
+    return 'Archetype: ${archetypeMetadata!.archetype.name}, '
+           'Loop: ${archetypeMetadata!.loopNumber}, '
+           'Enemy Multiplier: ${archetypeMetadata!.scalars.enemyMultiplier}x, '
+           'Item Multiplier: ${archetypeMetadata!.scalars.itemMultiplier}x';
+  }
 
   Game(this.content, this.depth, HeroSave save, {int? width, int? height, this.archetypeMetadata})
       : hero = Hero(Vec.zero, save, content.skills) {
@@ -67,6 +79,14 @@ class Game {
 
     _substanceUpdateOrder.addAll(_stage.bounds.inflate(-1));
     rng.shuffle(_substanceUpdateOrder);
+    
+    // Debug logging for archetype metadata
+    if (archetypeMetadata != null) {
+      print('Game initialized with archetype: ${archetypeMetadata!.archetype.name} '
+            '(Loop ${archetypeMetadata!.loopNumber}, '
+            'Enemy: ${archetypeMetadata!.scalars.enemyMultiplier}x, '
+            'Item: ${archetypeMetadata!.scalars.itemMultiplier}x)');
+    }
   }
 
   Iterable<String> generate() sync* {

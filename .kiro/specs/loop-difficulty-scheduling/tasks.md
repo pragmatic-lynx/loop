@@ -58,12 +58,19 @@
 
     - _Requirements: 1.2, 4.2_
 
-  - [ ] 3.2 Add metadata to Game class
+  - [x] 3.2 Add metadata to Game class
+
+
+
+
+
     - Store current level's archetype metadata
     - Make metadata accessible for logging and debugging
     - _Requirements: 1.2, 1.3_
 
-- [ ] 4. Build reward choice logging system
+- [-] 4. Build reward choice logging system
+
+
   - [ ] 4.1 Create RewardChoiceLog class
     - Define data structure for loop, archetype, choice tracking
     - Implement CSV serialization methods
