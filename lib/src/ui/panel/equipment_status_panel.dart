@@ -5,6 +5,7 @@ import 'package:malison/malison.dart';
 import '../../engine/core/game.dart';
 import '../../engine/items/item.dart';
 import '../../engine/items/equipment.dart';
+import '../../engine/hero/hero.dart';
 import '../../hues.dart';
 import '../draw.dart';
 import 'panel.dart';
@@ -22,47 +23,8 @@ class EquipmentStatusPanel extends Panel {
     var hero = game.hero;
     var y = 1;
     
-    // Active weapon
-    terminal.writeAt(1, y, "Active:", ash);
-    var weapons = hero.equipment.weapons;
-    if (weapons.isNotEmpty) {
-      var weapon = weapons.first;
-      terminal.writeAt(1, y + 1, "🗡️ ${weapon.type.name}", lightBlue);
-      if (weapon.attack != null) {
-        var damage = weapon.attack!.damage.toString();
-        terminal.writeAt(1, y + 2, "  ${damage} dmg", coolGray);
-      }
-    } else {
-      terminal.writeAt(1, y + 1, "🗡️ Fists", lightBlue);
-      terminal.writeAt(1, y + 2, "  1 dmg", coolGray);
-    }
-    
-    y += 4;
-    
-    // Armor
-    var armorPiece = _getArmorPiece(hero.equipment);
-    if (armorPiece != null) {
-      terminal.writeAt(1, y, "Armor:", ash);
-      var armorText = armorPiece.type.name;
-      if (armorText.length > terminal.width - 3) {
-        armorText = armorText.substring(0, terminal.width - 3);
-      }
-      terminal.writeAt(1, y + 1, "🛡️ $armorText", peaGreen);
-      terminal.writeAt(1, y + 2, "  ${armorPiece.type.armor} armor", coolGray);
-      y += 3;
-    }
-    
-    // Secondary weapon / ranged
-    var secondaryWeapon = _getSecondaryWeapon(hero.equipment.weapons.toList());
-    if (secondaryWeapon != null) {
-      terminal.writeAt(1, y, "Secondary:", ash);
-      var weaponText = secondaryWeapon.type.name;
-      if (weaponText.length > terminal.width - 3) {
-        weaponText = weaponText.substring(0, terminal.width - 3);
-      }
-      terminal.writeAt(1, y + 1, "🏹 $weaponText", lima);
-      y += 2;
-    }
+    // Show all equipped items by slot
+    y = _drawAllEquipmentSlots(terminal, y, hero);
     
     // Active spell with glyph
     var activeSpell = _getActiveSpell();
@@ -87,6 +49,119 @@ class EquipmentStatusPanel extends Panel {
         }
       }
     }
+  }
+  
+  int _drawAllEquipmentSlots(Terminal terminal, int y, Hero hero) {
+    // Show active weapon first
+    terminal.writeAt(1, y, "Active:", ash);
+    var weapons = hero.equipment.weapons;
+    if (weapons.isNotEmpty) {
+      var weapon = weapons.first;
+      var weaponText = weapon.type.name;
+      if (weaponText.length > terminal.width - 5) {
+        weaponText = weaponText.substring(0, terminal.width - 5);
+      }
+      terminal.writeAt(1, y + 1, "🗡️ $weaponText", lightBlue);
+      if (weapon.attack != null) {
+        var damage = "${weapon.attack!.damage} dmg";
+        terminal.writeAt(1, y + 2, "  $damage", coolGray);
+      }
+      y += 3;
+    } else {
+      terminal.writeAt(1, y + 1, "🗡️ Fists", lightBlue);
+      terminal.writeAt(1, y + 2, "  1 dmg", coolGray);
+      y += 3;
+    }
+    
+    // Show all equipment slots
+    for (var i = 0; i < hero.equipment.slots.length; i++) {
+      var item = hero.equipment.slots[i];
+      var slotName = hero.equipment.slotTypes[i];
+      
+      // Skip weapons since we already showed active weapon above
+      if (weapons.contains(item)) continue;
+      
+      // Capitalize first letter
+      var displaySlot = slotName[0].toUpperCase() + slotName.substring(1);
+      
+      terminal.writeAt(1, y, "$displaySlot:", ash);
+      
+      if (item != null) {
+        var itemText = item.type.name;
+        if (itemText.length > terminal.width - 5) {
+          itemText = itemText.substring(0, terminal.width - 5);
+        }
+        
+        var icon = _getSlotIcon(slotName);
+        terminal.writeAt(1, y + 1, "$icon $itemText", _getSlotColor(item));
+        
+        // Show relevant stats
+        if (item.baseArmor > 0) {
+          terminal.writeAt(1, y + 2, "  ${item.baseArmor} armor", coolGray);
+          y += 3;
+        } else {
+          y += 2;
+        }
+      } else {
+        terminal.writeAt(1, y + 1, "  (empty)", darkCoolGray);
+        y += 2;
+      }
+    }
+    
+    return y + 1;
+  }
+  
+  String _getSlotIcon(String slotName) {
+    switch (slotName.toLowerCase()) {
+      case 'weapon':
+      case 'hand':
+        return '🗡️';
+      case 'body':
+      case 'armor':
+        return '🛡️';
+      case 'helm':
+      case 'head':
+        return '🪖';
+      case 'gloves':
+      case 'hands':
+        return '🧤';
+      case 'boots':
+      case 'feet':
+        return '🥾';
+      case 'cloak':
+      case 'back':
+        return '🧥';
+      case 'ring':
+      case 'finger':
+        return '💍';
+      case 'amulet':
+      case 'neck':
+        return '💿';
+      default:
+        return '🔸';
+    }
+  }
+  
+  Color _getSlotColor(Item item) {
+    var name = item.type.name.toLowerCase();
+    
+    // Weapons
+    if (name.contains('sword') || name.contains('blade') || name.contains('axe')) {
+      return lightBlue;
+    }
+    
+    // Armor
+    if (name.contains('armor') || name.contains('mail') || name.contains('plate')) {
+      return peaGreen;
+    }
+    
+    // Accessories
+    if (name.contains('ring') || name.contains('amulet')) {
+      return gold;
+    }
+    
+    // Default
+    return ash;
   }
   
   Item? _getSecondaryWeapon(List<Item> weapons) {

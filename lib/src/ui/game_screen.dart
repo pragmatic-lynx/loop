@@ -38,6 +38,7 @@ import 'target_dialog.dart';
 import 'wizard_dialog.dart';
 import 'loop_reward_screen.dart';
 import 'game_screen_interface.dart';
+import 'inventory_dialog.dart';
 
 class GameScreen extends Screen<Input> implements GameScreenInterface {
   final Game game;
@@ -243,6 +244,8 @@ class GameScreen extends Screen<Input> implements GameScreenInterface {
         _pickUp();
       case Input.equip:
         ui.push(EquipDialog(this));
+      case Input.inventory:
+        ui.push(InventoryDialog(game));
 
       case Input.nw:
         action = WalkAction(Direction.nw);
