@@ -20,3 +20,4 @@ CODE.md
 /.cursor
 .stignore
 *_old
+/lib-working
