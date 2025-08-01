@@ -199,6 +199,9 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     if (action != null) {
       game.hero.setNextAction(action);
       
+      // Mark screen as dirty to trigger redraw
+      dirty();
+      
       // Update action mapping after each action (abilities may change)
       _updateActionMapping();
     }
@@ -226,6 +229,11 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     }
 
     var result = game.update();
+
+    // Mark screen as dirty if game made progress (hero moved, etc.)
+    if (result.madeProgress) {
+      dirty();
+    }
 
     // Track moves for loop system
     if (result.madeProgress) {
@@ -279,13 +287,16 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
 
   @override
   void render(Terminal terminal) {
-    print("LoopGameScreen.render() called");
+    print("LoopGameScreen.render() called, dirty: $_dirty");
     
     // Clear the terminal first
     terminal.clear();
     
     // Draw the stage
     stagePanel.render(terminal);
+    
+    // Mark as clean after rendering
+    _dirty = false;
 
     // Draw UI elements
     final rightSide = terminal.width - 24;
