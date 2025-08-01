@@ -8,6 +8,7 @@ import '../engine/loop/reward_choice_log.dart';
 import '../hues.dart';
 import 'draw.dart';
 import 'input.dart';
+import 'level_up_screen.dart';
 import 'loop_game_screen.dart';
 import 'storage.dart';
 
@@ -88,6 +89,19 @@ class LoopRewardScreen extends Screen<Input> {
   }
   
   void _startNextLoop() {
+    // Check if we need to show level-up screen after reward selection
+    if (loopManager.finishLoop(hero)) {
+      // Show level-up screen before starting next loop
+      ui.push(LevelUpScreen(
+        hero: hero,
+        pendingLevels: hero.pendingLevels,
+        storage: storage,
+      ));
+      
+      // Clear pending levels after showing screen
+      hero.pendingLevels = 0;
+    }
+    
     // Start the next loop at increased depth
     var depth = loopManager.getCurrentDepth();
     print("Starting next loop at depth: $depth");

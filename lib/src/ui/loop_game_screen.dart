@@ -10,6 +10,7 @@ import '../engine/action/action.dart';
 import '../engine/action/action_mapping.dart';
 import '../engine/action/walk.dart';
 import '../engine/core/actor.dart';
+import '../engine/core/constants.dart';
 import '../engine/core/content.dart';
 import '../engine/core/game.dart';
 import '../engine/hero/hero_save.dart';
@@ -26,6 +27,7 @@ import 'hero_equipment_dialog.dart';
 import 'item/equip_dialog.dart';
 import 'input.dart';
 import 'input_converter.dart';
+import 'level_up_screen.dart';
 import 'loop_input.dart';
 import 'loop_reward_screen.dart';
 import 'panel/log_panel.dart';
@@ -545,6 +547,22 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   }
 
   void _handleLoopExit() {
+    // Award XP bonus for descending stairs
+    game.hero.gainExperience(GameConstants.stairXpBonus);
+    
+    // Check if we need to show level-up screen
+    if (_loopManager.finishLoop(game.hero.save)) {
+      // Show level-up screen, then continue with loop
+      ui.push(LevelUpScreen(
+        hero: game.hero.save,
+        pendingLevels: game.hero.save.pendingLevels,
+        storage: _storage,
+      ));
+      
+      // Clear pending levels after showing screen
+      game.hero.save.pendingLevels = 0;
+    }
+    
     _previousSave = game.hero.save;
     _loopManager.reset();
     ui.goTo(GameOverScreen(_storage, _previousSave!, _previousSave!));

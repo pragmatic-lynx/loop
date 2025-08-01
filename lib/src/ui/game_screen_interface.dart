@@ -23,7 +23,7 @@ abstract class GameScreenInterface {
   /// Get the loop manager if available (for loop mode).
   Object? get loopManager;
   
-  /// Get the current game screen for UI updates
+  /// Get the current game screen for 2UI updates
   Screen<Input>? get screen;
   
   /// Mark the screen as needing to be redrawn
