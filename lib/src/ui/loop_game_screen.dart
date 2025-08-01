@@ -16,12 +16,14 @@ import '../engine/core/game.dart';
 import '../engine/hero/hero_save.dart';
 import '../engine/loop/level_archetype.dart';
 import '../engine/loop/loop_manager.dart';
+import '../engine/loop/loop_reward.dart';
 import '../engine/loop/smart_combat.dart';
 import '../engine/stage/tile.dart';
 import '../content/tiles.dart';
 import '../hues.dart';
 import 'exit_popup.dart';
 import 'game_over_screen.dart';
+import 'game_screen.dart';
 import 'game_screen_interface.dart';
 import 'hero_equipment_dialog.dart';
 import 'item/equip_dialog.dart';
@@ -574,7 +576,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     
     // Create a new game for the next level
     var depth = _loopManager.getCurrentDepth();
-    var newGame = GameScreen.createGame(_storage, game.content, game.hero.save, _loopManager, depth);
+    var newGame = GameScreen.loop(_storage, game.content, game.hero.save, _loopManager, depth);
     
     // Replace current screen with new game screen
     ui.goTo(LoopGameScreen.create(_storage, game.content, game.hero.save, _loopManager));
