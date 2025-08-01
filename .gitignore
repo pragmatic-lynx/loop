@@ -18,3 +18,4 @@ __pycache__/
 CODE.md 
 .stfolder/syncthing-folder-254637.txt
 /.cursor
+.stignore
