@@ -554,7 +554,8 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     terminal.writeAt(x + text.length, y, "]", lightWarmGray, darkerCoolGray);
   }
   void _renderLoopProgress(Terminal terminal) {
-    var progress = _loopManager.moveCount / LoopManager.movesPerLoop;
+    // Calculate remaining progress (countdown from 1.0 to 0.0)
+    var remainingProgress = 1.0 - (_loopManager.moveCount / LoopManager.movesPerLoop);
     var barWidth = 20;
     var leftWidth = 21;
     var rightWidth = 25;
@@ -568,14 +569,20 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     var centerWidth = terminal.width - leftWidth - rightWidth;
     var x = leftWidth + (centerWidth - barWidth) ~/ 2;
     var y = terminal.height - 1; // Move to bottom
+    
+    // Draw empty background
     for (var i = 0; i < barWidth; i++) {
       terminal.writeAt(x + i, y, "▒", darkWarmGray, darkerCoolGray);
     }
-    var fillWidth = (progress * barWidth).round();
+    
+    // Draw remaining time (starts full, empties out)
+    var fillWidth = (remainingProgress * barWidth).round();
     for (var i = 0; i < fillWidth; i++) {
       var color = lightBlue;
-      if (progress > 0.8) color = carrot;
-      if (progress > 0.9) color = red;
+      // Color changes based on how little time is left
+      if (remainingProgress < 0.2) color = red;      // < 20% remaining = red
+      else if (remainingProgress < 0.3) color = carrot; // < 30% remaining = orange
+      else if (remainingProgress < 0.5) color = yellow; // < 50% remaining = yellow
       terminal.writeAt(x + i, y, "█", color, darkerCoolGray);
     }
     var loopText = "L${_loopManager.currentLoop}";
