@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:piecemeal/piecemeal.dart';
 
 import '../../engine.dart';
+import '../../engine/loop/density_scalars.dart';
 import 'architect.dart';
 import 'builder.dart';
 import 'room.dart';
@@ -57,7 +58,7 @@ class ArchitecturalStyle {
     // TODO: More.
   }
 
-  static List<ArchitecturalStyle> pick(int depth) {
+  static List<ArchitecturalStyle> pick(int depth, {DensityScalars? scalars}) {
     var result = <ArchitecturalStyle>[];
 
     // TODO: Change count range based on depth?
@@ -70,7 +71,13 @@ class ArchitecturalStyle {
       // Make sure there's at least one style that can fill the entire stage.
       if (style.canFill) hasFillable = true;
 
-      if (!result.contains(style)) result.add(style);
+      if (!result.contains(style)) {
+        // Apply density scalars if provided
+        if (scalars != null) {
+          style = style._withScalars(scalars);
+        }
+        result.add(style);
+      }
     }
 
     return result;
@@ -103,5 +110,19 @@ class ArchitecturalStyle {
     var architecture = _factory();
     architecture.bind(this, architect, region);
     return architecture;
+  }
+
+  /// Create a copy of this style with density scalars applied
+  ArchitecturalStyle _withScalars(DensityScalars scalars) {
+    return ArchitecturalStyle(
+      name,
+      decorTheme,
+      decorDensity,
+      monsterGroups,
+      monsterDensity * scalars.enemyMultiplier,
+      itemDensity * scalars.itemMultiplier,
+      _factory,
+      canFill: canFill,
+    );
   }
 }

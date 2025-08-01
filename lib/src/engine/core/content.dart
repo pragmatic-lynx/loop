@@ -11,6 +11,7 @@ import '../items/item.dart';
 import '../items/item_type.dart';
 import '../items/recipe.dart';
 import '../items/shop.dart';
+import '../loop/archetype_metadata.dart';
 import '../monster/breed.dart';
 import '../stage/stage.dart';
 import 'element.dart';
@@ -21,7 +22,7 @@ abstract class Content {
   // TODO: Temp. Figure out where dungeon generator lives.
   // TODO: Using a callback to set the hero position is kind of hokey.
   Iterable<String> buildStage(
-      Lore lore, Stage stage, int depth, Function(Vec) placeHero);
+      Lore lore, Stage stage, int depth, Function(Vec) placeHero, {ArchetypeMetadata? archetypeMetadata});
 
   AffixType? findAffix(String name);
 

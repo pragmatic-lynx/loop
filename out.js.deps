@@ -143,7 +143,12 @@ file:///C:/Users/dev/repos/loop/lib/src/engine/items/item.dart
 file:///C:/Users/dev/repos/loop/lib/src/engine/items/item_type.dart
 file:///C:/Users/dev/repos/loop/lib/src/engine/items/recipe.dart
 file:///C:/Users/dev/repos/loop/lib/src/engine/items/shop.dart
+file:///C:/Users/dev/repos/loop/lib/src/engine/loop/archetype_metadata.dart
+file:///C:/Users/dev/repos/loop/lib/src/engine/loop/density_scalars.dart
+file:///C:/Users/dev/repos/loop/lib/src/engine/loop/difficulty_scheduler.dart
 file:///C:/Users/dev/repos/loop/lib/src/engine/loop/hero_preset.dart
+file:///C:/Users/dev/repos/loop/lib/src/engine/loop/level_archetype.dart
+file:///C:/Users/dev/repos/loop/lib/src/engine/loop/loop_item_manager.dart
 file:///C:/Users/dev/repos/loop/lib/src/engine/loop/loop_manager.dart
 file:///C:/Users/dev/repos/loop/lib/src/engine/loop/loop_reward.dart
 file:///C:/Users/dev/repos/loop/lib/src/engine/loop/smart_combat.dart
@@ -194,6 +199,7 @@ file:///C:/Users/dev/repos/loop/lib/src/ui/loop_input.dart
 file:///C:/Users/dev/repos/loop/lib/src/ui/loop_reward_screen.dart
 file:///C:/Users/dev/repos/loop/lib/src/ui/main_menu_screen.dart
 file:///C:/Users/dev/repos/loop/lib/src/ui/new_hero_screen.dart
+file:///C:/Users/dev/repos/loop/lib/src/ui/panel/equipment_status_panel.dart
 file:///C:/Users/dev/repos/loop/lib/src/ui/panel/item_panel.dart
 file:///C:/Users/dev/repos/loop/lib/src/ui/panel/log_panel.dart
 file:///C:/Users/dev/repos/loop/lib/src/ui/panel/panel.dart

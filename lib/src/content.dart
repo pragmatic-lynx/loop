@@ -17,6 +17,7 @@ import 'content/stage/architectural_style.dart';
 import 'content/stage/town.dart';
 import 'content/tiles.dart';
 import 'engine.dart';
+import 'engine/loop/archetype_metadata.dart';
 
 export 'content/skill/discipline/discipline.dart';
 export 'content/skill/spell/spell.dart';
@@ -40,9 +41,9 @@ Content createContent() {
 class GameContent implements Content {
   @override
   Iterable<String> buildStage(
-      Lore lore, Stage stage, int depth, Function(Vec) placeHero) {
+      Lore lore, Stage stage, int depth, Function(Vec) placeHero, {ArchetypeMetadata? archetypeMetadata}) {
     if (depth == 0) return Town(stage).buildStage(placeHero);
-    return Architect(lore, stage, depth).buildStage(placeHero);
+    return Architect(lore, stage, depth).buildStage(placeHero, scalars: archetypeMetadata?.scalars);
   }
 
   @override

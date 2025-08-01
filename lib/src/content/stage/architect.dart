@@ -1,6 +1,7 @@
 import 'package:piecemeal/piecemeal.dart';
 
 import '../../engine.dart';
+import '../../engine/loop/density_scalars.dart';
 import '../tiles.dart';
 import 'architectural_style.dart';
 import 'decorator.dart';
@@ -43,14 +44,14 @@ class Architect {
     debugOwners = _owners;
   }
 
-  Iterable<String> buildStage(Function(Vec) placeHero) sync* {
+  Iterable<String> buildStage(Function(Vec) placeHero, {DensityScalars? scalars}) sync* {
     // Initialize the stage with an edge of solid and everything else open but
     // fillable.
     for (var pos in stage.bounds) {
       stage[pos].type = Tiles.unformed;
     }
 
-    var styles = ArchitecturalStyle.pick(depth);
+    var styles = ArchitecturalStyle.pick(depth, scalars: scalars);
 
     var lastFillable = -1;
     for (var i = styles.length - 1; i >= 0; i--) {

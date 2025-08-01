@@ -4,6 +4,9 @@ import '../hero/hero_save.dart';
 import '../core/content.dart';
 import 'loop_reward.dart';
 import 'hero_preset.dart';
+import 'difficulty_scheduler.dart';
+import 'archetype_metadata.dart';
+import 'level_archetype.dart';
 // TODO: Re-enable when build issues are resolved
 // import 'item/loop_item_manager.dart';
 
@@ -34,6 +37,12 @@ class LoopManager {
   // TODO: Re-enable when build issues are resolved
   // LoopItemManager? _itemManager;
   
+  /// Difficulty scheduler for archetype management
+  final DifficultyScheduler _scheduler = DifficultyScheduler();
+  
+  /// Current level's archetype metadata
+  ArchetypeMetadata? currentArchetypeMetadata;
+  
   /// Initialize the loop system
   LoopManager();
   
@@ -55,7 +64,11 @@ class LoopManager {
     // Clear previous temporary rewards when starting a new loop
     activeRewards.clear();
     
+    // Generate archetype metadata for this loop
+    _generateArchetypeMetadata();
+    
     print('Starting Loop $currentLoop with preset: ${preset.name}');
+    print('Level archetype: ${currentArchetypeMetadata?.archetype.name}');
   }
   
   /// Track a move made by the hero
@@ -113,6 +126,21 @@ class LoopManager {
     return depth < 1 ? 1 : depth;
   }
   
+  /// Generate archetype metadata for the current loop
+  void _generateArchetypeMetadata() {
+    var archetype = _scheduler.getNextArchetype(currentLoop - 1); // 0-based indexing
+    var scalars = _scheduler.getScalars(archetype);
+    currentArchetypeMetadata = ArchetypeMetadata(archetype, scalars, currentLoop);
+  }
+  
+  /// Get the current archetype metadata for level generation
+  ArchetypeMetadata? getArchetypeMetadata() {
+    return currentArchetypeMetadata;
+  }
+  
+  /// Get the difficulty scheduler for external access
+  DifficultyScheduler get scheduler => _scheduler;
+  
   /// Check if hero should be given temporary bonuses
   void applyActiveRewards(HeroSave hero) {
     for (var reward in activeRewards) {
@@ -150,6 +178,8 @@ class LoopManager {
       'isActive': isLoopActive,
       'isRewardSelection': isRewardSelection,
       'currentDepth': getCurrentDepth(),
+      'archetype': currentArchetypeMetadata?.archetype.name,
+      'scalars': currentArchetypeMetadata?.scalars.toString(),
     };
   }
 }

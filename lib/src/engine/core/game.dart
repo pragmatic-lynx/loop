@@ -6,6 +6,7 @@ import '../../content/action/detection.dart';
 import '../action/action.dart';
 import '../hero/hero.dart';
 import '../hero/hero_save.dart';
+import '../loop/archetype_metadata.dart';
 import '../stage/stage.dart';
 import 'actor.dart';
 import 'content.dart';
@@ -50,8 +51,11 @@ class Game {
   late final Stage _stage;
 
   final Hero hero;
+  
+  /// Archetype metadata for level generation (optional)
+  final ArchetypeMetadata? archetypeMetadata;
 
-  Game(this.content, this.depth, HeroSave save, {int? width, int? height})
+  Game(this.content, this.depth, HeroSave save, {int? width, int? height, this.archetypeMetadata})
       : hero = Hero(Vec.zero, save, content.skills) {
     // TODO: Vary size?
     _stage = Stage(width ?? 120, height ?? 80, this);
@@ -67,7 +71,7 @@ class Game {
     late Vec heroPos;
     yield* content.buildStage(hero.save.lore, _stage, depth, (pos) {
       heroPos = pos;
-    });
+    }, archetypeMetadata: archetypeMetadata);
 
     yield "Calculating visibility";
     initHero(heroPos);

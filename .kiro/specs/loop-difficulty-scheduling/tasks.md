@@ -11,14 +11,20 @@
   - Build `DifficultyScheduler` class with configurable schedule cycling
   - _Requirements: 1.1, 2.1, 2.3, 3.4_
 
-- [-] 2. Integrate archetype system with level generation
+- [x] 2. Integrate archetype system with level generation
 
 
-  - [ ] 2.1 Modify LoopManager to use DifficultyScheduler
+
+
+  - [x] 2.1 Modify LoopManager to use DifficultyScheduler
+
+
     - Add scheduler instance to LoopManager
     - Update level creation to get current archetype and scalars
     - Pass archetype metadata to game generation
     - _Requirements: 1.2, 2.1, 2.2_
+
+
 
   - [ ] 2.2 Extend Architect class to accept density scalars
     - Add optional scalars parameter to buildStage method

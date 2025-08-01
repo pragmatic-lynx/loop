@@ -147,7 +147,10 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     // loopManager.applyLoopItems(save);
     loopManager.applyActiveRewards(save);
 
-    var game = Game(content, depth, save, width: 60, height: 34);
+    // Get archetype metadata from loop manager
+    var archetypeMetadata = loopManager.getArchetypeMetadata();
+    
+    var game = Game(content, depth, save, width: 60, height: 34, archetypeMetadata: archetypeMetadata);
 
     // Generate the dungeon
     for (var _ in game.generate()) {}

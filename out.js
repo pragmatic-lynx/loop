@@ -702,7 +702,7 @@
       return new A.StateError("Too few elements");
     },
     LateError: function LateError(t0) {
-      this._message = t0;
+      this.__internal$_message = t0;
     },
     CodeUnits: function CodeUnits(t0) {
       this.__internal$_string = t0;
@@ -1927,12 +1927,12 @@
     NullError: function NullError() {
     },
     JsNoSuchMethodError: function JsNoSuchMethodError(t0, t1, t2) {
-      this.__js_helper$_message = t0;
+      this._message = t0;
       this._method = t1;
       this._receiver = t2;
     },
     UnknownJsTypeError: function UnknownJsTypeError(t0) {
-      this.__js_helper$_message = t0;
+      this._message = t0;
     },
     NullThrownFromJavaScriptException: function NullThrownFromJavaScriptException(t0) {
       this._irritant = t0;
@@ -6781,7 +6781,7 @@
       _.start = t2;
       _.end = t3;
     },
-    ArchitecturalStyle_pick(depth) {
+    ArchitecturalStyle_pick(depth, scalars) {
       var style,
         result = A._setArrayType([], type$.JSArray_ArchitecturalStyle),
         count = Math.min($.$get$rng().taper$2(1, 10), 5),
@@ -6797,6 +6797,11 @@
       }
       return result;
     },
+    ArchitecturalStyle$($name, decorTheme, decorDensity, monsterGroups, monsterDensity, itemDensity, _factory, canFill) {
+      var t1 = monsterDensity == null ? 1 : monsterDensity,
+        t2 = itemDensity == null ? 1 : itemDensity;
+      return new A.ArchitecturalStyle($name, decorTheme, decorDensity, monsterGroups, t1, t2, _factory, canFill !== false);
+    },
     ArchitecturalStyle: function ArchitecturalStyle(t0, t1, t2, t3, t4, t5, t6, t7) {
       var _ = this;
       _.name = t0;
@@ -6809,11 +6814,9 @@
       _.canFill = t7;
     },
     _addStyle($name, canFill, create, decor, decorDensity, end, endFrequency, itemDensity, monsterDensity, monsters, start, startFrequency) {
-      var t1 = A._setArrayType((monsters == null ? "monster" : monsters).split(" "), type$.JSArray_String),
-        t2 = monsterDensity == null ? 1 : monsterDensity,
-        t3 = itemDensity == null ? 1 : itemDensity,
-        t4 = $.$get$ArchitecturalStyle_styles();
-      t4._resource$_add$7(t4.$ti._precomputed1._as(new A.ArchitecturalStyle($name, decor, decorDensity, t1, t2, t3, create, canFill !== false)), null, start, end, startFrequency, endFrequency, null);
+      var style = A.ArchitecturalStyle$($name, decor, decorDensity, A._setArrayType((monsters == null ? "monster" : monsters).split(" "), type$.JSArray_String), monsterDensity, itemDensity, create, canFill),
+        t1 = $.$get$ArchitecturalStyle_styles();
+      t1._resource$_add$7(t1.$ti._precomputed1._as(style), null, start, end, startFrequency, endFrequency, null);
     },
     dungeon(shapes, frequency) {
       var _null = null;
@@ -7470,15 +7473,16 @@
     GeneratorActionMixin: function GeneratorActionMixin() {
     },
     ActionMapping_ActionMapping$fromSmartCombat(smartCombat) {
-      var label, label0, label1, count;
+      var label, label0, count, label1, count0;
       smartCombat.handlePrimaryAction$0();
       label = smartCombat._getPrimaryActionLabel$0();
       smartCombat.handleSecondaryAction$0();
       label0 = smartCombat._getSecondaryActionLabel$0();
+      count = smartCombat._getActiveSpellCount$0();
       smartCombat.handleHealAction$0();
       label1 = smartCombat._getHealActionLabel$0();
-      count = smartCombat._getHealItemCount$0();
-      return new A.ActionMapping(new A.SmartActionInfo(label, null).get$displayText(), new A.SmartActionInfo(label0, null).get$displayText(), new A.SmartActionInfo(label1, count).get$displayText());
+      count0 = smartCombat._getHealItemCount$0();
+      return new A.ActionMapping(new A.SmartActionInfo(label, null).get$displayText(), new A.SmartActionInfo(label0, count).get$displayText(), new A.SmartActionInfo(label1, count0).get$displayText());
     },
     ActionMapping: function ActionMapping(t0, t1, t2) {
       this.action1Label = t0;
@@ -7686,7 +7690,7 @@
     Energy: function Energy() {
       this.energy = 0;
     },
-    Game$($content, depth, save, height, width) {
+    Game$($content, depth, save, archetypeMetadata, height, width) {
       var t1 = A.ListQueue$(type$.Action),
         t2 = A._setArrayType([], type$.JSArray_Action),
         t3 = A._setArrayType([], type$.JSArray_Event),
@@ -7699,7 +7703,7 @@
       t5.toString;
       t6._health = B.JSInt_methods.clamp$2(B.JSNumber_methods.toInt$0(Math.pow(t5, 1.458) + 9), 0, t6.get$maxHealth());
       t6._focus = save.intellect.get$maxFocus();
-      t3 = new A.Game($content, t1, t2, t3, new A.Energy(), t4, depth, t6);
+      t3 = new A.Game($content, t1, t2, t3, new A.Energy(), t4, depth, t6, archetypeMetadata);
       t1 = width == null ? 120 : width;
       t1 = A.Stage$(t1, height == null ? 80 : height, t3);
       t3.__Game__stage_F !== $ && A.throwLateFieldAI("_stage");
@@ -7710,7 +7714,7 @@
       B.JSArray_methods.shuffle$1(type$.List_Vec._as(t4), t1._random);
       return t3;
     },
-    Game: function Game(t0, t1, t2, t3, t4, t5, t6, t7) {
+    Game: function Game(t0, t1, t2, t3, t4, t5, t6, t7, t8) {
       var _ = this;
       _.content = t0;
       _._actions = t1;
@@ -7722,6 +7726,7 @@
       _.depth = t6;
       _.__Game__stage_F = $;
       _.hero = t7;
+      _.archetypeMetadata = t8;
     },
     Game_generate_closure: function Game_generate_closure(t0) {
       this.heroPos = t0;
@@ -8296,12 +8301,30 @@
       this._shop$_drop = t0;
       this.name = t1;
     },
-    LoopManager: function LoopManager(t0, t1) {
+    DensityScalars: function DensityScalars() {
+    },
+    DifficultyScheduler$() {
+      var t1 = A._setArrayType([B.LevelArchetype_COMBAT_combat, B.LevelArchetype_COMBAT_combat, B.LevelArchetype_LOOT_loot], type$.JSArray_LevelArchetype),
+        t2 = A.LinkedHashMap_LinkedHashMap$_literal([B.LevelArchetype_COMBAT_combat, new A.DensityScalars(), B.LevelArchetype_LOOT_loot, new A.DensityScalars(), B.LevelArchetype_BOSS_boss, new A.DensityScalars()], type$.LevelArchetype, type$.DensityScalars);
+      return new A.DifficultyScheduler(t1, t2);
+    },
+    DifficultyScheduler: function DifficultyScheduler(t0, t1) {
+      this.schedule = t0;
+      this.scalars = t1;
+    },
+    DifficultyScheduler_toString_closure: function DifficultyScheduler_toString_closure() {
+    },
+    LevelArchetype: function LevelArchetype(t0, t1) {
+      this.name = t0;
+      this._core$_name = t1;
+    },
+    LoopManager: function LoopManager(t0, t1, t2) {
       var _ = this;
       _.moveCount = _.threatLevel = _.currentLoop = 0;
       _.isRewardSelection = _.isLoopActive = false;
       _.currentRewardOptions = t0;
       _.activeRewards = t1;
+      _._scheduler = t2;
     },
     LoopReward: function LoopReward() {
     },
@@ -8359,6 +8382,11 @@
       this.flavorText = t2;
     },
     LuckyFindsReward: function LuckyFindsReward(t0, t1, t2) {
+      this.name = t0;
+      this.description = t1;
+      this.flavorText = t2;
+    },
+    SummonReward: function SummonReward(t0, t1, t2) {
       this.name = t0;
       this.description = t1;
       this.flavorText = t2;
@@ -9156,7 +9184,7 @@
     },
     GameScreen_GameScreen$town(storage, $content, save) {
       var t1, t2, t3,
-        game = A.Game$($content, 0, save, 34, 60);
+        game = A.Game$($content, 0, save, null, 34, 60);
       for (t1 = game.generate$0(), t2 = t1.$ti, t1 = new A._SyncStarIterator(t1._outerHelper(), t2._eval$1("_SyncStarIterator<1>")), t2 = t2._precomputed1; t1.moveNext$0();) {
         t3 = t1._async$_current;
         if (t3 == null)
@@ -9668,7 +9696,8 @@
       var game, t1, t2, t3,
         depth = loopManager.getCurrentDepth$0();
       A.print("LoopGameScreen.create: Creating game at depth " + depth);
-      game = A.Game$($content, depth, save, 34, 60);
+      loopManager.applyActiveRewards$1(save);
+      game = A.Game$($content, depth, save, null, 34, 60);
       for (t1 = game.generate$0(), t2 = t1.$ti, t1 = new A._SyncStarIterator(t1._outerHelper(), t2._eval$1("_SyncStarIterator<1>")), t2 = t2._precomputed1; t1.moveNext$0();) {
         t3 = t1._async$_current;
         if (t3 == null)
@@ -9676,29 +9705,41 @@
       }
       t1 = game.hero;
       t2 = new A.SmartCombat(game, t1);
-      t1 = new A.LoopGameScreen(game, storage, new A.LogPanel(t1.save.log), new A.ItemPanel(game), t2, loopManager);
+      t1 = t1.save;
+      t1 = new A.LoopGameScreen(game, storage, new A.LogPanel(t1.log), new A.ItemPanel(game), t2, loopManager, t1.clone$0(0));
       t1.__LoopGameScreen__sidebarPanel_F = new A.SidebarPanel(t1);
       t1.__LoopGameScreen__stagePanel_F = A.StagePanel$(t1);
-      t1.__LoopGameScreen__actionMapping_A = A.ActionMapping_ActionMapping$fromSmartCombat(t2);
+      t1.__LoopGameScreen__equipmentPanel_F = new A.EquipmentStatusPanel(game);
+      t1._controlsPanel = new A.ControlsPanel(A.ActionMapping_ActionMapping$fromSmartCombat(t2));
+      t1._updateActionMapping$0();
       t1.dirty$0();
       return t1;
     },
-    LoopGameScreen: function LoopGameScreen(t0, t1, t2, t3, t4, t5) {
+    ControlsPanel: function ControlsPanel(t0) {
+      this.actionMapping = t0;
+      this._bounds = null;
+    },
+    LoopGameScreen: function LoopGameScreen(t0, t1, t2, t3, t4, t5, t6) {
       var _ = this;
       _.game = t0;
       _._loop_game_screen$_storage = t1;
       _._loop_game_screen$_logPanel = t2;
       _.itemPanel = t3;
-      _.__LoopGameScreen__stagePanel_F = _.__LoopGameScreen__sidebarPanel_F = $;
+      _.__LoopGameScreen__equipmentPanel_F = _.__LoopGameScreen__stagePanel_F = _.__LoopGameScreen__sidebarPanel_F = $;
       _._smartCombat = t4;
       _.__LoopGameScreen__actionMapping_A = $;
       _._loop_game_screen$_loopManager = t5;
-      _._showActionHelp = false;
+      _._controlsPanel = null;
       _._loop_game_screen$_pause = 0;
+      _._loop_game_screen$_previousSave = t6;
       _._ui = null;
     },
     LoopInput: function LoopInput(t0) {
       this._core$_name = t0;
+    },
+    LoopRewardScreen$($content, storage, loopManager, hero) {
+      var t1 = loopManager.currentRewardOptions;
+      return new A.LoopRewardScreen($content, storage, loopManager, hero, t1);
     },
     LoopRewardScreen: function LoopRewardScreen(t0, t1, t2, t3, t4) {
       var _ = this;
@@ -9796,6 +9837,10 @@
       _._new_hero_screen$_name = t2;
       _._options = t3;
       _.selected = 0;
+    },
+    EquipmentStatusPanel: function EquipmentStatusPanel(t0) {
+      this.game = t0;
+      this._bounds = null;
     },
     ItemPanel: function ItemPanel(t0) {
       this._item_panel$_game = t0;
@@ -10032,9 +10077,6 @@
     Display: function Display(t0, t1) {
       this._glyphs = t0;
       this._changedGlyphs = t1;
-    },
-    Color$(r, g, b) {
-      return new A.Color(r, g, b);
     },
     Glyph$(char, fore, $back) {
       var t1;
@@ -11754,17 +11796,18 @@
       t3 = type$.JSArray_LoopReward;
       t4 = A._setArrayType([], t3);
       t3 = A._setArrayType([], t3);
-      t5 = A._setArrayType([], type$.JSArray_HeroSave);
-      t6 = new A.Storage($content, t5);
-      t6._load$0();
-      if (t5.length === 0) {
+      t5 = A.DifficultyScheduler$();
+      t6 = A._setArrayType([], type$.JSArray_HeroSave);
+      t7 = new A.Storage($content, t6);
+      t7._load$0();
+      if (t6.length === 0) {
         A.print("Creating default Loop Mode hero...");
         defaultHero = $content.createHero$1("Loop Runner");
         defaultHero.gold = 2000;
-        B.JSArray_methods.add$1(t5, defaultHero);
-        t6.save$0(0);
+        B.JSArray_methods.add$1(t6, defaultHero);
+        t7.save$0(0);
       }
-      t2.push$1(new A.MainMenuScreen($content, t6, new A.LoopManager(t4, t3)));
+      t2.push$1(new A.MainMenuScreen($content, t7, new A.LoopManager(t4, t3, t5)));
       $.___ui._readField$0().set$handlingInput(true);
       $.___ui._readField$0().set$running(true);
       t1 = t1.body;
@@ -13035,10 +13078,12 @@
           return B.LoopInput_10;
         case B.Input_drop:
           return B.LoopInput_11;
-        case B.Input_cancel:
+        case B.Input_equip:
           return B.LoopInput_12;
-        case B.Input_heroInfo:
+        case B.Input_cancel:
           return B.LoopInput_13;
+        case B.Input_heroInfo:
+          return B.LoopInput_14;
         default:
           return null;
       }
@@ -13837,7 +13882,7 @@
   };
   A.LateError.prototype = {
     toString$0(_) {
-      return "LateInitializationError: " + this._message;
+      return "LateInitializationError: " + this.__internal$_message;
     }
   };
   A.CodeUnits.prototype = {
@@ -14381,16 +14426,16 @@
         _s38_ = "NoSuchMethodError: method not found: '",
         t1 = _this._method;
       if (t1 == null)
-        return "NoSuchMethodError: " + _this.__js_helper$_message;
+        return "NoSuchMethodError: " + _this._message;
       t2 = _this._receiver;
       if (t2 == null)
-        return _s38_ + t1 + "' (" + _this.__js_helper$_message + ")";
-      return _s38_ + t1 + "' on '" + t2 + "' (" + _this.__js_helper$_message + ")";
+        return _s38_ + t1 + "' (" + _this._message + ")";
+      return _s38_ + t1 + "' on '" + t2 + "' (" + _this._message + ")";
     }
   };
   A.UnknownJsTypeError.prototype = {
     toString$0(_) {
-      var t1 = this.__js_helper$_message;
+      var t1 = this._message;
       return t1.length === 0 ? "Error" : "Error: " + t1;
     }
   };
@@ -15295,13 +15340,13 @@
     call$1(result) {
       return this.bodyFunction.call$2(0, result);
     },
-    $signature: 112
+    $signature: 113
   };
   A._awaitOnObject_closure0.prototype = {
     call$2(error, stackTrace) {
       this.bodyFunction.call$2(1, new A.ExceptionAndStackTrace(error, type$.StackTrace._as(stackTrace)));
     },
-    $signature: 122
+    $signature: 123
   };
   A._wrapJsFunctionForAsync_closure.prototype = {
     call$2(errorCode, result) {
@@ -18359,7 +18404,7 @@
     call$1(el) {
       return J.remove$0$ax(type$.Element._as(el));
     },
-    $signature: 157
+    $signature: 158
   };
   A.KeyRange.prototype = {$isKeyRange: 1};
   A._convertToJS_closure.prototype = {
@@ -18659,15 +18704,16 @@
     $isSvgElement: 1
   };
   A.GameContent.prototype = {
-    buildStage$4(lore, stage, depth, placeHero) {
-      var t1, t2;
+    buildStage$5$archetypeMetadata(lore, stage, depth, placeHero, archetypeMetadata) {
+      var t1, t2, t3;
       type$.dynamic_Function_Vec._as(placeHero);
       if (depth === 0)
         return new A.Town(stage).buildStage$1(placeHero);
       t1 = stage.tiles.bounds.size;
       t2 = t1.x;
       t1 = t1.y;
-      return new A.Architect(lore, stage, depth, new A.Array2D(A.List_List$filled(t2 * t1, null, false, type$.nullable_Architecture), new A.Rect(new A.Vec(0, 0), new A.Vec(t2, t1)), type$.Array2D_nullable_Architecture)).buildStage$1(placeHero);
+      t3 = A.List_List$filled(t2 * t1, null, false, type$.nullable_Architecture);
+      return new A.Architect(lore, stage, depth, new A.Array2D(t3, new A.Rect(new A.Vec(0, 0), new A.Vec(t2, t1)), type$.Array2D_nullable_Architecture)).buildStage$2$scalars(placeHero, null);
     },
     createHero$4$heroClass$permadeath$race($name, heroClass, permadeath, race) {
       var t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, hero, inventory, _null = null;
@@ -19185,7 +19231,7 @@
       ++this._box_0.foundItems;
       this.addTile.call$1(pos);
     },
-    $signature: 111
+    $signature: 112
   };
   A.DetectAction__findTiles_closure0.prototype = {
     call$2(a, b) {
@@ -19200,7 +19246,7 @@
       t1.toString;
       return t1;
     },
-    $signature: 121
+    $signature: 122
   };
   A.EatAction.prototype = {
     onPerform$0() {
@@ -19907,7 +19953,7 @@
       t1.reachTile$2(pos, Math.sqrt(pos.$sub(0, t2).get$lengthSquared()));
       return false;
     },
-    $signature: 124
+    $signature: 125
   };
   A.RayAction.prototype = {
     get$range() {
@@ -20166,14 +20212,14 @@
       A._asInt(_);
       return new A.WindAction();
     },
-    $signature: 126
+    $signature: 127
   };
   A.Elements_fire_closure.prototype = {
     call$1(_) {
       A._asInt(_);
       return new A.BurnActorAction();
     },
-    $signature: 127
+    $signature: 128
   };
   A.Elements_fire_closure0.prototype = {
     call$4(pos, hit, distance, fuel) {
@@ -20185,13 +20231,13 @@
     },
     "call*": "call$4",
     $requiredArgCount: 4,
-    $signature: 129
+    $signature: 130
   };
   A.Elements_cold_closure.prototype = {
     call$1(damage) {
       return new A.FreezeActorAction(A._asInt(damage));
     },
-    $signature: 133
+    $signature: 134
   };
   A.Elements_cold_closure0.prototype = {
     call$4(pos, hit, distance, _) {
@@ -20203,13 +20249,13 @@
     },
     "call*": "call$4",
     $requiredArgCount: 4,
-    $signature: 134
+    $signature: 135
   };
   A.Elements_poison_closure.prototype = {
     call$1(damage) {
       return new A.PoisonAction(A._asInt(damage));
     },
-    $signature: 137
+    $signature: 138
   };
   A.Elements_poison_closure0.prototype = {
     call$4(pos, hit, distance, _) {
@@ -20221,19 +20267,19 @@
     },
     "call*": "call$4",
     $requiredArgCount: 4,
-    $signature: 142
+    $signature: 143
   };
   A.Elements_dark_closure.prototype = {
     call$1(damage) {
       return new A.BlindAction(A._asInt(damage));
     },
-    $signature: 147
+    $signature: 148
   };
   A.Elements_light_closure.prototype = {
     call$1(damage) {
       return new A.DazzleAction(A._asInt(damage));
     },
-    $signature: 148
+    $signature: 149
   };
   A.Elements_light_closure0.prototype = {
     call$4(pos, hit, distance, _) {
@@ -20248,7 +20294,7 @@
     },
     "call*": "call$4",
     $requiredArgCount: 4,
-    $signature: 149
+    $signature: 150
   };
   A._BaseBuilder.prototype = {
     toss$4$breakage$damage$element$range(breakage, damage, element, range) {
@@ -20412,19 +20458,19 @@
     call$0() {
       return new A.EatAction(this.amount);
     },
-    $signature: 152
+    $signature: 153
   };
   A.ItemBuilder_detection_closure.prototype = {
     call$0() {
       return A.DetectAction$(this.types, this.range);
     },
-    $signature: 53
+    $signature: 154
   };
   A.ItemBuilder_perception_closure.prototype = {
     call$0() {
       return new A.PerceiveAction(this.duration, this.distance);
     },
-    $signature: 156
+    $signature: 53
   };
   A.ItemBuilder_resistSalve_closure.prototype = {
     call$0() {
@@ -22363,15 +22409,16 @@
     }
   };
   A.Architect.prototype = {
-    buildStage$1(placeHero) {
-      return new A._SyncStarIterable(this.buildStage$body$Architect(type$.dynamic_Function_Vec._as(placeHero)), type$._SyncStarIterable_String);
+    buildStage$2$scalars(placeHero, scalars) {
+      return new A._SyncStarIterable(this.buildStage$body$Architect(type$.dynamic_Function_Vec._as(placeHero), scalars), type$._SyncStarIterable_String);
     },
-    buildStage$body$Architect($async$placeHero) {
+    buildStage$body$Architect($async$placeHero, $async$scalars) {
       var $async$self = this;
       return function() {
-        var placeHero = $async$placeHero;
+        var placeHero = $async$placeHero,
+          scalars = $async$scalars;
         var $async$goto = 0, $async$handler = 2, $async$errorStack = [], t1, t2, t3, t4, t5, t6, t7, t8, styles, lastFillable, i, possibleRegions, regions, architecture, unownedPassages, decorator;
-        return function $async$buildStage$1($async$iterator, $async$errorCode, $async$result) {
+        return function $async$buildStage$2$scalars($async$iterator, $async$errorCode, $async$result) {
           if ($async$errorCode === 1) {
             $async$errorStack.push($async$result);
             $async$goto = $async$handler;
@@ -22394,7 +22441,7 @@
                     }
                     t4[t7].type = $.$get$Tiles_unformed();
                   }
-                  styles = A.ArchitecturalStyle_pick($async$self.depth);
+                  styles = A.ArchitecturalStyle_pick($async$self.depth, scalars);
                   i = styles.length - 1;
                   while (true) {
                     if (!(i >= 0)) {
@@ -27091,7 +27138,7 @@
                 t2 = $async$self.__Game__stage_F;
                 t2 === $ && A.throwLateFieldNI("_stage");
                 $async$goto = 2;
-                return $async$iterator._yieldStar$1($async$self.content.buildStage$4(t1.save.lore, t2, $async$self.depth, new A.Game_generate_closure(heroPos)));
+                return $async$iterator._yieldStar$1($async$self.content.buildStage$5$archetypeMetadata(t1.save.lore, t2, $async$self.depth, new A.Game_generate_closure(heroPos), $async$self.archetypeMetadata));
               case 2:
                 // after yield
                 $async$goto = 3;
@@ -29079,7 +29126,7 @@
       A._asInt(count);
       return count + (type$.nullable_Item._as(item) == null ? 0 : 1);
     },
-    $signature: 105
+    $signature: 132
   };
   A.Equipment_canEquip_closure.prototype = {
     call$1(slot) {
@@ -29477,6 +29524,32 @@
       }
     }
   };
+  A.DensityScalars.prototype = {
+    toString$0(_) {
+      return "DensityScalars(enemy: 1x, item: 1x)";
+    }
+  };
+  A.DifficultyScheduler.prototype = {
+    toString$0(_) {
+      var t1 = this.schedule,
+        t2 = A._arrayInstanceType(t1);
+      return "DifficultyScheduler(schedule: [" + new A.MappedListIterable(t1, t2._eval$1("String(1)")._as(new A.DifficultyScheduler_toString_closure()), t2._eval$1("MappedListIterable<1,String>")).join$1(0, ", ") + "], scalars: " + this.scalars.toString$0(0) + ")";
+    }
+  };
+  A.DifficultyScheduler_toString_closure.prototype = {
+    call$1(a) {
+      return type$.LevelArchetype._as(a).name;
+    },
+    $signature: 111
+  };
+  A.LevelArchetype.prototype = {
+    _enumToString$0() {
+      return "LevelArchetype." + this._core$_name;
+    },
+    toString$0(_) {
+      return this.name;
+    }
+  };
   A.LoopManager.prototype = {
     recordMove$0() {
       var _this = this;
@@ -29492,7 +29565,7 @@
       var allRewards, _this = this;
       _this.isLoopActive = false;
       _this.isRewardSelection = true;
-      allRewards = A._setArrayType([B.DamageBoostReward_5fE, B.DamageBoostReward_xxS, B.ArmorBoostReward_DYH, B.ArmorBoostReward_3Zf, B.HealthBoostReward_jwh, B.HealthBoostReward_479, B.HealingSupplyReward_ngq, B.FoodSupplyReward_O61, B.ScrollSupplyReward_TOU, B.GoldReward_jSt, B.GoldReward_VUY, B.LightRadiusReward_eQB, B.MovementSpeedReward_gv6, B.LuckyFindsReward_Z7p], type$.JSArray_LoopReward);
+      allRewards = A._setArrayType([B.DamageBoostReward_5fE, B.DamageBoostReward_xxS, B.ArmorBoostReward_DYH, B.ArmorBoostReward_3Zf, B.HealthBoostReward_jwh, B.HealthBoostReward_479, B.HealingSupplyReward_ngq, B.FoodSupplyReward_O61, B.ScrollSupplyReward_TOU, B.GoldReward_jSt, B.GoldReward_VUY, B.LightRadiusReward_eQB, B.MovementSpeedReward_gv6, B.LuckyFindsReward_Z7p, B.SummonReward_3TK], type$.JSArray_LoopReward);
       B.JSArray_methods.shuffle$0(allRewards);
       _this.currentRewardOptions = A.SubListIterable$(allRewards, 0, A.checkNotNullable(3, "count", type$.int), type$.LoopReward).toList$0(0);
       A.print("Loop " + _this.currentLoop + " complete! " + _this.moveCount + " moves made. Time for rewards!");
@@ -29518,6 +29591,11 @@
       var t1 = this.threatLevel;
       return 1 + t1;
     },
+    applyActiveRewards$1(hero) {
+      var t1, t2, _i;
+      for (t1 = this.activeRewards, t2 = t1.length, _i = 0; _i < t1.length; t1.length === t2 || (0, A.throwConcurrentModificationError)(t1), ++_i)
+        t1[_i].apply$1(hero);
+    },
     reset$0(_) {
       var _this = this;
       _this.moveCount = _this.threatLevel = _this.currentLoop = 0;
@@ -29529,8 +29607,11 @@
       var _this = this,
         t1 = _this.currentLoop,
         t2 = _this.threatLevel,
-        t3 = _this.moveCount;
-      return A.LinkedHashMap_LinkedHashMap$_literal(["currentLoop", t1, "threatLevel", t2, "moveCount", t3, "movesRemaining", 50 - t3, "isActive", _this.isLoopActive, "isRewardSelection", _this.isRewardSelection, "currentDepth", _this.getCurrentDepth$0()], type$.String, type$.dynamic);
+        t3 = _this.moveCount,
+        t4 = _this.isLoopActive,
+        t5 = _this.isRewardSelection,
+        t6 = _this.getCurrentDepth$0();
+      return A.LinkedHashMap_LinkedHashMap$_literal(["currentLoop", t1, "threatLevel", t2, "moveCount", t3, "movesRemaining", 50 - t3, "isActive", t4, "isRewardSelection", t5, "currentDepth", t6, "archetype", null, "scalars", null], type$.String, type$.dynamic);
     }
   };
   A.LoopReward.prototype = {};
@@ -29587,6 +29668,11 @@
       A.print("Applied lucky finds boost to " + hero.name);
     }
   };
+  A.SummonReward.prototype = {
+    apply$1(hero) {
+      A.print("Added summoning scrolls to " + hero.name + "'s inventory");
+    }
+  };
   A.SmartActionInfo.prototype = {
     get$displayText() {
       var t1 = this.count;
@@ -29596,6 +29682,41 @@
     }
   };
   A.SmartCombat.prototype = {
+    get$activeSpell() {
+      var t1, t2, t3, $name, t4;
+      for (t1 = this.hero.save._inventory._items, t2 = A._arrayInstanceType(t1), t1 = new J.ArrayIterator(t1, t1.length, t2._eval$1("ArrayIterator<1>")), t2 = t2._precomputed1; t1.moveNext$0();) {
+        t3 = t1._current;
+        if (t3 == null)
+          t3 = t2._as(t3);
+        $name = A.Log__categorize(t3.type.quantifiableName, false, true).toLowerCase();
+        if (A.stringContainsUnchecked($name, "scroll", 0)) {
+          t4 = true;
+          if (!A.stringContainsUnchecked($name, "lightning", 0))
+            if (!A.stringContainsUnchecked($name, "fireball", 0))
+              if (!A.stringContainsUnchecked($name, "ice", 0))
+                if (!A.stringContainsUnchecked($name, "teleport", 0))
+                  if (!A.stringContainsUnchecked($name, "heal", 0))
+                    if (!A.stringContainsUnchecked($name, "summon", 0))
+                      if (!A.stringContainsUnchecked($name, "magic", 0))
+                        if (!A.stringContainsUnchecked($name, "bolt", 0))
+                          if (!A.stringContainsUnchecked($name, "frost", 0))
+                            t4 = A.stringContainsUnchecked($name, "fire", 0);
+        } else
+          t4 = false;
+        if (t4)
+          return t3;
+      }
+      return null;
+    },
+    cycleActiveSpell$0() {
+      var spell = this.get$activeSpell();
+      if (spell == null)
+        return;
+      if (spell._count > 1)
+        return;
+      else
+        B.JSArray_methods.remove$1(this.hero.save._inventory._items, spell);
+    },
     handlePrimaryAction$0() {
       var target, t1, items, item, operablePos, nearestEnemy, direction, _this = this;
       _this._autoPickupItems$0();
@@ -29621,9 +29742,20 @@
       }
       return null;
     },
+    _getActiveSpellCount$0() {
+      var spell = this.get$activeSpell();
+      if (spell != null && spell._count > 1)
+        return "(" + spell._count + ")";
+      return null;
+    },
     handleSecondaryAction$0() {
-      var rangedTarget, _this = this;
-      _this._findNearestEnemy$0() != null;
+      var rangedTarget, _this = this,
+        spell = _this.get$activeSpell();
+      if (spell != null)
+        if (_this._findNearestEnemy$0() != null) {
+          _this.cycleActiveSpell$0();
+          return A.UseAction$(B.ItemLocation_Inventory, spell);
+        }
       rangedTarget = _this._findNearestEnemy$0();
       if (rangedTarget != null && _this._hasRangedWeapon$0())
         return _this._createRangedAttack$1(rangedTarget._pos);
@@ -29825,11 +29957,11 @@
       return !items.get$isEmpty(0) ? items.get$first(0) : null;
     },
     _getPrimaryActionLabel$0() {
-      var t1, items, item, _this = this;
+      var weapon, t1, items, item, _this = this;
       if (_this._findAdjacentEnemy$0() != null) {
-        t1 = _this.hero.save._equipment;
-        if ((!t1.get$weapons().get$isEmpty(0) ? t1.get$weapons().get$first(0) : null) != null)
-          return "Attack";
+        weapon = _this._getBestPrimaryWeapon$0();
+        if (weapon != null)
+          return _this._getWeaponActionName$1(weapon);
         return "Punch";
       }
       t1 = _this.game.__Game__stage_F;
@@ -29847,9 +29979,13 @@
       return "Attack";
     },
     _getSecondaryActionLabel$0() {
-      this._findNearestEnemy$0() != null;
-      if (this._hasRangedWeapon$0())
-        return "Shoot";
+      var rangedWeapon, _this = this,
+        spell = _this.get$activeSpell();
+      if (spell != null)
+        return _this._getMagicActionName$1(spell);
+      rangedWeapon = _this._getBestRangedWeapon$0();
+      if (rangedWeapon != null)
+        return _this._getRangedActionName$1(rangedWeapon);
       return "Magic";
     },
     _getHealActionLabel$0() {
@@ -29880,6 +30016,106 @@
           healingItems += t3._count;
       }
       return healingItems > 0 ? "(" + healingItems + ")" : null;
+    },
+    _getBestPrimaryWeapon$0() {
+      var t1, t2, t3, $name, t4,
+        weapons = this.hero.save._equipment.get$weapons();
+      if (!weapons.get$iterator(0).moveNext$0())
+        return null;
+      for (t1 = J.get$iterator$ax(weapons.__internal$_iterable), t2 = new A.WhereIterator(t1, weapons._f, weapons.$ti._eval$1("WhereIterator<1>")); t2.moveNext$0();) {
+        t3 = t1.get$current();
+        $name = A.Log__categorize(t3.type.quantifiableName, false, true).toLowerCase();
+        t4 = true;
+        if (!A.stringContainsUnchecked($name, "sword", 0))
+          if (!A.stringContainsUnchecked($name, "axe", 0))
+            if (!A.stringContainsUnchecked($name, "mace", 0))
+              if (!A.stringContainsUnchecked($name, "hammer", 0))
+                if (!A.stringContainsUnchecked($name, "spear", 0))
+                  if (!A.stringContainsUnchecked($name, "staff", 0))
+                    if (!A.stringContainsUnchecked($name, "club", 0))
+                      if (!A.stringContainsUnchecked($name, "blade", 0))
+                        if (!A.stringContainsUnchecked($name, "rapier", 0))
+                          if (!A.stringContainsUnchecked($name, "scimitar", 0))
+                            t4 = A.stringContainsUnchecked($name, "katana", 0);
+        if (t4)
+          return t3;
+      }
+      return weapons.get$first(0);
+    },
+    _getBestRangedWeapon$0() {
+      var t1, t2, t3, t4, $name, t5;
+      for (t1 = this.hero.save, t2 = t1._equipment.get$weapons(), t3 = J.get$iterator$ax(t2.__internal$_iterable), t2 = new A.WhereIterator(t3, t2._f, t2.$ti._eval$1("WhereIterator<1>")); t2.moveNext$0();) {
+        t4 = t3.get$current();
+        $name = A.Log__categorize(t4.type.quantifiableName, false, true).toLowerCase();
+        if (this._isSecondaryWeapon$1($name)) {
+          t5 = true;
+          if (!A.stringContainsUnchecked($name, "bow", 0))
+            if (!A.stringContainsUnchecked($name, "dart", 0))
+              t5 = A.stringContainsUnchecked($name, "sling", 0);
+          if (t5)
+            return t4;
+        }
+      }
+      for (t1 = t1._inventory._items, t2 = A._arrayInstanceType(t1), t1 = new J.ArrayIterator(t1, t1.length, t2._eval$1("ArrayIterator<1>")), t2 = t2._precomputed1; t1.moveNext$0();) {
+        t3 = t1._current;
+        if (t3 == null)
+          t3 = t2._as(t3);
+        $name = A.Log__categorize(t3.type.quantifiableName, false, true).toLowerCase();
+        if (this._isSecondaryWeapon$1($name)) {
+          t4 = true;
+          if (!A.stringContainsUnchecked($name, "bow", 0))
+            if (!A.stringContainsUnchecked($name, "dart", 0))
+              t4 = A.stringContainsUnchecked($name, "sling", 0);
+          if (t4)
+            return t3;
+        }
+      }
+      return null;
+    },
+    _getWeaponActionName$1(weapon) {
+      var $name = A.Log__categorize(weapon.type.quantifiableName, false, true).toLowerCase();
+      if (B.JSString_methods.contains$1($name, "sword") || B.JSString_methods.contains$1($name, "blade"))
+        return "Slash";
+      if (B.JSString_methods.contains$1($name, "axe"))
+        return "Chop";
+      if (B.JSString_methods.contains$1($name, "mace") || B.JSString_methods.contains$1($name, "hammer"))
+        return "Smash";
+      if (B.JSString_methods.contains$1($name, "spear"))
+        return "Thrust";
+      if (B.JSString_methods.contains$1($name, "staff"))
+        return "Strike";
+      if (B.JSString_methods.contains$1($name, "dagger"))
+        return "Stab";
+      return "Attack";
+    },
+    _getRangedActionName$1(weapon) {
+      var $name = A.Log__categorize(weapon.type.quantifiableName, false, true).toLowerCase();
+      if (B.JSString_methods.contains$1($name, "bow"))
+        return "Shoot";
+      if (B.JSString_methods.contains$1($name, "dart"))
+        return "Throw";
+      if (B.JSString_methods.contains$1($name, "sling"))
+        return "Sling";
+      return "Shoot";
+    },
+    _getMagicActionName$1(magicItem) {
+      var $name = A.Log__categorize(magicItem.type.quantifiableName, false, true).toLowerCase();
+      if (B.JSString_methods.contains$1($name, "lightning"))
+        return "Zap";
+      if (B.JSString_methods.contains$1($name, "fireball") || B.JSString_methods.contains$1($name, "fire"))
+        return "Burn";
+      if (B.JSString_methods.contains$1($name, "ice") || B.JSString_methods.contains$1($name, "frost"))
+        return "Freeze";
+      if (B.JSString_methods.contains$1($name, "teleport"))
+        return "Teleport";
+      if (B.JSString_methods.contains$1($name, "heal"))
+        return "Heal";
+      if (B.JSString_methods.contains$1($name, "scroll"))
+        return "Cast";
+      return "Magic";
+    },
+    _isSecondaryWeapon$1($name) {
+      return B.JSString_methods.contains$1($name, "bow") || B.JSString_methods.contains$1($name, "crossbow") || B.JSString_methods.contains$1($name, "dart") || B.JSString_methods.contains$1($name, "sling") || B.JSString_methods.contains$1($name, "javelin") || B.JSString_methods.contains$1($name, "throwing") || B.JSString_methods.contains$1($name, "dagger");
     }
   };
   A.BreedRef.prototype = {};
@@ -31156,7 +31392,7 @@
         t1._open.add$2(0, here, total);
       }
     },
-    $signature: 113
+    $signature: 114
   };
   A.MotilityFlow.prototype = {
     tileCost$4(parentCost, pos, tile, isDiagonal) {
@@ -31529,7 +31765,7 @@
         return;
       t1._queue.add$2(0, neighborPos, 255 - illumination);
     },
-    $signature: 114
+    $signature: 115
   };
   A.Path.prototype = {
     toString$0(_) {
@@ -31850,7 +32086,7 @@
     call$1(_) {
       return new A.Tile($.$get$TileType_uninitialized(), $.$get$Element_none());
     },
-    $signature: 115
+    $signature: 116
   };
   A.Stage_placeDrops_closure.prototype = {
     call$1(item) {
@@ -31893,7 +32129,7 @@
     call$0() {
       return A.Inventory$(B.ItemLocation_ybX, null, null);
     },
-    $signature: 116
+    $signature: 117
   };
   A.Stage_forEachItem_closure.prototype = {
     call$2(pos, inventory) {
@@ -31904,7 +32140,7 @@
         t3.call$2(t4 == null ? t2._as(t4) : t4, pos);
       }
     },
-    $signature: 117
+    $signature: 118
   };
   A.Motility.prototype = {
     get$hashCode(_) {
@@ -32085,7 +32321,7 @@
       t1 === $ && A.throwLateFieldNI("_stagePanel");
       t1.drawStageGlyph$4(this.terminal, t4, t5, glyph);
     },
-    $signature: 118
+    $signature: 119
   };
   A.SkillDirectionDialog.prototype = {
     get$query() {
@@ -32555,13 +32791,13 @@
     call$3(label, color, change) {
       return this.call$4$total(label, color, change, null);
     },
-    $signature: 119
+    $signature: 120
   };
   A.ExitPopup_closure.prototype = {
     call$1(actor) {
       return !(type$.Actor._as(actor) instanceof A.Hero);
     },
-    $signature: 120
+    $signature: 121
   };
   A._AnimatedValue.prototype = {
     update$0(_) {
@@ -32732,7 +32968,7 @@
           t4 = t3._pos;
           if (t2.tiles.$get$2(t4.get$x(t4), t4.get$y(t4)).type.portal === B.TilePortal_exit)
             if (_this._loopManager != null)
-              _this._handleLoopExit$0();
+              _this._game_screen$_handleLoopExit$0();
             else {
               t2 = _this._ui;
               t2.toString;
@@ -32936,8 +33172,8 @@
         _this.game.hero._behavior = new A.ActionBehavior(action);
       return true;
     },
-    _handleLoopExit$0() {
-      var t2, t3, _this = this,
+    _game_screen$_handleLoopExit$0() {
+      var t2, t3, t4, _this = this,
         t1 = _this._loopManager;
       if (t1 == null)
         return;
@@ -32945,11 +33181,13 @@
       t1.triggerRewardSelection$0();
       t2 = _this._game_screen$_storage;
       t2.save$0(0);
-      t3 = _this.game;
-      _this._ui.goTo$1(new A.LoopRewardScreen(t3.content, t2, t1, t3.hero.save, t1.currentRewardOptions));
+      t3 = _this._ui;
+      t3.toString;
+      t4 = _this.game;
+      t3.goTo$1(A.LoopRewardScreen$(t4.content, t2, t1, t4.hero.save));
     },
     activate$2(popped, result) {
-      var t3, t4, game, _this = this,
+      var t3, t4, game, _this = this, _null = null,
         t1 = _this.game,
         t2 = t1.hero;
       if (!t2.needsInput$1(t1))
@@ -32966,13 +33204,13 @@
         _this._game_screen$_storage.save$0(0);
         t3 = _this._ui;
         t3.toString;
-        game = A.Game$(t1.content, result, t2.save.clone$0(0), null, null);
+        game = A.Game$(t1.content, result, t2.save.clone$0(0), _null, _null, _null);
         t2 = game.generate$0();
         t3.push$1(new A.LoadingDialog(game, new A._SyncStarIterator(t2._outerHelper(), t2.$ti._eval$1("_SyncStarIterator<1>"))));
       } else if (popped instanceof A.LoadingDialog) {
         t1 = _this._ui;
         t1.toString;
-        t1.goTo$1(A.GameScreen$(_this._game_screen$_storage, type$.Game._as(result), null));
+        t1.goTo$1(A.GameScreen$(_this._game_screen$_storage, type$.Game._as(result), _null));
       } else if (popped instanceof A.ForfeitPopup && J.$eq$(result, true)) {
         t2 = _this._game_screen$_storage;
         if (t1.depth > 0) {
@@ -33020,7 +33258,9 @@
           A.print("Hero move recorded. Total moves: " + t2.moveCount);
           if (t2.isRewardSelection) {
             A.print("Time for reward selection!");
-            _this._ui.goTo$1(new A.LoopRewardScreen(t1.content, _this._game_screen$_storage, t2, t4.save, t2.currentRewardOptions));
+            t3 = _this._ui;
+            t3.toString;
+            t3.goTo$1(A.LoopRewardScreen$(t1.content, _this._game_screen$_storage, t2, t4.save));
             return;
           }
         }
@@ -33295,7 +33535,7 @@
     call$2(shop, inventory) {
       type$.Shop._as(shop).update$1(0, type$.Inventory._as(inventory));
     },
-    $signature: 123
+    $signature: 124
   };
   A.GameScreen_activate_closure0.prototype = {
     call$1(dir) {
@@ -33373,7 +33613,7 @@
         t1.writeAt$4(x + 1, y, string, B.Color_204_35_57);
       }
     },
-    $signature: 125
+    $signature: 126
   };
   A.HeroEquipmentDialog_render_writeBonus.prototype = {
     call$3(x, y, bonus) {
@@ -33871,7 +34111,7 @@
     call$1(breed) {
       return type$.Breed._as(breed).flags.unique;
     },
-    $signature: 128
+    $signature: 129
   };
   A.HeroMonsterLoreDialog__listBreeds_compareGlyph.prototype = {
     call$2(a, b) {
@@ -33891,7 +34131,7 @@
     call$1(c) {
       return c >= 65 && c <= 90;
     },
-    $signature: 130
+    $signature: 131
   };
   A.HeroMonsterLoreDialog__listBreeds_compareDepth.prototype = {
     call$2(a, b) {
@@ -34537,7 +34777,7 @@
       t1.writeAt$4(statLeft + 1, t2, string, t4);
       t3.nameRight = statLeft;
     },
-    $signature: 132
+    $signature: 133
   };
   A.PickUpDialog.prototype = {
     get$allowedLocations() {
@@ -35243,6 +35483,19 @@
       terminal.writeAt$4(2, 4, B.JSString_methods.substring$2(B.JSString_methods.$mul("/    ", 6), offset, offset + 26), B.Color_226_223_240);
     }
   };
+  A.ControlsPanel.prototype = {
+    renderPanel$1(terminal) {
+      var t1 = terminal.size;
+      A.Draw_frame(terminal, 0, 0, t1.x, t1.y, null, "CONTROLS", false);
+      terminal.writeAt$4(1, 1, "Movement:", B.Color_226_223_240);
+      terminal.writeAt$4(1, 2, "Arrow Keys", B.Color_132_126_135);
+      terminal.writeAt$4(1, 3, " ", B.Color_226_223_240);
+      terminal.writeAt$4(1, 4, "Actions:", B.Color_226_223_240);
+      terminal.writeAt$4(1, 5, "1: \ud83d\udde1\ufe0f " + this.actionMapping.action1Label, B.Color_64_163_229);
+      terminal.writeAt$4(1, 6, "2: \u26a1 " + this.actionMapping.action2Label, B.Color_131_158_13);
+      terminal.writeAt$4(1, 7, "3: \u2764\ufe0f " + this.actionMapping.action3Label, B.Color_255_122_105);
+    }
+  };
   A.LoopGameScreen.prototype = {
     get$loopManager() {
       return this._loop_game_screen$_loopManager;
@@ -35274,6 +35527,15 @@
     get$currentTargetActor() {
       return null;
     },
+    _updateActionMapping$0() {
+      var t2, _this = this,
+        t1 = A.ActionMapping_ActionMapping$fromSmartCombat(_this._smartCombat);
+      _this.__LoopGameScreen__actionMapping_A = t1;
+      t2 = _this._controlsPanel;
+      if (t2 != null)
+        t2.actionMapping = t1;
+      _this.dirty$0();
+    },
     handleInput$1(input) {
       var loopInput = A.InputConverter_convertToLoopInput(input);
       if (loopInput == null)
@@ -35282,15 +35544,11 @@
       return true;
     },
     _handleLoopInput$1(input) {
-      var action, _this = this, _null = null;
+      var action, t1, t2, t3, _this = this, _null = null;
       switch (input) {
-        case B.LoopInput_12:
-          _this._showActionHelp = !_this._showActionHelp;
-          _this.dirty$0();
-          return true;
         case B.LoopInput_13:
-          _this._showActionHelp = !_this._showActionHelp;
-          _this.dirty$0();
+          return true;
+        case B.LoopInput_14:
           return true;
         case B.LoopInput_0:
           action = A.WalkAction$(B.Direction_0_m1_n);
@@ -35320,9 +35578,18 @@
           action = A.WalkAction$(B.Direction_0_0_none);
           break;
         case B.LoopInput_9:
+          t1 = _this.game;
+          t2 = t1.__Game__stage_F;
+          t2 === $ && A.throwLateFieldNI("_stage");
+          t1 = t1.hero;
+          t3 = t1._pos;
+          if (t2.tiles.$get$2(t3.get$x(t3), t3.get$y(t3)).type.portal === B.TilePortal_exit) {
+            _this._handleLoopExit$0();
+            return true;
+          }
           action = _this._smartCombat.handlePrimaryAction$0();
           if (action == null) {
-            _this.game.hero.save.log.add$5(0, B.LogType_0, "No primary action available.", _null, _null, _null);
+            t1.save.log.add$5(0, B.LogType_0, "No primary action available.", _null, _null, _null);
             _this.dirty$0();
           }
           break;
@@ -35340,36 +35607,48 @@
             _this.dirty$0();
           }
           break;
+        case B.LoopInput_12:
+          t1 = _this.game;
+          t2 = t1.__Game__stage_F;
+          t2 === $ && A.throwLateFieldNI("_stage");
+          t1 = t1.hero;
+          t3 = t1._pos;
+          if (t2.tiles.$get$2(t3.get$x(t3), t3.get$y(t3)).type.portal === B.TilePortal_exit) {
+            _this._handleLoopExit$0();
+            return true;
+          }
+          t1.save.log.add$5(0, B.LogType_0, "Equipment management not available in loop mode.", _null, _null, _null);
+          _this.dirty$0();
+          return true;
         default:
           action = _null;
       }
       if (action != null) {
         _this.game.hero._behavior = new A.ActionBehavior(action);
         _this.dirty$0();
-        _this.__LoopGameScreen__actionMapping_A = A.ActionMapping_ActionMapping$fromSmartCombat(_this._smartCombat);
-        _this.dirty$0();
+        _this._updateActionMapping$0();
       }
       return true;
     },
     activate$2(popped, result) {
-      var _this = this,
-        t1 = _this.game;
+      var t1 = this.game;
       if (!t1.hero.needsInput$1(t1))
-        _this._loop_game_screen$_pause = 5;
-      _this.__LoopGameScreen__actionMapping_A = A.ActionMapping_ActionMapping$fromSmartCombat(_this._smartCombat);
-      _this.dirty$0();
+        this._loop_game_screen$_pause = 5;
+      this._updateActionMapping$0();
     },
     update$0(_) {
-      var result, t2, t3, t4, _this = this,
+      var result, t2, t3, t4, t5, _this = this,
         t1 = _this._loop_game_screen$_pause;
       if (t1 > 0) {
         _this._loop_game_screen$_pause = t1 - 1;
+        _this.dirty$0();
         return;
       }
       t1 = _this.game;
       result = t1.update$0(0);
       t2 = result.madeProgress;
       if (t2) {
+        _this.dirty$0();
         t3 = t1.hero;
         if (t3.energy.energy < 240) {
           t4 = _this._loop_game_screen$_loopManager;
@@ -35378,7 +35657,9 @@
             A.print("Loop complete! Going to reward selection.");
             t2 = _this._loop_game_screen$_storage;
             t2.save$0(0);
-            _this._ui.goTo$1(new A.LoopRewardScreen(t1.content, t2, t4, t3.save, t4.currentRewardOptions));
+            t5 = _this._ui;
+            t5.toString;
+            t5.goTo$1(A.LoopRewardScreen$(t1.content, t2, t4, t3.save));
             return;
           }
         }
@@ -35404,26 +35685,39 @@
         _this.dirty$0();
     },
     resize$1(_, size) {
-      var leftWidth, centerWidth, t2, logHeight, _this = this,
+      var leftWidth, rightWidth, centerWidth, t2, t3, logHeight, _this = this,
         t1 = size.x;
-      if (t1 > 160)
+      if (t1 > 160) {
         leftWidth = 29;
-      else
-        leftWidth = t1 > 150 ? 25 : 21;
-      centerWidth = t1 - leftWidth;
+        rightWidth = 30;
+      } else if (t1 > 150) {
+        leftWidth = 25;
+        rightWidth = 28;
+      } else {
+        leftWidth = 21;
+        rightWidth = 25;
+      }
+      centerWidth = t1 - leftWidth - rightWidth;
       _this.itemPanel._bounds = null;
-      t1 = _this.__LoopGameScreen__sidebarPanel_F;
-      t1 === $ && A.throwLateFieldNI("_sidebarPanel");
-      t2 = size.y;
-      t1._bounds = new A.Rect(new A.Vec(0, 0), new A.Vec(leftWidth, t2));
-      logHeight = Math.min(3 + B.JSInt_methods._tdivFast$1(t2 - 30, 2), 8);
+      t2 = _this.__LoopGameScreen__sidebarPanel_F;
+      t2 === $ && A.throwLateFieldNI("_sidebarPanel");
+      t3 = size.y;
+      t2._bounds = new A.Rect(new A.Vec(0, 0), new A.Vec(leftWidth, t3));
+      t2 = _this.__LoopGameScreen__equipmentPanel_F;
+      t2 === $ && A.throwLateFieldNI("_equipmentPanel");
+      t1 -= rightWidth;
+      t2._bounds = new A.Rect(new A.Vec(t1, 0), new A.Vec(rightWidth, 12));
+      t2 = _this._controlsPanel;
+      if (t2 != null)
+        t2._bounds = new A.Rect(new A.Vec(t1, t3 - 8), new A.Vec(rightWidth, 8));
+      logHeight = Math.min(3 + B.JSInt_methods._tdivFast$1(t3 - 30, 2), 8);
       _this._loop_game_screen$_logPanel._bounds = new A.Rect(new A.Vec(leftWidth, 0), new A.Vec(centerWidth, logHeight));
       t1 = _this.__LoopGameScreen__stagePanel_F;
       t1 === $ && A.throwLateFieldNI("_stagePanel");
-      t1._bounds = new A.Rect(new A.Vec(leftWidth, logHeight), new A.Vec(centerWidth, t2 - logHeight));
+      t1._bounds = new A.Rect(new A.Vec(leftWidth, logHeight), new A.Vec(centerWidth, t3 - logHeight));
     },
     render$1(terminal) {
-      var t1, _this = this;
+      var t1, movesRemaining, text, t2, leftWidth, rightWidth, t3, x, y, color, _this = this;
       terminal.fill$4(0, 0, 0, terminal.get$width(0), terminal.get$height(0));
       t1 = _this.__LoopGameScreen__stagePanel_F;
       t1 === $ && A.throwLateFieldNI("_stagePanel");
@@ -35432,49 +35726,81 @@
       t1 = _this.__LoopGameScreen__sidebarPanel_F;
       t1 === $ && A.throwLateFieldNI("_sidebarPanel");
       t1.render$1(terminal);
+      t1 = _this.__LoopGameScreen__equipmentPanel_F;
+      t1 === $ && A.throwLateFieldNI("_equipmentPanel");
+      t1.render$1(terminal);
       _this.itemPanel.render$1(terminal);
-      if (_this._showActionHelp)
-        _this._renderActionHelp$1(terminal);
+      t1 = _this._controlsPanel;
+      if (t1 != null)
+        t1.render$1(terminal);
+      movesRemaining = 50 - _this._loop_game_screen$_loopManager.moveCount;
+      text = "" + movesRemaining;
+      t1 = terminal._display._glyphs.bounds.size;
+      t2 = t1.x;
+      if (t2 > 160) {
+        leftWidth = 29;
+        rightWidth = 30;
+      } else if (t2 > 150) {
+        leftWidth = 25;
+        rightWidth = 28;
+      } else {
+        leftWidth = 21;
+        rightWidth = 25;
+      }
+      t3 = text.length;
+      x = leftWidth + B.JSInt_methods._tdivFast$1(t2 - leftWidth - rightWidth - t3, 2);
+      y = t1.y - 2;
+      if (movesRemaining <= 10)
+        color = B.Color_204_35_57;
+      else if (movesRemaining <= 20)
+        color = B.Color_179_74_4;
+      else
+        color = movesRemaining <= 30 ? B.Color_232_200_21 : B.Color_226_223_240;
+      terminal.writeAt$5(x - 1, y, "[", B.Color_132_126_135, B.Color_20_19_31);
+      terminal.writeAt$5(x, y, text, color, B.Color_20_19_31);
+      terminal.writeAt$5(x + t3, y, "]", B.Color_132_126_135, B.Color_20_19_31);
+      _this._renderLoopProgress$1(terminal);
     },
-    _renderActionHelp$1(terminal) {
-      var dy, dx, t2, t3, t4, t5, _this = this,
-        t1 = terminal._display._glyphs.bounds.size,
-        x = B.JSInt_methods._tdivFast$1(t1.x - 30, 2),
-        y = B.JSInt_methods._tdivFast$1(t1.y - 12, 2);
-      for (dy = 0; dy < 12; ++dy)
-        for (t1 = y + dy, dx = 0; dx < 30; ++dx)
-          terminal.writeAt$5(x + dx, t1, " ", $.$get$darkerCoolGray(), $.$get$darkWarmGray());
-      t1 = $.$get$darkWarmGray();
-      terminal.writeAt$5(x, y, "\u2554", B.Color_226_223_240, t1);
-      t2 = x + 30 - 1;
-      terminal.writeAt$5(t2, y, "\u2557", B.Color_226_223_240, t1);
-      t3 = y + 12;
-      t4 = t3 - 1;
-      terminal.writeAt$5(x, t4, "\u255a", B.Color_226_223_240, t1);
-      terminal.writeAt$5(t2, t4, "\u255d", B.Color_226_223_240, t1);
-      for (dx = 1; dx < 29; ++dx) {
-        t5 = x + dx;
-        terminal.writeAt$5(t5, y, "\u2550", B.Color_226_223_240, t1);
-        terminal.writeAt$5(t5, t4, "\u2550", B.Color_226_223_240, t1);
+    _renderLoopProgress$1(terminal) {
+      var leftWidth, rightWidth, x, y, i, fillWidth, color, loopText,
+        t1 = this._loop_game_screen$_loopManager,
+        progress = t1.moveCount / 50,
+        t2 = terminal._display._glyphs.bounds.size,
+        t3 = t2.x;
+      if (t3 > 160) {
+        leftWidth = 29;
+        rightWidth = 30;
+      } else if (t3 > 150) {
+        leftWidth = 25;
+        rightWidth = 28;
+      } else {
+        leftWidth = 21;
+        rightWidth = 25;
       }
-      for (dy = 1; dy < 11; ++dy) {
-        t4 = y + dy;
-        terminal.writeAt$5(x, t4, "\u2551", B.Color_226_223_240, t1);
-        terminal.writeAt$5(t2, t4, "\u2551", B.Color_226_223_240, t1);
+      x = leftWidth + B.JSInt_methods._tdivFast$1(t3 - leftWidth - rightWidth - 20, 2);
+      y = t2.y - 1;
+      for (i = 0; i < 20; ++i)
+        terminal.writeAt$5(x + i, y, "\u2592", B.Color_42_36_43, B.Color_20_19_31);
+      fillWidth = B.JSNumber_methods.round$0(progress * 20);
+      for (t2 = progress > 0.9, t3 = progress > 0.8, i = 0; i < fillWidth; ++i) {
+        color = t3 ? B.Color_179_74_4 : B.Color_64_163_229;
+        if (t2)
+          color = B.Color_204_35_57;
+        terminal.writeAt$5(x + i, y, "\u2588", color, B.Color_20_19_31);
       }
-      t2 = x + 2;
-      terminal.writeAt$5(t2, y + 1, "LOOP MODE CONTROLS", B.Color_222_156_33, t1);
-      terminal.writeAt$5(t2, y + 3, "Arrow Keys/WASD: Move", B.Color_226_223_240, t1);
-      t4 = _this.__LoopGameScreen__actionMapping_A;
-      t4 === $ && A.throwLateFieldNI("_actionMapping");
-      terminal.writeAt$5(t2, y + 4, "1: \ud83d\udde1\ufe0f " + t4.action1Label, B.Color_64_163_229, t1);
-      terminal.writeAt$5(t2, y + 5, "2: \u26a1 " + _this.__LoopGameScreen__actionMapping_A.action2Label, B.Color_131_158_13, t1);
-      terminal.writeAt$5(t2, y + 6, "3: \u2764\ufe0f " + _this.__LoopGameScreen__actionMapping_A.action3Label, B.Color_255_122_105, t1);
-      terminal.writeAt$5(t2, y + 9, "TAB: Toggle this help", B.Color_132_126_135, t1);
-      terminal.writeAt$5(t2, y + 10, "ESC: Pause", B.Color_132_126_135, t1);
-      t4 = _this._loop_game_screen$_loopManager;
-      t5 = t4.moveCount;
-      terminal.writeAt$5(t2, t3 - 2, "Loop " + t4.currentLoop + ": " + (50 - t5) + " moves left", B.Color_179_74_4, t1);
+      loopText = "L" + t1.currentLoop;
+      terminal.writeAt$5(x - loopText.length - 1, y, loopText, B.Color_226_223_240, B.Color_20_19_31);
+    },
+    _handleLoopExit$0() {
+      var t1, t2, t3, _this = this;
+      _this._loop_game_screen$_previousSave = _this.game.hero.save;
+      _this._loop_game_screen$_loopManager.reset$0(0);
+      t1 = _this._ui;
+      t1.toString;
+      t2 = _this._loop_game_screen$_previousSave;
+      t3 = new A.GameOverScreen(t2);
+      t3.GameOverScreen$3(_this._loop_game_screen$_storage, t2, t2);
+      t1.goTo$1(t3);
     },
     $isGameScreenInterface: 1,
     get$game() {
@@ -35612,7 +35938,7 @@
           A.print("Starting loop mode with existing hero: " + save.name);
           save.set$gold(Math.max(save.gold, 1500));
           t1 = type$.JSArray_LoopReward;
-          loopManager = new A.LoopManager(A._setArrayType([], t1), A._setArrayType([], t1));
+          loopManager = new A.LoopManager(A._setArrayType([], t1), A._setArrayType([], t1), A.DifficultyScheduler$());
           loopManager.currentLoop = 1;
           loopManager.isLoopActive = true;
           loopManager.threatLevel = 2;
@@ -35723,7 +36049,7 @@
         t1 = _this.content;
         save = t1.createHero$1("Temporary");
         t2 = terminal._display._glyphs.bounds.size;
-        game = _this._game = A.Game$(t1, $.$get$rng().inclusive$2(1, 100), save, t2.y, t2.x);
+        game = _this._game = A.Game$(t1, $.$get$rng().inclusive$2(1, 100), save, null, t2.y, t2.x);
         t2 = game.generate$0();
         _this._generator = new A._SyncStarIterator(t2._outerHelper(), t2.$ti._eval$1("_SyncStarIterator<1>"));
         _this._lightDungeon = false;
@@ -35940,13 +36266,13 @@
         A.print("Error adding items: " + A.S(e));
       }
       t1 = type$.JSArray_LoopReward;
-      loopManager = new A.LoopManager(A._setArrayType([], t1), A._setArrayType([], t1));
+      loopManager = new A.LoopManager(A._setArrayType([], t1), A._setArrayType([], t1), A.DifficultyScheduler$());
       loopManager.currentLoop = 1;
       loopManager.isLoopActive = true;
       loopManager.threatLevel = 2;
       depth = loopManager.getCurrentDepth$0();
       A.print("Creating game at depth " + depth + "...");
-      game = A.Game$(this._content, depth, hero, 34, 60);
+      game = A.Game$(this._content, depth, hero, _null, 34, 60);
       A.print("Generating dungeon...");
       for (t1 = game.generate$0(), t2 = t1.$ti, t1 = new A._SyncStarIterator(t1._outerHelper(), t2._eval$1("_SyncStarIterator<1>")), t2 = t2._precomputed1; t1.moveNext$0();) {
         t3 = t1._async$_current;
@@ -36003,13 +36329,13 @@
     call$1(race) {
       return type$.Race._as(race).name;
     },
-    $signature: 135
+    $signature: 136
   };
   A.NewHeroScreen_closure0.prototype = {
     call$1(cls) {
       return type$.HeroClass._as(cls).name;
     },
-    $signature: 136
+    $signature: 137
   };
   A.NewHeroScreen_render_closure.prototype = {
     call$1(terminal) {
@@ -36187,6 +36513,129 @@
           return A.ioore(t1, t2);
         terminal.writeAt$4(x, t3, t1[t2], B.Color_226_223_240);
       }
+    }
+  };
+  A.EquipmentStatusPanel.prototype = {
+    renderPanel$1(terminal) {
+      var weapons, t3, armorPiece, armorText, t4, y, secondaryWeapon, weaponText, activeSpell, spellGlyph, $name, spellText, count, _this = this,
+        t1 = terminal.size,
+        t2 = t1.x;
+      A.Draw_frame(terminal, 0, 0, t2, t1.y, null, "GEAR", false);
+      terminal.writeAt$4(1, 1, "Active:", B.Color_226_223_240);
+      t1 = _this.game.hero.save._equipment;
+      weapons = t1.get$weapons();
+      if (!weapons.get$isEmpty(0)) {
+        t3 = weapons.get$first(0).type;
+        terminal.writeAt$4(1, 2, "\ud83d\udde1\ufe0f " + A.Log__categorize(t3.quantifiableName, false, true), B.Color_64_163_229);
+        t3 = t3.attack;
+        if (t3 != null)
+          terminal.writeAt$4(1, 3, "  " + B.JSInt_methods.toString$0(t3.damage) + " dmg", B.Color_63_75_115);
+      } else {
+        terminal.writeAt$4(1, 2, "\ud83d\udde1\ufe0f Fists", B.Color_64_163_229);
+        terminal.writeAt$4(1, 3, "  1 dmg", B.Color_63_75_115);
+      }
+      armorPiece = _this._getArmorPiece$1(t1);
+      if (armorPiece != null) {
+        terminal.writeAt$4(1, 5, "Armor:", B.Color_226_223_240);
+        t3 = armorPiece.type;
+        armorText = A.Log__categorize(t3.quantifiableName, false, true);
+        t4 = t2 - 3;
+        terminal.writeAt$4(1, 6, "\ud83d\udee1\ufe0f " + (armorText.length > t4 ? B.JSString_methods.substring$2(armorText, 0, t4) : armorText), B.Color_22_117_38);
+        terminal.writeAt$4(1, 7, "  " + t3.armor + " armor", B.Color_63_75_115);
+        y = 8;
+      } else
+        y = 5;
+      t1 = t1.get$weapons();
+      t1 = A.List_List$_of(t1, t1.$ti._eval$1("Iterable.E"));
+      secondaryWeapon = _this._getSecondaryWeapon$1(t1);
+      if (secondaryWeapon != null) {
+        terminal.writeAt$4(1, y, "Secondary:", B.Color_226_223_240);
+        weaponText = A.Log__categorize(secondaryWeapon.type.quantifiableName, false, true);
+        t1 = t2 - 3;
+        if (weaponText.length > t1)
+          weaponText = B.JSString_methods.substring$2(weaponText, 0, t1);
+        terminal.writeAt$4(1, y + 1, "\ud83c\udff9 " + weaponText, B.Color_131_158_13);
+        y += 2;
+      }
+      activeSpell = _this._getActiveSpell$0();
+      if (activeSpell != null) {
+        terminal.writeAt$4(1, y, "Active Spell:", B.Color_226_223_240);
+        spellGlyph = _this._getSpellGlyph$1(activeSpell);
+        t1 = activeSpell.type.quantifiableName;
+        $name = A.Log__categorize(t1, false, true);
+        if (B.JSString_methods.startsWith$1($name, "Scroll of "))
+          $name = B.JSString_methods.substring$1($name, 10);
+        t2 -= 5;
+        spellText = $name.length > t2 ? B.JSString_methods.substring$2($name, 0, t2) : $name;
+        terminal.writeAt$4(1, y + 1, spellGlyph + " " + spellText, B.Color_56_16_125);
+        count = activeSpell._count;
+        if (count > 1)
+          terminal.writeAt$4(1, y + 2, "  x" + count, B.Color_63_75_115);
+        B.JSString_methods.contains$1(A.Log__categorize(t1, false, true).toLowerCase(), "summon");
+      }
+    },
+    _getSecondaryWeapon$1(weapons) {
+      var t1, _i, weapon, $name, t2;
+      type$.List_Item._as(weapons);
+      for (t1 = weapons.length, _i = 0; _i < weapons.length; weapons.length === t1 || (0, A.throwConcurrentModificationError)(weapons), ++_i) {
+        weapon = weapons[_i];
+        $name = A.Log__categorize(weapon.type.quantifiableName, false, true).toLowerCase();
+        t2 = true;
+        if (!A.stringContainsUnchecked($name, "bow", 0))
+          if (!A.stringContainsUnchecked($name, "dart", 0))
+            if (!A.stringContainsUnchecked($name, "sling", 0))
+              t2 = A.stringContainsUnchecked($name, "crossbow", 0);
+        if (t2)
+          return weapon;
+      }
+      return null;
+    },
+    _getActiveSpell$0() {
+      var t1, t2, t3, $name, t4;
+      for (t1 = this.game.hero.save._inventory._items, t2 = A._arrayInstanceType(t1), t1 = new J.ArrayIterator(t1, t1.length, t2._eval$1("ArrayIterator<1>")), t2 = t2._precomputed1; t1.moveNext$0();) {
+        t3 = t1._current;
+        if (t3 == null)
+          t3 = t2._as(t3);
+        $name = A.Log__categorize(t3.type.quantifiableName, false, true).toLowerCase();
+        if (A.stringContainsUnchecked($name, "scroll", 0)) {
+          t4 = true;
+          if (!A.stringContainsUnchecked($name, "lightning", 0))
+            if (!A.stringContainsUnchecked($name, "fireball", 0))
+              if (!A.stringContainsUnchecked($name, "ice", 0))
+                if (!A.stringContainsUnchecked($name, "teleport", 0))
+                  t4 = A.stringContainsUnchecked($name, "summon", 0);
+        } else
+          t4 = false;
+        if (t4)
+          return t3;
+      }
+      return null;
+    },
+    _getSpellGlyph$1(spell) {
+      var $name = A.Log__categorize(spell.type.quantifiableName, false, true).toLowerCase();
+      if (B.JSString_methods.contains$1($name, "lightning") || B.JSString_methods.contains$1($name, "bolt"))
+        return "\u26a1";
+      if (B.JSString_methods.contains$1($name, "fire") || B.JSString_methods.contains$1($name, "fireball"))
+        return "\ud83d\udd25";
+      if (B.JSString_methods.contains$1($name, "ice") || B.JSString_methods.contains$1($name, "frost"))
+        return "\u2744\ufe0f";
+      if (B.JSString_methods.contains$1($name, "teleport"))
+        return "\ud83c\udf00";
+      if (B.JSString_methods.contains$1($name, "heal"))
+        return "\u2764\ufe0f";
+      if (B.JSString_methods.contains$1($name, "summon"))
+        return "\ud83d\udc7e";
+      return "\u2728";
+    },
+    _getArmorPiece$1(equipment) {
+      var t1, t2, t3, t4, t5;
+      for (t1 = B.JSArray_methods.get$iterator(equipment.slots), t2 = new A.WhereTypeIterator(t1, type$.WhereTypeIterator_Item), t3 = type$.Item; t2.moveNext$0();) {
+        t4 = t3._as(t1.get$current());
+        t5 = t4.type.equipSlot;
+        if (t5 === "body" || t5 === "helm" || t5 === "gloves" || t5 === "boots" || t5 === "cloak")
+          return t4;
+      }
+      return null;
     }
   };
   A.ItemPanel.prototype = {
@@ -36513,7 +36962,7 @@
       t1 = this.hero;
       return B.JSInt_methods.compareTo$1(a._pos.$sub(0, t1._pos).get$lengthSquared(), b._pos.$sub(0, t1._pos).get$lengthSquared());
     },
-    $signature: 138
+    $signature: 139
   };
   A.SidebarPanel__drawStats_drawStat.prototype = {
     call$1(stat) {
@@ -36528,7 +36977,7 @@
       t1.writeAt$4(t4, t3 + 1, B.JSString_methods.padLeft$1(B.JSNumber_methods.toString$0(t5), 3), B.Color_226_223_240);
       t2.x = t2.x + B.JSInt_methods._tdivFast$1(t1.size.x - 4, 4);
     },
-    $signature: 139
+    $signature: 140
   };
   A.SidebarPanel__drawHealthBar_drawCondition.prototype = {
     call$3(char, fore, $back) {
@@ -36542,7 +36991,7 @@
     call$2(char, fore) {
       return this.call$3(char, fore, null);
     },
-    $signature: 140
+    $signature: 141
   };
   A.StagePanel.prototype = {
     drawStageGlyph$4(terminal, x, y, glyph) {
@@ -36800,7 +37249,7 @@
     call$1(effect) {
       return !type$.Effect._as(effect).update$1(0, this.$this._stage_panel$_gameScreen.get$game());
     },
-    $signature: 141
+    $signature: 142
   };
   A.StagePanel_renderPanel_multiply.prototype = {
     call$2(a, b) {
@@ -37679,7 +38128,7 @@
     call$1(c) {
       return type$.HeroClass._as(c).name === this.name;
     },
-    $signature: 143
+    $signature: 144
   };
   A.Storage__load_closure0.prototype = {
     call$2($name, shop) {
@@ -37695,19 +38144,19 @@
         t1.$indexSet(0, shop, shop.create$0());
       }
     },
-    $signature: 144
+    $signature: 145
   };
   A.Storage__loadRace_closure.prototype = {
     call$1(race) {
       return type$.Race._as(race).name === this.name;
     },
-    $signature: 145
+    $signature: 146
   };
   A.Storage__loadLog_closure.prototype = {
     call$1(type) {
       return type$.LogType._as(type)._core$_name === A._asString(J.$index$asx(this.messageMap, "type"));
     },
-    $signature: 146
+    $signature: 147
   };
   A.Storage__loadLore_closure.prototype = {
     call$2(breedName, count) {
@@ -39678,7 +40127,7 @@
     call$1(monster) {
       return type$.Monster._as(monster)._health <= 0;
     },
-    $signature: 150
+    $signature: 151
   };
   (function aliases() {
     var _ = J.Interceptor.prototype;
@@ -39724,8 +40173,8 @@
       _instance_2_u = hunkHelpers._instance_2u,
       _instance = hunkHelpers.installInstanceTearOff,
       _instance_0_u = hunkHelpers._instance_0u;
-    _static_2(J, "_interceptors_JSArray__compareAny$closure", "JSArray__compareAny", 151);
-    _instance_1_i(J.JSArray.prototype, "get$add", "add$1", 153);
+    _static_2(J, "_interceptors_JSArray__compareAny$closure", "JSArray__compareAny", 152);
+    _instance_1_i(J.JSArray.prototype, "get$add", "add$1", 157);
     _static_0(A, "_js_helper_Primitives_dateNow$closure", "Primitives_dateNow", 2);
     _static_1(A, "async__AsyncRun__scheduleImmediateJsOverride$closure", "_AsyncRun__scheduleImmediateJsOverride", 25);
     _static_1(A, "async__AsyncRun__scheduleImmediateWithSetImmediate$closure", "_AsyncRun__scheduleImmediateWithSetImmediate", 25);
@@ -39734,8 +40183,8 @@
     _static_1(A, "convert___defaultToEncodable$closure", "_defaultToEncodable", 15);
     _static(A, "html__Html5NodeValidator__standardAttributeValidator$closure", 4, null, ["call$4"], ["_Html5NodeValidator__standardAttributeValidator"], 39, 0);
     _static(A, "html__Html5NodeValidator__uriAttributeValidator$closure", 4, null, ["call$4"], ["_Html5NodeValidator__uriAttributeValidator"], 39, 0);
-    _static_1(A, "js___convertToJS$closure", "_convertToJS", 154);
-    _static_1(A, "js___convertToDart$closure", "_convertToDart", 155);
+    _static_1(A, "js___convertToJS$closure", "_convertToJS", 155);
+    _static_1(A, "js___convertToDart$closure", "_convertToDart", 156);
     _static_1(A, "furnishing_builder___mirrorCharBoth$closure", "_mirrorCharBoth", 4);
     _static_1(A, "furnishing_builder___mirrorCharHorizontal$closure", "_mirrorCharHorizontal", 4);
     _static_1(A, "furnishing_builder___mirrorCharVertical$closure", "_mirrorCharVertical", 4);
@@ -39752,7 +40201,7 @@
     _static_1(A, "affix___noBonus$closure", "_noBonus", 5);
     var _;
     _instance_2_u(_ = A.AffixType.prototype, "get$setResist", "setResist$2", 103);
-    _instance_2_u(_, "get$setStatBonus", "setStatBonus$2", 131);
+    _instance_2_u(_, "get$setStatBonus", "setStatBonus$2", 104);
     _instance(A.Inventory.prototype, "get$tryAdd", 0, 1, null, ["call$2$wasUnequipped", "call$1"], ["tryAdd$2$wasUnequipped", "tryAdd$1"], 106, 0, 0);
     _instance_1_u(A.GameScreen.prototype, "get$_fireTowards", "_fireTowards$1", 43);
     _instance_1_u(_ = A.ItemDialog.prototype, "get$getPrice", "getPrice$1", 33);
@@ -39779,7 +40228,7 @@
     _instance_1_u(_ = A.UserInterface.prototype, "get$_keyDown", "_keyDown$1", 29);
     _instance_1_u(_, "get$_keyUp", "_keyUp$1", 29);
     _instance_1_u(_, "get$_tick", "_tick$1", 32);
-    _static_1(A, "skills_Skills_find$closure", "Skills_find", 104);
+    _static_1(A, "skills_Skills_find$closure", "Skills_find", 105);
   })();
   (function inheritance() {
     var _mixin = hunkHelpers.mixin,
@@ -39787,7 +40236,7 @@
       _inherit = hunkHelpers.inherit,
       _inheritMany = hunkHelpers.inheritMany;
     _inherit(A.Object, null);
-    _inheritMany(A.Object, [A.JS_CONST, J.Interceptor, J.ArrayIterator, A.Error, A.ListBase, A.SentinelValue, A.Iterable, A.ListIterator, A.MappedIterator, A.WhereIterator, A.TakeIterator, A.TakeWhileIterator, A.SkipIterator, A.WhereTypeIterator, A.FixedLengthListMixin, A.UnmodifiableListMixin, A.Symbol, A._Record, A.MapView, A.ConstantMap, A._KeysOrValuesOrElementsIterator, A.JSInvocationMirror, A.Closure, A.TypeErrorDecoder, A.NullThrownFromJavaScriptException, A.ExceptionAndStackTrace, A._StackTrace, A._Required, A.MapBase, A.LinkedHashMapCell, A.LinkedHashMapKeyIterator, A.LinkedHashMapValueIterator, A.LinkedHashMapEntryIterator, A.JSSyntaxRegExp, A._MatchImplementation, A._AllMatchesIterator, A.StringMatch, A._StringAllMatchesIterator, A._Cell, A.Rti, A._FunctionParameters, A._Type, A._TimerImpl, A._AsyncAwaitCompleter, A._SyncStarIterator, A.AsyncError, A._Completer, A._FutureListener, A._Future, A._AsyncCallbackEntry, A.Stream, A._StreamIterator, A._Zone, A.SetBase, A._LinkedHashSetCell, A._LinkedHashSetIterator, A._UnmodifiableMapMixin, A._ListQueueIterator, A.Codec, A.Converter, A._JsonStringifier, A.DateTime, A._Enum, A.OutOfMemoryError, A.StackOverflowError, A._Exception, A.FormatException, A.MapEntry, A.Null, A._StringStackTrace, A.Stopwatch, A.StringBuffer, A.CssStyleDeclarationBase, A.EventStreamProvider, A._EventStreamSubscription, A._Html5NodeValidator, A.ImmutableListMixin, A.NodeValidatorBuilder, A._SimpleNodeValidator, A._SvgNodeValidator, A.FixedSizeListIterator, A._DOMWindowCrossFrame, A._SameOriginUriPolicy, A._ValidatingTreeSanitizer, A.JsObject, A._JSRandom, A._Random, A.Point, A._RectangleBase, A.GameContent, A.Action, A.ElementActionMixin, A.Flow, A.Decor, A.Cell, A._BaseBuilder, A.AffixBuilder, A._BaseDrop, A._PercentDrop, A._AllOfDrop, A._OneOfDrop, A._RepeatDrop, A.FloorDrop, A._BaseBuilder0, A._BreedSpawn, A._TagSpawn, A._RepeatSpawn, A._AllOfSpawn, A.Move, A.Skill, A.Architect, A._Path, A.Architecture, A.Pathfinder, A.ArchitecturalStyle, A.Decorator, A.DensityMap, A.Junction, A.JunctionSet, A.Painter, A.PaintStyle, A.Reachability, A._FillStep, A._RiverPoint, A.RoomTile, A.Town, A.TileBuilder, A._MonsterLog, A.ActionResult, A.GeneratorActionMixin, A.ActionMapping, A.DestroyActionMixin, A.Actor, A.Attack, A.Hit, A.Defense, A.Condition, A.Element, A.Energy, A.Game, A.GameResult, A.Event, A.EventType, A.Log, A.Noun, A.Pronoun, A.Message, A.ResourceSet, A._Resource, A._Tag, A._QueryKey, A._ResourceQuery, A.Behavior, A.HeroClass, A.HeroSave, A.Lore, A.Race, A.RaceStats, A.UsableSkill, A.ActionSkill, A.TargetSkill, A.DirectionSkill, A.SkillSet, A.Property, A.Stat, A.Affix, A.AffixType, A.ItemLocation, A.ItemCollection, A.AddItemResult, A.Item, A.ItemUse, A.Toss, A.ItemType, A.Recipe, A.Shop, A.LoopManager, A.LoopReward, A.SmartActionInfo, A.SmartCombat, A.BreedRef, A.Breed, A.BreedFlags, A.MonsterState, A.BucketQueue, A.Fov, A._Shadow, A.Lighting, A.Path, A.Sound, A.Stage, A.Motility, A.TilePortal, A.TileType, A.Tile, A.Screen, A.ElementEffect, A.FrameEffect, A.ItemEffect, A.DamageEffect, A.ParticleEffect, A.TeleportEffect, A.HealEffect, A.DetectEffect, A.MapEffect, A.TreasureEffect, A.HowlEffect, A.BlinkEffect, A._AnimatedValue, A._Sort, A._Sort0, A.Input, A.ItemInspector, A._Section, A.Control, A.Panel, A.Storage, A.Display, A.Color, A.Glyph, A.KeyBindings, A._KeyBinding, A.Terminal, A.UserInterface, A._CircleIterator, A._LineIterator, A.RectIterator, A.Rng, A.VecMixin, A._Vec_Object_VecMixin, A.TerminalFont]);
+    _inheritMany(A.Object, [A.JS_CONST, J.Interceptor, J.ArrayIterator, A.Error, A.ListBase, A.SentinelValue, A.Iterable, A.ListIterator, A.MappedIterator, A.WhereIterator, A.TakeIterator, A.TakeWhileIterator, A.SkipIterator, A.WhereTypeIterator, A.FixedLengthListMixin, A.UnmodifiableListMixin, A.Symbol, A._Record, A.MapView, A.ConstantMap, A._KeysOrValuesOrElementsIterator, A.JSInvocationMirror, A.Closure, A.TypeErrorDecoder, A.NullThrownFromJavaScriptException, A.ExceptionAndStackTrace, A._StackTrace, A._Required, A.MapBase, A.LinkedHashMapCell, A.LinkedHashMapKeyIterator, A.LinkedHashMapValueIterator, A.LinkedHashMapEntryIterator, A.JSSyntaxRegExp, A._MatchImplementation, A._AllMatchesIterator, A.StringMatch, A._StringAllMatchesIterator, A._Cell, A.Rti, A._FunctionParameters, A._Type, A._TimerImpl, A._AsyncAwaitCompleter, A._SyncStarIterator, A.AsyncError, A._Completer, A._FutureListener, A._Future, A._AsyncCallbackEntry, A.Stream, A._StreamIterator, A._Zone, A.SetBase, A._LinkedHashSetCell, A._LinkedHashSetIterator, A._UnmodifiableMapMixin, A._ListQueueIterator, A.Codec, A.Converter, A._JsonStringifier, A.DateTime, A._Enum, A.OutOfMemoryError, A.StackOverflowError, A._Exception, A.FormatException, A.MapEntry, A.Null, A._StringStackTrace, A.Stopwatch, A.StringBuffer, A.CssStyleDeclarationBase, A.EventStreamProvider, A._EventStreamSubscription, A._Html5NodeValidator, A.ImmutableListMixin, A.NodeValidatorBuilder, A._SimpleNodeValidator, A._SvgNodeValidator, A.FixedSizeListIterator, A._DOMWindowCrossFrame, A._SameOriginUriPolicy, A._ValidatingTreeSanitizer, A.JsObject, A._JSRandom, A._Random, A.Point, A._RectangleBase, A.GameContent, A.Action, A.ElementActionMixin, A.Flow, A.Decor, A.Cell, A._BaseBuilder, A.AffixBuilder, A._BaseDrop, A._PercentDrop, A._AllOfDrop, A._OneOfDrop, A._RepeatDrop, A.FloorDrop, A._BaseBuilder0, A._BreedSpawn, A._TagSpawn, A._RepeatSpawn, A._AllOfSpawn, A.Move, A.Skill, A.Architect, A._Path, A.Architecture, A.Pathfinder, A.ArchitecturalStyle, A.Decorator, A.DensityMap, A.Junction, A.JunctionSet, A.Painter, A.PaintStyle, A.Reachability, A._FillStep, A._RiverPoint, A.RoomTile, A.Town, A.TileBuilder, A._MonsterLog, A.ActionResult, A.GeneratorActionMixin, A.ActionMapping, A.DestroyActionMixin, A.Actor, A.Attack, A.Hit, A.Defense, A.Condition, A.Element, A.Energy, A.Game, A.GameResult, A.Event, A.EventType, A.Log, A.Noun, A.Pronoun, A.Message, A.ResourceSet, A._Resource, A._Tag, A._QueryKey, A._ResourceQuery, A.Behavior, A.HeroClass, A.HeroSave, A.Lore, A.Race, A.RaceStats, A.UsableSkill, A.ActionSkill, A.TargetSkill, A.DirectionSkill, A.SkillSet, A.Property, A.Stat, A.Affix, A.AffixType, A.ItemLocation, A.ItemCollection, A.AddItemResult, A.Item, A.ItemUse, A.Toss, A.ItemType, A.Recipe, A.Shop, A.DensityScalars, A.DifficultyScheduler, A.LoopManager, A.LoopReward, A.SmartActionInfo, A.SmartCombat, A.BreedRef, A.Breed, A.BreedFlags, A.MonsterState, A.BucketQueue, A.Fov, A._Shadow, A.Lighting, A.Path, A.Sound, A.Stage, A.Motility, A.TilePortal, A.TileType, A.Tile, A.Screen, A.ElementEffect, A.FrameEffect, A.ItemEffect, A.DamageEffect, A.ParticleEffect, A.TeleportEffect, A.HealEffect, A.DetectEffect, A.MapEffect, A.TreasureEffect, A.HowlEffect, A.BlinkEffect, A._AnimatedValue, A._Sort, A._Sort0, A.Input, A.ItemInspector, A._Section, A.Panel, A.Control, A.Storage, A.Display, A.Color, A.Glyph, A.KeyBindings, A._KeyBinding, A.Terminal, A.UserInterface, A._CircleIterator, A._LineIterator, A.RectIterator, A.Rng, A.VecMixin, A._Vec_Object_VecMixin, A.TerminalFont]);
     _inheritMany(J.Interceptor, [J.JSBool, J.JSNull, J.JavaScriptObject, J.JavaScriptBigInt, J.JavaScriptSymbol, J.JSNumber, J.JSString]);
     _inheritMany(J.JavaScriptObject, [J.LegacyJavaScriptObject, J.JSArray, A.NativeTypedData, A.EventTarget, A.Blob, A.CanvasRenderingContext2D, A._CssStyleDeclaration_JavaScriptObject_CssStyleDeclarationBase, A.DomException, A.DomImplementation, A.DomRectReadOnly, A.Event0, A._HtmlCollection_JavaScriptObject_ListMixin, A.ImageData, A.Location, A._NodeList_JavaScriptObject_ListMixin, A._Storage_JavaScriptObject_MapMixin, A.__NamedNodeMap_JavaScriptObject_ListMixin, A.KeyRange]);
     _inheritMany(J.LegacyJavaScriptObject, [J.PlainJavaScriptObject, J.UnknownJavaScriptObject, J.JavaScriptFunction]);
@@ -39809,7 +40258,7 @@
     _inherit(A.UnmodifiableMapView, A._UnmodifiableMapView_MapView__UnmodifiableMapMixin);
     _inherit(A.ConstantMapView, A.UnmodifiableMapView);
     _inheritMany(A.ConstantMap, [A.ConstantStringMap, A.GeneralConstantMap]);
-    _inheritMany(A.Closure, [A.Closure0Args, A.Closure2Args, A.TearOffClosure, A.initHooks_closure, A.initHooks_closure1, A._AsyncRun__initializeScheduleImmediate_internalCallback, A._AsyncRun__initializeScheduleImmediate_closure, A._awaitOnObject_closure, A._Future__propagateToListeners_handleWhenCompleteCallback_closure, A.Stream_length_closure, A._RootZone_bindUnaryCallbackGuarded_closure, A.Element_Element$html_closure, A.Window_animationFrame_closure, A._EventStreamSubscription_closure, A.NodeValidatorBuilder_allowsElement_closure, A.NodeValidatorBuilder_allowsAttribute_closure, A._SimpleNodeValidator_closure, A._SimpleNodeValidator_closure0, A._TemplatingNodeValidator_closure, A.FilteredElementList__iterable_closure, A.FilteredElementList__iterable_closure0, A.FilteredElementList_removeRange_closure, A._convertToJS_closure, A._convertToJS_closure0, A._wrapToDart_closure, A._wrapToDart_closure0, A._wrapToDart_closure1, A.GameContent__tryToIgniteTile_neighbor, A.DetectAction__findTiles_addTile, A.DetectAction__findTiles_closure1, A.WindAction_onPerform_closure, A.FlowAction_onPerform_closure, A.RayActionBase_onPerform_closure, A.furnishing_closure, A.Elements_air_closure, A.Elements_fire_closure, A.Elements_fire_closure0, A.Elements_cold_closure, A.Elements_cold_closure0, A.Elements_poison_closure, A.Elements_poison_closure0, A.Elements_dark_closure, A.Elements_light_closure, A.Elements_light_closure0, A.ItemBuilder_ball_closure0, A.ItemBuilder_flow_closure0, A.AffixBuilder_price_closure, A.AffixBuilder_price_closure0, A.AffixBuilder_heft_closure, A.AffixBuilder_weight_closure, A.AffixBuilder_brand_closure, A.AffixBuilder_resist_closure, A.fixed_closure, A.scaleParam_closure, A.rings_closure, A.weapons_closure, A.SpawnMove_onGetAction_checkNeighbor, A.Archery__hasBow_closure, A.MasteryDiscipline__hasWeapon_closure, A.Swordfighting_getDefense_closure, A.conjuringSpells_closure, A.conjuringSpells_closure0, A.conjuringSpells_closure1, A.divinationSpells_closure, A.sorcerySpells_closure, A.sorcerySpells_closure0, A.sorcerySpells_closure1, A.sorcerySpells_closure2, A.sorcerySpells_closure3, A.Decorator__spawnMonster_closure, A.Keep_spawnMonsters_closure, A.Keep__tryAttachRoom_closure, A.Room__calculateEdges_isFloor, A.Tiles_closedChest_closure, A.Tiles_closedBarrel_closure, A.DestroyActionMixin_destroyFloorItems_closure, A.DestroyActionMixin_destroyHeldItems_closure, A.DestroyActionMixin_destroyHeldItems_closure0, A.Element_closure, A.Element_closure0, A.Game_generate_closure, A.Log_wordWrap_finishWord, A.hashPoint_hashInt, A.ResourceSet_all_closure, A.ResourceSet_hasTag_closure, A.ResourceSet_getTags_closure, A.ResourceSet_tryChoose_closure, A.ResourceSet_tryChoose_closure0, A.ResourceSet_tryChooseMatching_closure, A.ResourceSet_tryChooseMatching_closure0, A.ResourceSet_tryChooseMatching__closure, A.RunBehavior_canPerform_closure, A.RunBehavior__shouldKeepRunning_actorAt, A.Hero_createRangedHit_closure, A.Hero_refreshProperties_closure, A.Hero_refreshProperties_closure0, A.SkillSet_acquired_closure, A.StatBase_refresh_closure, A.Equipment_weapons_closure, A.Equipment_canEquip_closure, A.Inventory_clone_closure, A.Monster_onGiveDamage_closure, A.Monster_onTakeDamage_closure, A.Monster_onTakeDamage_closure0, A.MonsterState__meander_closure, A.AwakeState_getAction_closure, A.AwakeState__escapeSubstance_closure, A.AwakeState__findRangedPath_isValidRangedPosition, A.AfraidState_getAction_closure, A.AfraidState_getAction_closure0, A.Flow__directionsTo_walkBack, A.Lighting__lightWalls_checkNeighbor, A.Stage_closure, A.Stage_placeDrops_closure, A.Stage_placeDrops__closure, A.DirectionDialog_render_draw, A.ExitPopup_add, A.ExitPopup_closure, A.GameOverScreen_render_closure, A.GameScreen_activate_closure0, A.GameScreen__openTargetDialog_closure, A.HeroEquipmentDialog_render_writeScale, A.HeroEquipmentDialog_render_writeBonus, A.HeroMonsterLoreDialog__describeBreed_closure, A.HeroMonsterLoreDialog__describeBreed_closure0, A.HeroMonsterLoreDialog__listBreeds_closure, A.HeroMonsterLoreDialog__listBreeds_compareGlyph_isUpper, A.renderItems_drawStat, A.TossDialog_selectItem_closure, A.NewHeroScreen_closure, A.NewHeroScreen_closure0, A.NewHeroScreen_render_closure, A.NameControl__refreshUnique_closure, A.SidebarPanel__drawStats_drawStat, A.SidebarPanel__drawHealthBar_drawCondition, A.StagePanel_update_closure, A.StagePanel_renderPanel_closure, A.Storage_remove_closure, A.Storage_replace_closure, A.Storage__load_closure, A.Storage__loadRace_closure, A.Storage__loadLog_closure, A.TargetDialog__changeMonsterTarget_closure, A.TargetDialog__changeMonsterTarget_closure0, A._SearchDialog__matchedItems_closure, A._WizardSpawnDialog__selectItem_closure, A.RetroTerminal$__closure, A.RetroTerminal_render_closure, A.main_closure, A.main_closure0, A._addFont_closure, A._addFont_closure0, A._addFont_closure1, A._refreshDebugBoxes_closure]);
+    _inheritMany(A.Closure, [A.Closure0Args, A.Closure2Args, A.TearOffClosure, A.initHooks_closure, A.initHooks_closure1, A._AsyncRun__initializeScheduleImmediate_internalCallback, A._AsyncRun__initializeScheduleImmediate_closure, A._awaitOnObject_closure, A._Future__propagateToListeners_handleWhenCompleteCallback_closure, A.Stream_length_closure, A._RootZone_bindUnaryCallbackGuarded_closure, A.Element_Element$html_closure, A.Window_animationFrame_closure, A._EventStreamSubscription_closure, A.NodeValidatorBuilder_allowsElement_closure, A.NodeValidatorBuilder_allowsAttribute_closure, A._SimpleNodeValidator_closure, A._SimpleNodeValidator_closure0, A._TemplatingNodeValidator_closure, A.FilteredElementList__iterable_closure, A.FilteredElementList__iterable_closure0, A.FilteredElementList_removeRange_closure, A._convertToJS_closure, A._convertToJS_closure0, A._wrapToDart_closure, A._wrapToDart_closure0, A._wrapToDart_closure1, A.GameContent__tryToIgniteTile_neighbor, A.DetectAction__findTiles_addTile, A.DetectAction__findTiles_closure1, A.WindAction_onPerform_closure, A.FlowAction_onPerform_closure, A.RayActionBase_onPerform_closure, A.furnishing_closure, A.Elements_air_closure, A.Elements_fire_closure, A.Elements_fire_closure0, A.Elements_cold_closure, A.Elements_cold_closure0, A.Elements_poison_closure, A.Elements_poison_closure0, A.Elements_dark_closure, A.Elements_light_closure, A.Elements_light_closure0, A.ItemBuilder_ball_closure0, A.ItemBuilder_flow_closure0, A.AffixBuilder_price_closure, A.AffixBuilder_price_closure0, A.AffixBuilder_heft_closure, A.AffixBuilder_weight_closure, A.AffixBuilder_brand_closure, A.AffixBuilder_resist_closure, A.fixed_closure, A.scaleParam_closure, A.rings_closure, A.weapons_closure, A.SpawnMove_onGetAction_checkNeighbor, A.Archery__hasBow_closure, A.MasteryDiscipline__hasWeapon_closure, A.Swordfighting_getDefense_closure, A.conjuringSpells_closure, A.conjuringSpells_closure0, A.conjuringSpells_closure1, A.divinationSpells_closure, A.sorcerySpells_closure, A.sorcerySpells_closure0, A.sorcerySpells_closure1, A.sorcerySpells_closure2, A.sorcerySpells_closure3, A.Decorator__spawnMonster_closure, A.Keep_spawnMonsters_closure, A.Keep__tryAttachRoom_closure, A.Room__calculateEdges_isFloor, A.Tiles_closedChest_closure, A.Tiles_closedBarrel_closure, A.DestroyActionMixin_destroyFloorItems_closure, A.DestroyActionMixin_destroyHeldItems_closure, A.DestroyActionMixin_destroyHeldItems_closure0, A.Element_closure, A.Element_closure0, A.Game_generate_closure, A.Log_wordWrap_finishWord, A.hashPoint_hashInt, A.ResourceSet_all_closure, A.ResourceSet_hasTag_closure, A.ResourceSet_getTags_closure, A.ResourceSet_tryChoose_closure, A.ResourceSet_tryChoose_closure0, A.ResourceSet_tryChooseMatching_closure, A.ResourceSet_tryChooseMatching_closure0, A.ResourceSet_tryChooseMatching__closure, A.RunBehavior_canPerform_closure, A.RunBehavior__shouldKeepRunning_actorAt, A.Hero_createRangedHit_closure, A.Hero_refreshProperties_closure, A.Hero_refreshProperties_closure0, A.SkillSet_acquired_closure, A.StatBase_refresh_closure, A.Equipment_weapons_closure, A.Equipment_canEquip_closure, A.Inventory_clone_closure, A.DifficultyScheduler_toString_closure, A.Monster_onGiveDamage_closure, A.Monster_onTakeDamage_closure, A.Monster_onTakeDamage_closure0, A.MonsterState__meander_closure, A.AwakeState_getAction_closure, A.AwakeState__escapeSubstance_closure, A.AwakeState__findRangedPath_isValidRangedPosition, A.AfraidState_getAction_closure, A.AfraidState_getAction_closure0, A.Flow__directionsTo_walkBack, A.Lighting__lightWalls_checkNeighbor, A.Stage_closure, A.Stage_placeDrops_closure, A.Stage_placeDrops__closure, A.DirectionDialog_render_draw, A.ExitPopup_add, A.ExitPopup_closure, A.GameOverScreen_render_closure, A.GameScreen_activate_closure0, A.GameScreen__openTargetDialog_closure, A.HeroEquipmentDialog_render_writeScale, A.HeroEquipmentDialog_render_writeBonus, A.HeroMonsterLoreDialog__describeBreed_closure, A.HeroMonsterLoreDialog__describeBreed_closure0, A.HeroMonsterLoreDialog__listBreeds_closure, A.HeroMonsterLoreDialog__listBreeds_compareGlyph_isUpper, A.renderItems_drawStat, A.TossDialog_selectItem_closure, A.NewHeroScreen_closure, A.NewHeroScreen_closure0, A.NewHeroScreen_render_closure, A.NameControl__refreshUnique_closure, A.SidebarPanel__drawStats_drawStat, A.SidebarPanel__drawHealthBar_drawCondition, A.StagePanel_update_closure, A.StagePanel_renderPanel_closure, A.Storage_remove_closure, A.Storage_replace_closure, A.Storage__load_closure, A.Storage__loadRace_closure, A.Storage__loadLog_closure, A.TargetDialog__changeMonsterTarget_closure, A.TargetDialog__changeMonsterTarget_closure0, A._SearchDialog__matchedItems_closure, A._WizardSpawnDialog__selectItem_closure, A.RetroTerminal$__closure, A.RetroTerminal_render_closure, A.main_closure, A.main_closure0, A._addFont_closure, A._addFont_closure0, A._addFont_closure1, A._refreshDebugBoxes_closure]);
     _inheritMany(A.Closure0Args, [A.Primitives_initTicker_closure, A._AsyncRun__scheduleImmediateJsOverride_internalCallback, A._AsyncRun__scheduleImmediateWithSetImmediate_internalCallback, A._TimerImpl_internalCallback, A._Future__addListener_closure, A._Future__prependListeners_closure, A._Future__chainCoreFuture_closure, A._Future__asyncCompleteWithValue_closure, A._Future__asyncCompleteErrorObject_closure, A._Future__propagateToListeners_handleWhenCompleteCallback, A._Future__propagateToListeners_handleValueCallback, A._Future__propagateToListeners_handleError, A.Stream_length_closure0, A._rootHandleError_closure, A._RootZone_bindCallbackGuarded_closure, A.DetectAction__findTiles_addTile_closure, A.ItemBuilder_food_closure, A.ItemBuilder_detection_closure, A.ItemBuilder_perception_closure, A.ItemBuilder_resistSalve_closure, A.ItemBuilder_mapping_closure, A.ItemBuilder_haste_closure, A.ItemBuilder_teleport_closure, A.ItemBuilder_heal_closure, A.ItemBuilder_ball_closure, A.ItemBuilder_flow_closure, A.ItemBuilder_lightSource_closure, A.AffixBuilder_parameter_closure, A.dungeon_closure, A.catacomb_closure, A.cavern_closure, A.lake_closure, A.river_closure, A.keep_closure, A.pit_closure, A.Decorator_decorate_closure, A.Decorator__spawnMonster_closure0, A.River_build_northish, A.River_build_southish, A.River_build_eastish, A.River_build_westish, A.River_build_northSouth, A.River_build_eastWest, A.Debug_monsterLog_closure, A.Debug_monsterStat_closure, A.Debug_monsterStat_closure0, A.Debug_monsterReason_closure, A.Log_wordWrap_finishLine, A.Lore_seeBreed_closure, A.Lore_slay_closure, A.Lore_findItem_closure, A.Lore_findItem_closure0, A.Lore_useItem_closure, A.Stage_addItem_closure, A.StagePanel__positionCamera_centerX, A.StagePanel__positionCamera_centerY]);
     _inheritMany(A.Closure2Args, [A.Primitives_functionNoSuchMethod_closure, A.JsLinkedHashMap_addAll_closure, A.initHooks_closure0, A._awaitOnObject_closure0, A._wrapJsFunctionForAsync_closure, A._Future__propagateToListeners_handleWhenCompleteCallback_closure0, A.LinkedHashMap_LinkedHashMap$from_closure, A.MapBase_mapToString_closure, A._JsonStringifier_writeMap_closure, A.NoSuchMethodError_toString_closure, A.Storage_keys_closure, A._ValidatingTreeSanitizer_sanitizeTree_walk, A.GameContent__spreadPoison_neighbor, A.BarrierAction_onPerform_tryDirection, A.BarrierAction_onPerform_tryDirection_tryOffset, A.DetectAction__findTiles_closure, A.DetectAction__findTiles_closure0, A._OneOfDrop_closure, A.shop_closure, A.dragons_closure, A.Decorator__spawnMonster_spawn, A.Keep__regionContains_diagonal, A.Tiles_braziers_closure, A._MonsterLog_toString_closure, A.Lore_allSlain_closure, A.RaceStats_lerp, A.Equipment_length_closure, A.Item_strikeBonus_closure, A.Item_damageScale_closure, A.Item_damageBonus_closure, A.Item_armorModifier_closure, A.Item_quantifiableName_closure, A.Item_weight_closure, A.Item_heft_closure, A.Item_resistance_closure, A.Flow__processNext_processNeighbor, A.Lighting__process_checkNeighbor, A.Stage_forEachItem_closure, A.Draw_helpKeys_closure, A.Draw_helpKeys_closure0, A.GameScreen_activate_closure, A.HeroEquipmentDialog_render_writeLine, A.HeroEquipmentDialog_render_closure, A.HeroItemLoreDialog_render_writeLine, A.HeroItemLoreDialog__listItems_compareSort, A.HeroItemLoreDialog__listItems_compareDepth, A.HeroItemLoreDialog__listItems_comparePrice, A.HeroItemLoreDialog__listItems_closure, A.HeroMonsterLoreDialog_render_writeLine, A.HeroMonsterLoreDialog__listBreeds_compareGlyph, A.HeroMonsterLoreDialog__listBreeds_compareDepth, A.HeroMonsterLoreDialog__listBreeds_closure0, A.HeroResistancesDialog_render_writeLine, A.HeroResistancesDialog_render_closure, A.MainMenuScreen__renderTile_multiply, A.MainMenuScreen__renderTile_applyLighting, A.SidebarPanel_renderPanel_closure, A.StagePanel_renderPanel_multiply, A.StagePanel_renderPanel_applyLighting, A.Popup_render_closure, A.Popup_render_closure0, A.Storage__load_closure0, A.Storage__loadLore_closure, A.Storage__loadLore_closure0, A.Storage__loadLore_closure1, A.Storage__loadLore_closure2, A.Storage__loadLore_closure3]);
     _inherit(A.NullError, A.TypeError);
@@ -39863,7 +40312,7 @@
     _inheritMany(A.LosAction, [A.BoltAction, A.TossLosAction]);
     _inheritMany(A.ConditionAction, [A.HasteAction, A._FreezeActorAction_ConditionAction_DestroyActionMixin, A.PoisonAction, A.BlindAction, A.DazzleAction, A.ResistAction]);
     _inherit(A.FreezeActorAction, A._FreezeActorAction_ConditionAction_DestroyActionMixin);
-    _inheritMany(A._Enum, [A.DetectType, A.Missive, A.Symmetry, A.ItemQuality, A.Region, A.TakeFrom, A.RoomShapes, A.RoomSize, A.HitType, A.LogType, A.SpawnLocation, A.LoopInput, A._Direction__Enum_VecMixin]);
+    _inheritMany(A._Enum, [A.DetectType, A.Missive, A.Symmetry, A.ItemQuality, A.Region, A.TakeFrom, A.RoomShapes, A.RoomSize, A.HitType, A.LogType, A.LevelArchetype, A.SpawnLocation, A.LoopInput, A._Direction__Enum_VecMixin]);
     _inherit(A.BurnActorAction, A._BurnActorAction_Action_DestroyActionMixin);
     _inherit(A.BurnFloorAction, A._BurnFloorAction_Action_DestroyActionMixin);
     _inherit(A.BurningFloorAction, A._BurningFloorAction_Action_DestroyActionMixin);
@@ -39911,7 +40360,7 @@
     _inheritMany(A.StatBase, [A.Strength, A.Agility, A.Fortitude, A.Intellect, A.Will]);
     _inherit(A.Equipment, A._Equipment_IterableBase_ItemCollection);
     _inherit(A.Inventory, A._Inventory_IterableMixin_ItemCollection);
-    _inheritMany(A.LoopReward, [A.DamageBoostReward, A.ArmorBoostReward, A.HealthBoostReward, A.HealingSupplyReward, A.FoodSupplyReward, A.ScrollSupplyReward, A.GoldReward, A.LightRadiusReward, A.MovementSpeedReward, A.LuckyFindsReward]);
+    _inheritMany(A.LoopReward, [A.DamageBoostReward, A.ArmorBoostReward, A.HealthBoostReward, A.HealingSupplyReward, A.FoodSupplyReward, A.ScrollSupplyReward, A.GoldReward, A.LightRadiusReward, A.MovementSpeedReward, A.LuckyFindsReward, A.SummonReward]);
     _inheritMany(A.MonsterState, [A.AsleepState, A.AwakeState, A.AfraidState]);
     _inheritMany(A.Screen, [A.Popup, A.DirectionDialog, A.GameOverScreen, A.GameScreen, A.HeroInfoDialog, A.ItemDialog, A.TownScreen, A.LoadingDialog, A.LoopGameScreen, A.LoopRewardScreen, A.MainMenuScreen, A.NewHeroScreen, A.SelectSkillDialog, A.SkillDialog, A.TargetDialog, A.WizardDialog, A._SearchDialog]);
     _inheritMany(A.Popup, [A.ConfirmPopup, A.ExitPopup, A.ForfeitPopup, A.SelectDepthPopup]);
@@ -39923,8 +40372,8 @@
     _inheritMany(A.TownScreen, [A._ItemVerbScreen, A._HomeScreen, A._CrucibleScreen, A._ShopScreen, A._CountScreen]);
     _inheritMany(A._ItemVerbScreen, [A._GetScreen, A._ShopBuyScreen]);
     _inheritMany(A._GetScreen, [A._GetFromHomeScreen, A._GetFromCrucibleScreen]);
+    _inheritMany(A.Panel, [A.ControlsPanel, A.EquipmentStatusPanel, A.ItemPanel, A.LogPanel, A.SidebarPanel, A.StagePanel]);
     _inheritMany(A.Control, [A.NameControl, A.SelectControl]);
-    _inheritMany(A.Panel, [A.ItemPanel, A.LogPanel, A.SidebarPanel, A.StagePanel]);
     _inherit(A.SkillTypeDialog, A.SkillDialog);
     _inheritMany(A.SkillTypeDialog, [A.DisciplineDialog, A.SpellDialog]);
     _inheritMany(A._SearchDialog, [A._WizardDropDialog, A._WizardSpawnDialog, A._WizardTrainDialog]);
@@ -39979,7 +40428,7 @@
     typeUniverse: {eC: new Map(), tR: {}, eT: {}, tPV: {}, sEA: []},
     mangledGlobalNames: {int: "int", double: "double", num: "num", String: "String", bool: "bool", Null: "Null", List: "List", Object: "Object", Map: "Map"},
     mangledNames: {},
-    types: ["~()", "bool(Vec)", "int()", "bool(Item)", "String(String)", "int(int)", "double()", "~(String,@)", "Action(Vec)", "int?(Item)", "~(Vec)", "bool(Direction)", "int(int,Affix)", "Color(Color,Color)", "~(Event0)", "@(@)", "double(int)", "~(Item)", "~(int,Color)", "int(ItemType,ItemType)", "_MonsterLog()", "TeleportAction(ActionSpell,Game,int)", "~(String,String)", "int(int,String)", "Null(int)", "~(~())", "int(Breed,Breed)", "bool(String)", "bool(HeroSave)", "~(KeyboardEvent)", "~(Object?,Object?)", "Null(@)", "~(num)", "int(Item)", "~(int,int,int)", "FlowAction(ActionSpell,Game,int)", "double(int,int)", "~(AffixBuilder)", "bool(NodeValidator)", "bool(Element0,String,String,_Html5NodeValidator)", "double(double,Affix)", "~(Monster)", "~(Terminal)", "~(Direction)", "Null()", "~(Item?,int)", "int(int,int)", "List<Vec>()", "~(int,int,Glyph)", "int(Monster)", "~(MouseEvent)", "bool(Move)", "bool(Node)", "DetectAction()", "ResistAction()", "MappingAction()", "HasteAction()", "TeleportAction()", "HealAction()", "RingSelfAction()", "RingFromAction(Vec)", "FlowSelfAction()", "FlowFromAction(Vec)", "IlluminateSelfAction()", "~(int,@)", "Null(Object,StackTrace)", "~(Drop,double)", "~(@,@)", "~(String,double)", "~(String,List<Object>)", "~(Node,Node?)", "Element0(Node)", "Null(~())", "DetectAction(ActionSpell,Game,int)", "BoltAction(TargetSpell,Game,int,Vec)", "RayAction(TargetSpell,Game,int,Vec)", "JsFunction(@)", "BarrierAction(TargetSpell,Game,int,Vec)", "Dungeon()", "Catacomb()", "Cavern()", "Lake()", "River()", "Keep()", "Pit()", "~(Breed,Vec)", "Vec()", "JsArray<@>(@)", "JsObject(@)", "OpenChestAction(Vec)", "OpenBarrelAction(Vec)", "TileType(TileBuilder,int)", "~(Symbol0,@)", "Queue<num>()", "~(int,int)", "bool(bool,int)", "bool(double,double)", "Null(Vec,Hit,num,int)", "Null(Vec)", "~(int)", "~(Skill)", "Null(double)", "bool(Skill)", "~(Element,int(int))", "Skill(String)", "int(int,Item?)", "AddItemResult(Item{wasUnequipped:bool})", "Item(Item)", "@(String)", "@(@,String)", "String(String,Affix)", "~(Item,Vec)", "~(@)", "~(Direction,bool)", "~(Vec,int)", "Tile(Vec)", "Inventory()", "~(Vec,Inventory)", "~(int,Direction,String)", "~(String,Color,int{total:int?})", "bool(Actor)", "List<Vec>(int)", "Null(@,StackTrace)", "~(Shop,Inventory)", "bool(double)", "~(int,int,double)", "WindAction(int)", "BurnActorAction(int)", "bool(Breed)", "BurnFloorAction(Vec,Hit,num,int)", "bool(int)", "~(Stat,int(int))", "~(int,Object,Color,Color)", "FreezeActorAction(int)", "FreezeFloorAction(Vec,Hit,num,int)", "String(Race)", "String(HeroClass)", "PoisonAction(int)", "int(Monster,Monster)", "~(StatBase)", "~(String,Color[Color?])", "bool(Effect)", "PoisonFloorAction(Vec,Hit,num,int)", "bool(HeroClass)", "~(String,Shop)", "bool(Race)", "bool(LogType)", "BlindAction(int)", "DazzleAction(int)", "LightFloorAction(Vec,Hit,num,int)", "bool(Monster)", "int(@,@)", "EatAction()", "~(Object?)", "Object?(Object?)", "Object?(@)", "PerceiveAction()", "~(Element0)"],
+    types: ["~()", "bool(Vec)", "int()", "bool(Item)", "String(String)", "int(int)", "double()", "~(String,@)", "Action(Vec)", "int?(Item)", "~(Vec)", "bool(Direction)", "int(int,Affix)", "Color(Color,Color)", "~(Event0)", "@(@)", "double(int)", "~(Item)", "~(int,Color)", "int(ItemType,ItemType)", "_MonsterLog()", "TeleportAction(ActionSpell,Game,int)", "~(String,String)", "int(int,String)", "Null(int)", "~(~())", "int(Breed,Breed)", "bool(String)", "bool(HeroSave)", "~(KeyboardEvent)", "~(Object?,Object?)", "Null(@)", "~(num)", "int(Item)", "~(int,int,int)", "FlowAction(ActionSpell,Game,int)", "double(int,int)", "~(AffixBuilder)", "bool(NodeValidator)", "bool(Element0,String,String,_Html5NodeValidator)", "double(double,Affix)", "~(Monster)", "~(Terminal)", "~(Direction)", "Null()", "~(Item?,int)", "int(int,int)", "List<Vec>()", "~(int,int,Glyph)", "int(Monster)", "~(MouseEvent)", "bool(Move)", "bool(Node)", "PerceiveAction()", "ResistAction()", "MappingAction()", "HasteAction()", "TeleportAction()", "HealAction()", "RingSelfAction()", "RingFromAction(Vec)", "FlowSelfAction()", "FlowFromAction(Vec)", "IlluminateSelfAction()", "~(int,@)", "Null(Object,StackTrace)", "~(Drop,double)", "~(@,@)", "~(String,double)", "~(String,List<Object>)", "~(Node,Node?)", "Element0(Node)", "Null(~())", "DetectAction(ActionSpell,Game,int)", "BoltAction(TargetSpell,Game,int,Vec)", "RayAction(TargetSpell,Game,int,Vec)", "JsFunction(@)", "BarrierAction(TargetSpell,Game,int,Vec)", "Dungeon()", "Catacomb()", "Cavern()", "Lake()", "River()", "Keep()", "Pit()", "~(Breed,Vec)", "Vec()", "JsArray<@>(@)", "JsObject(@)", "OpenChestAction(Vec)", "OpenBarrelAction(Vec)", "TileType(TileBuilder,int)", "~(Symbol0,@)", "Queue<num>()", "~(int,int)", "bool(bool,int)", "bool(double,double)", "Null(Vec,Hit,num,int)", "Null(Vec)", "~(int)", "~(Skill)", "Null(double)", "bool(Skill)", "~(Element,int(int))", "~(Stat,int(int))", "Skill(String)", "AddItemResult(Item{wasUnequipped:bool})", "Item(Item)", "@(String)", "@(@,String)", "String(String,Affix)", "String(LevelArchetype)", "~(Item,Vec)", "~(@)", "~(Direction,bool)", "~(Vec,int)", "Tile(Vec)", "Inventory()", "~(Vec,Inventory)", "~(int,Direction,String)", "~(String,Color,int{total:int?})", "bool(Actor)", "List<Vec>(int)", "Null(@,StackTrace)", "~(Shop,Inventory)", "bool(double)", "~(int,int,double)", "WindAction(int)", "BurnActorAction(int)", "bool(Breed)", "BurnFloorAction(Vec,Hit,num,int)", "bool(int)", "int(int,Item?)", "~(int,Object,Color,Color)", "FreezeActorAction(int)", "FreezeFloorAction(Vec,Hit,num,int)", "String(Race)", "String(HeroClass)", "PoisonAction(int)", "int(Monster,Monster)", "~(StatBase)", "~(String,Color[Color?])", "bool(Effect)", "PoisonFloorAction(Vec,Hit,num,int)", "bool(HeroClass)", "~(String,Shop)", "bool(Race)", "bool(LogType)", "BlindAction(int)", "DazzleAction(int)", "LightFloorAction(Vec,Hit,num,int)", "bool(Monster)", "int(@,@)", "EatAction()", "DetectAction()", "Object?(Object?)", "Object?(@)", "~(Object?)", "~(Element0)"],
     interceptorsByTag: null,
     leafTags: null,
     arrayRti: Symbol("$ti"),
@@ -39988,7 +40437,7 @@
       "4;": types => o => o instanceof A._Record_4 && A.pairwiseIsTest(types, o._values)
     }
   };
-  A._Universe_addRules(init.typeUniverse, JSON.parse('{"PlainJavaScriptObject":"LegacyJavaScriptObject","UnknownJavaScriptObject":"LegacyJavaScriptObject","JavaScriptFunction":"LegacyJavaScriptObject","AbortPaymentEvent":"Event0","ExtendableEvent":"Event0","AElement":"SvgElement","GraphicsElement":"SvgElement","AudioElement":"HtmlElement","MediaElement":"HtmlElement","ShadowRoot":"Node","DocumentFragment":"Node","XmlDocument":"Document","PointerEvent":"MouseEvent","CompositionEvent":"UIEvent","DedicatedWorkerGlobalScope":"WorkerGlobalScope","CDataSection":"CharacterData","Text":"CharacterData","MathMLElement":"Element0","HtmlFormControlsCollection":"HtmlCollection","File":"Blob","JSBool":{"bool":[],"TrustedGetRuntimeType":[]},"JSNull":{"TrustedGetRuntimeType":[]},"JSArray":{"List":["1"],"EfficientLengthIterable":["1"],"Iterable":["1"]},"JSUnmodifiableArray":{"JSArray":["1"],"List":["1"],"EfficientLengthIterable":["1"],"Iterable":["1"]},"ArrayIterator":{"Iterator":["1"]},"JSNumber":{"double":[],"num":[],"Comparable":["num"]},"JSInt":{"double":[],"int":[],"num":[],"Comparable":["num"],"TrustedGetRuntimeType":[]},"JSNumNotInt":{"double":[],"num":[],"Comparable":["num"],"TrustedGetRuntimeType":[]},"JSString":{"String":[],"Comparable":["String"],"Pattern":[],"TrustedGetRuntimeType":[]},"LateError":{"Error":[]},"CodeUnits":{"ListBase":["int"],"UnmodifiableListMixin":["int"],"List":["int"],"EfficientLengthIterable":["int"],"Iterable":["int"],"ListBase.E":"int","UnmodifiableListMixin.E":"int"},"EfficientLengthIterable":{"Iterable":["1"]},"ListIterable":{"EfficientLengthIterable":["1"],"Iterable":["1"]},"SubListIterable":{"ListIterable":["1"],"EfficientLengthIterable":["1"],"Iterable":["1"],"ListIterable.E":"1","Iterable.E":"1"},"ListIterator":{"Iterator":["1"]},"MappedIterable":{"Iterable":["2"],"Iterable.E":"2"},"EfficientLengthMappedIterable":{"MappedIterable":["1","2"],"EfficientLengthIterable":["2"],"Iterable":["2"],"Iterable.E":"2"},"MappedIterator":{"Iterator":["2"]},"MappedListIterable":{"ListIterable":["2"],"EfficientLengthIterable":["2"],"Iterable":["2"],"ListIterable.E":"2","Iterable.E":"2"},"WhereIterable":{"Iterable":["1"],"Iterable.E":"1"},"WhereIterator":{"Iterator":["1"]},"TakeIterable":{"Iterable":["1"],"Iterable.E":"1"},"EfficientLengthTakeIterable":{"TakeIterable":["1"],"EfficientLengthIterable":["1"],"Iterable":["1"],"Iterable.E":"1"},"TakeIterator":{"Iterator":["1"]},"TakeWhileIterable":{"Iterable":["1"],"Iterable.E":"1"},"TakeWhileIterator":{"Iterator":["1"]},"SkipIterable":{"Iterable":["1"],"Iterable.E":"1"},"EfficientLengthSkipIterable":{"SkipIterable":["1"],"EfficientLengthIterable":["1"],"Iterable":["1"],"Iterable.E":"1"},"SkipIterator":{"Iterator":["1"]},"WhereTypeIterable":{"Iterable":["1"],"Iterable.E":"1"},"WhereTypeIterator":{"Iterator":["1"]},"UnmodifiableListBase":{"ListBase":["1"],"UnmodifiableListMixin":["1"],"List":["1"],"EfficientLengthIterable":["1"],"Iterable":["1"]},"ReversedListIterable":{"ListIterable":["1"],"EfficientLengthIterable":["1"],"Iterable":["1"],"ListIterable.E":"1","Iterable.E":"1"},"Symbol":{"Symbol0":[]},"_Record_2":{"_Record2":[],"_Record":[]},"_Record_4":{"_RecordN":[],"_Record":[]},"ConstantMapView":{"UnmodifiableMapView":["1","2"],"_UnmodifiableMapView_MapView__UnmodifiableMapMixin":["1","2"],"MapView":["1","2"],"_UnmodifiableMapMixin":["1","2"],"Map":["1","2"]},"ConstantMap":{"Map":["1","2"]},"ConstantStringMap":{"ConstantMap":["1","2"],"Map":["1","2"]},"_KeysOrValues":{"Iterable":["1"],"Iterable.E":"1"},"_KeysOrValuesOrElementsIterator":{"Iterator":["1"]},"GeneralConstantMap":{"ConstantMap":["1","2"],"Map":["1","2"]},"JSInvocationMirror":{"Invocation":[]},"NullError":{"TypeError":[],"Error":[]},"JsNoSuchMethodError":{"Error":[]},"UnknownJsTypeError":{"Error":[]},"_StackTrace":{"StackTrace":[]},"Closure":{"Function":[]},"Closure0Args":{"Function":[]},"Closure2Args":{"Function":[]},"TearOffClosure":{"Function":[]},"StaticClosure":{"Function":[]},"BoundClosure":{"Function":[]},"RuntimeError":{"Error":[]},"JsLinkedHashMap":{"MapBase":["1","2"],"LinkedHashMap":["1","2"],"Map":["1","2"],"MapBase.K":"1","MapBase.V":"2"},"LinkedHashMapKeysIterable":{"EfficientLengthIterable":["1"],"Iterable":["1"],"Iterable.E":"1"},"LinkedHashMapKeyIterator":{"Iterator":["1"]},"LinkedHashMapValuesIterable":{"EfficientLengthIterable":["1"],"Iterable":["1"],"Iterable.E":"1"},"LinkedHashMapValueIterator":{"Iterator":["1"]},"LinkedHashMapEntriesIterable":{"EfficientLengthIterable":["MapEntry<1,2>"],"Iterable":["MapEntry<1,2>"],"Iterable.E":"MapEntry<1,2>"},"LinkedHashMapEntryIterator":{"Iterator":["MapEntry<1,2>"]},"JsConstantLinkedHashMap":{"JsLinkedHashMap":["1","2"],"MapBase":["1","2"],"LinkedHashMap":["1","2"],"Map":["1","2"],"MapBase.K":"1","MapBase.V":"2"},"_Record2":{"_Record":[]},"_RecordN":{"_Record":[]},"JSSyntaxRegExp":{"RegExp":[],"Pattern":[]},"_MatchImplementation":{"RegExpMatch":[],"Match":[]},"_AllMatchesIterable":{"Iterable":["RegExpMatch"],"Iterable.E":"RegExpMatch"},"_AllMatchesIterator":{"Iterator":["RegExpMatch"]},"StringMatch":{"Match":[]},"_StringAllMatchesIterable":{"Iterable":["Match"],"Iterable.E":"Match"},"_StringAllMatchesIterator":{"Iterator":["Match"]},"NativeTypedData":{"TypedData":[]},"NativeByteData":{"TypedData":[],"TrustedGetRuntimeType":[]},"NativeTypedArray":{"JavaScriptIndexingBehavior":["1"],"TypedData":[]},"NativeTypedArrayOfDouble":{"ListBase":["double"],"List":["double"],"JavaScriptIndexingBehavior":["double"],"EfficientLengthIterable":["double"],"TypedData":[],"Iterable":["double"],"FixedLengthListMixin":["double"]},"NativeTypedArrayOfInt":{"ListBase":["int"],"List":["int"],"JavaScriptIndexingBehavior":["int"],"EfficientLengthIterable":["int"],"TypedData":[],"Iterable":["int"],"FixedLengthListMixin":["int"]},"NativeFloat32List":{"ListBase":["double"],"List":["double"],"JavaScriptIndexingBehavior":["double"],"EfficientLengthIterable":["double"],"TypedData":[],"Iterable":["double"],"FixedLengthListMixin":["double"],"TrustedGetRuntimeType":[],"ListBase.E":"double","FixedLengthListMixin.E":"double"},"NativeFloat64List":{"ListBase":["double"],"List":["double"],"JavaScriptIndexingBehavior":["double"],"EfficientLengthIterable":["double"],"TypedData":[],"Iterable":["double"],"FixedLengthListMixin":["double"],"TrustedGetRuntimeType":[],"ListBase.E":"double","FixedLengthListMixin.E":"double"},"NativeInt16List":{"ListBase":["int"],"List":["int"],"JavaScriptIndexingBehavior":["int"],"EfficientLengthIterable":["int"],"TypedData":[],"Iterable":["int"],"FixedLengthListMixin":["int"],"TrustedGetRuntimeType":[],"ListBase.E":"int","FixedLengthListMixin.E":"int"},"NativeInt32List":{"ListBase":["int"],"List":["int"],"JavaScriptIndexingBehavior":["int"],"EfficientLengthIterable":["int"],"TypedData":[],"Iterable":["int"],"FixedLengthListMixin":["int"],"TrustedGetRuntimeType":[],"ListBase.E":"int","FixedLengthListMixin.E":"int"},"NativeInt8List":{"ListBase":["int"],"List":["int"],"JavaScriptIndexingBehavior":["int"],"EfficientLengthIterable":["int"],"TypedData":[],"Iterable":["int"],"FixedLengthListMixin":["int"],"TrustedGetRuntimeType":[],"ListBase.E":"int","FixedLengthListMixin.E":"int"},"NativeUint16List":{"ListBase":["int"],"List":["int"],"JavaScriptIndexingBehavior":["int"],"EfficientLengthIterable":["int"],"TypedData":[],"Iterable":["int"],"FixedLengthListMixin":["int"],"TrustedGetRuntimeType":[],"ListBase.E":"int","FixedLengthListMixin.E":"int"},"NativeUint32List":{"ListBase":["int"],"List":["int"],"JavaScriptIndexingBehavior":["int"],"EfficientLengthIterable":["int"],"TypedData":[],"Iterable":["int"],"FixedLengthListMixin":["int"],"TrustedGetRuntimeType":[],"ListBase.E":"int","FixedLengthListMixin.E":"int"},"NativeUint8ClampedList":{"ListBase":["int"],"List":["int"],"JavaScriptIndexingBehavior":["int"],"EfficientLengthIterable":["int"],"TypedData":[],"Iterable":["int"],"FixedLengthListMixin":["int"],"TrustedGetRuntimeType":[],"ListBase.E":"int","FixedLengthListMixin.E":"int"},"NativeUint8List":{"ListBase":["int"],"List":["int"],"JavaScriptIndexingBehavior":["int"],"EfficientLengthIterable":["int"],"TypedData":[],"Iterable":["int"],"FixedLengthListMixin":["int"],"TrustedGetRuntimeType":[],"ListBase.E":"int","FixedLengthListMixin.E":"int"},"_Error":{"Error":[]},"_TypeError":{"TypeError":[],"Error":[]},"_SyncStarIterator":{"Iterator":["1"]},"_SyncStarIterable":{"Iterable":["1"],"Iterable.E":"1"},"AsyncError":{"Error":[]},"_SyncCompleter":{"_Completer":["1"]},"_Future":{"Future":["1"]},"_Zone":{"Zone":[]},"_RootZone":{"_Zone":[],"Zone":[]},"Queue":{"EfficientLengthIterable":["1"],"Iterable":["1"]},"_LinkedHashSet":{"SetBase":["1"],"Set":["1"],"EfficientLengthIterable":["1"],"Iterable":["1"]},"_LinkedHashSetIterator":{"Iterator":["1"]},"ListBase":{"List":["1"],"EfficientLengthIterable":["1"],"Iterable":["1"]},"MapBase":{"Map":["1","2"]},"MapView":{"Map":["1","2"]},"UnmodifiableMapView":{"_UnmodifiableMapView_MapView__UnmodifiableMapMixin":["1","2"],"MapView":["1","2"],"_UnmodifiableMapMixin":["1","2"],"Map":["1","2"]},"ListQueue":{"Queue":["1"],"ListIterable":["1"],"EfficientLengthIterable":["1"],"Iterable":["1"],"ListIterable.E":"1","Iterable.E":"1"},"_ListQueueIterator":{"Iterator":["1"]},"SetBase":{"Set":["1"],"EfficientLengthIterable":["1"],"Iterable":["1"]},"_SetBase":{"SetBase":["1"],"Set":["1"],"EfficientLengthIterable":["1"],"Iterable":["1"]},"_JsonMap":{"MapBase":["String","@"],"Map":["String","@"],"MapBase.K":"String","MapBase.V":"@"},"_JsonMapKeyIterable":{"ListIterable":["String"],"EfficientLengthIterable":["String"],"Iterable":["String"],"ListIterable.E":"String","Iterable.E":"String"},"JsonUnsupportedObjectError":{"Error":[]},"JsonCyclicError":{"Error":[]},"JsonCodec":{"Codec":["Object?","String"]},"DateTime":{"Comparable":["DateTime"]},"double":{"num":[],"Comparable":["num"]},"int":{"num":[],"Comparable":["num"]},"List":{"EfficientLengthIterable":["1"],"Iterable":["1"]},"num":{"Comparable":["num"]},"RegExpMatch":{"Match":[]},"String":{"Comparable":["String"],"Pattern":[]},"AssertionError":{"Error":[]},"TypeError":{"Error":[]},"ArgumentError":{"Error":[]},"RangeError":{"Error":[]},"IndexError":{"Error":[]},"NoSuchMethodError":{"Error":[]},"UnsupportedError":{"Error":[]},"UnimplementedError":{"Error":[]},"StateError":{"Error":[]},"ConcurrentModificationError":{"Error":[]},"OutOfMemoryError":{"Error":[]},"StackOverflowError":{"Error":[]},"_StringStackTrace":{"StackTrace":[]},"StringBuffer":{"StringSink":[]},"CanvasElement":{"Element0":[],"Node":[],"EventTarget":[]},"Element0":{"Node":[],"EventTarget":[]},"KeyboardEvent":{"Event0":[]},"MouseEvent":{"Event0":[]},"Node":{"EventTarget":[]},"_Html5NodeValidator":{"NodeValidator":[]},"HtmlElement":{"Element0":[],"Node":[],"EventTarget":[]},"AnchorElement":{"Element0":[],"Node":[],"EventTarget":[]},"AreaElement":{"Element0":[],"Node":[],"EventTarget":[]},"BaseElement":{"Element0":[],"Node":[],"EventTarget":[]},"BodyElement":{"Element0":[],"Node":[],"EventTarget":[]},"ButtonElement":{"Element0":[],"Node":[],"EventTarget":[]},"CharacterData":{"Node":[],"EventTarget":[]},"Document":{"Node":[],"EventTarget":[]},"DomRectReadOnly":{"Rectangle":["num"]},"_ChildrenElementList":{"ListBase":["Element0"],"List":["Element0"],"EfficientLengthIterable":["Element0"],"Iterable":["Element0"],"ListBase.E":"Element0"},"_FrozenElementList":{"ListBase":["1"],"List":["1"],"EfficientLengthIterable":["1"],"Iterable":["1"],"ListBase.E":"1"},"FormElement":{"Element0":[],"Node":[],"EventTarget":[]},"HtmlCollection":{"ListBase":["Node"],"ImmutableListMixin":["Node"],"List":["Node"],"JavaScriptIndexingBehavior":["Node"],"EfficientLengthIterable":["Node"],"Iterable":["Node"],"ListBase.E":"Node","ImmutableListMixin.E":"Node"},"HtmlDocument":{"Node":[],"EventTarget":[]},"ImageElement":{"Element0":[],"Node":[],"EventTarget":[]},"_ChildNodeListLazy":{"ListBase":["Node"],"List":["Node"],"EfficientLengthIterable":["Node"],"Iterable":["Node"],"ListBase.E":"Node"},"NodeList":{"ListBase":["Node"],"ImmutableListMixin":["Node"],"List":["Node"],"JavaScriptIndexingBehavior":["Node"],"EfficientLengthIterable":["Node"],"Iterable":["Node"],"ListBase.E":"Node","ImmutableListMixin.E":"Node"},"PreElement":{"Element0":[],"Node":[],"EventTarget":[]},"SelectElement":{"Element0":[],"Node":[],"EventTarget":[]},"Storage0":{"MapBase":["String","String"],"Map":["String","String"],"MapBase.K":"String","MapBase.V":"String"},"TableElement":{"Element0":[],"Node":[],"EventTarget":[]},"TableRowElement":{"Element0":[],"Node":[],"EventTarget":[]},"TableSectionElement":{"Element0":[],"Node":[],"EventTarget":[]},"TemplateElement":{"Element0":[],"Node":[],"EventTarget":[]},"UIEvent":{"Event0":[]},"Window":{"WindowBase":[],"EventTarget":[]},"WorkerGlobalScope":{"EventTarget":[]},"_Attr":{"Node":[],"EventTarget":[]},"_DomRect":{"Rectangle":["num"]},"_NamedNodeMap":{"ListBase":["Node"],"ImmutableListMixin":["Node"],"List":["Node"],"JavaScriptIndexingBehavior":["Node"],"EfficientLengthIterable":["Node"],"Iterable":["Node"],"ListBase.E":"Node","ImmutableListMixin.E":"Node"},"_AttributeMap":{"MapBase":["String","String"],"Map":["String","String"]},"_ElementAttributeMap":{"MapBase":["String","String"],"Map":["String","String"],"MapBase.K":"String","MapBase.V":"String"},"_EventStream":{"Stream":["1"]},"_ElementEventStreamImpl":{"_EventStream":["1"],"Stream":["1"]},"_EventStreamSubscription":{"StreamSubscription":["1"]},"NodeValidatorBuilder":{"NodeValidator":[]},"_SimpleNodeValidator":{"NodeValidator":[]},"_TemplatingNodeValidator":{"NodeValidator":[]},"_SvgNodeValidator":{"NodeValidator":[]},"FixedSizeListIterator":{"Iterator":["1"]},"_DOMWindowCrossFrame":{"WindowBase":[],"EventTarget":[]},"_SameOriginUriPolicy":{"UriPolicy":[]},"_ValidatingTreeSanitizer":{"NodeTreeSanitizer":[]},"FilteredElementList":{"ListBase":["Element0"],"List":["Element0"],"EfficientLengthIterable":["Element0"],"Iterable":["Element0"],"ListBase.E":"Element0"},"JsArray":{"ListBase":["1"],"List":["1"],"EfficientLengthIterable":["1"],"Iterable":["1"],"ListBase.E":"1"},"_JSRandom":{"Random":[]},"_Random":{"Random":[]},"Rectangle":{"_RectangleBase":["1"]},"ScriptElement0":{"SvgElement":[],"Element0":[],"Node":[],"EventTarget":[]},"SvgElement":{"Element0":[],"Node":[],"EventTarget":[]},"GameContent":{"Content":[]},"BarrierAction":{"Action":[]},"BoltAction":{"Action":[]},"HasteAction":{"Action":[]},"FreezeActorAction":{"Action":[]},"PoisonAction":{"Action":[]},"BlindAction":{"Action":[]},"DazzleAction":{"Action":[]},"ResistAction":{"Action":[]},"ConditionAction":{"Action":[]},"DetectAction":{"Action":[]},"EatAction":{"Action":[]},"BurnActorAction":{"Action":[]},"BurnFloorAction":{"Action":[]},"FreezeFloorAction":{"Action":[]},"PoisonFloorAction":{"Action":[]},"WindAction":{"Action":[]},"LightFloorAction":{"Action":[]},"BurningFloorAction":{"Action":[]},"PoisonedFloorAction":{"Action":[]},"FlowAction":{"Action":[]},"FlowSelfAction":{"Action":[]},"FlowFromAction":{"Action":[]},"HealAction":{"Action":[]},"HowlAction":{"Action":[]},"IlluminateSelfAction":{"Action":[]},"IlluminateAction":{"Action":[]},"MappingAction":{"Action":[]},"MappingFlow":{"Flow":[]},"MissiveAction":{"Action":[]},"PerceiveAction":{"Action":[]},"PolymorphAction":{"Action":[]},"AmputateAction":{"Action":[]},"RayAction":{"Action":[]},"RingSelfAction":{"Action":[]},"RingFromAction":{"Action":[]},"RayActionBase":{"Action":[]},"SpawnAction":{"Action":[]},"TeleportAction":{"Action":[]},"OpenBarrelAction":{"Action":[]},"OpenChestAction":{"Action":[]},"_OpenTileAction":{"Action":[]},"Furnishing":{"Decor":[]},"_ItemDrop":{"Drop":[]},"_TagDrop":{"Drop":[]},"_PercentDrop":{"Drop":[]},"_AllOfDrop":{"Drop":[]},"_OneOfDrop":{"Drop":[]},"_RepeatDrop":{"Drop":[]},"_BreedSpawn":{"Spawn":[]},"_TagSpawn":{"Spawn":[]},"_RepeatSpawn":{"Spawn":[]},"_AllOfSpawn":{"Spawn":[]},"AmputateMove":{"Move":[]},"BoltMove":{"Move":[]},"ConeMove":{"Move":[]},"HasteMove":{"Move":[]},"HealMove":{"Move":[]},"HowlMove":{"Move":[]},"MissiveMove":{"Move":[]},"SpawnMove":{"Move":[]},"TeleportMove":{"Move":[]},"Archery":{"TargetSkill":[],"Discipline":[],"UsableSkill":[],"Skill":[],"Comparable":["Skill"]},"ArrowAction":{"Action":[]},"AxeMastery":{"DirectionSkill":[],"Discipline":[],"UsableSkill":[],"Skill":[],"Comparable":["Skill"]},"SweepAction":{"Action":[]},"BattleHardening":{"Discipline":[],"Skill":[],"Comparable":["Skill"]},"ClubMastery":{"DirectionSkill":[],"Discipline":[],"UsableSkill":[],"Skill":[],"Comparable":["Skill"]},"BashAction":{"Action":[]},"Discipline":{"Skill":[],"Comparable":["Skill"]},"DualWield":{"Discipline":[],"Skill":[],"Comparable":["Skill"]},"MasteryDiscipline":{"Discipline":[],"Skill":[],"Comparable":["Skill"]},"UsableMasteryDiscipline":{"Discipline":[],"UsableSkill":[],"Skill":[],"Comparable":["Skill"]},"MasteryAction":{"Action":[]},"SlayDiscipline":{"Discipline":[],"Skill":[],"Comparable":["Skill"]},"SpearMastery":{"DirectionSkill":[],"Discipline":[],"UsableSkill":[],"Skill":[],"Comparable":["Skill"]},"SpearAction":{"Action":[]},"Swordfighting":{"Discipline":[],"Skill":[],"Comparable":["Skill"]},"WhipMastery":{"TargetSkill":[],"Discipline":[],"UsableSkill":[],"Skill":[],"Comparable":["Skill"]},"Spell":{"UsableSkill":[],"Skill":[],"Comparable":["Skill"]},"ActionSpell":{"Spell":[],"UsableSkill":[],"Skill":[],"Comparable":["Skill"]},"TargetSpell":{"Spell":[],"TargetSkill":[],"UsableSkill":[],"Skill":[],"Comparable":["Skill"]},"Catacomb":{"Architecture":[]},"Cavern":{"Architecture":[]},"Dungeon":{"Architecture":[]},"Keep":{"Architecture":[]},"Lake":{"Architecture":[]},"Pit":{"Architecture":[]},"River":{"Architecture":[]},"RoomArchitecture":{"Architecture":[]},"FocusAction":{"Action":[]},"AttackAction":{"Action":[]},"ItemAction":{"Action":[]},"PickUpAction":{"Action":[]},"DropAction":{"Action":[]},"EquipAction":{"Action":[]},"UnequipAction":{"Action":[]},"UseAction":{"Action":[]},"LosAction":{"Action":[]},"TossAction":{"Action":[]},"TossLosAction":{"Action":[]},"WalkAction":{"Action":[]},"OpenDoorAction":{"Action":[]},"CloseDoorAction":{"Action":[]},"RestAction":{"Action":[]},"Actor":{"Noun":[]},"ResistCondition":{"Condition":[]},"HasteCondition":{"Condition":[]},"ColdCondition":{"Condition":[]},"PoisonCondition":{"Condition":[]},"BlindnessCondition":{"Condition":[]},"PerceiveCondition":{"Condition":[]},"VecSet":{"Iterable":["Vec"],"Iterable.E":"Vec"},"ActionBehavior":{"Behavior":[]},"RestBehavior":{"Behavior":[]},"RunBehavior":{"Behavior":[]},"Hero":{"Actor":[],"Noun":[]},"Skill":{"Comparable":["Skill"]},"UsableSkill":{"Skill":[],"Comparable":["Skill"]},"StatBase":{"Property":["int"]},"Property":{"Property.T":"1"},"Strength":{"StatBase":[],"Property":["int"],"Property.T":"int"},"Agility":{"StatBase":[],"Property":["int"],"Property.T":"int"},"Fortitude":{"StatBase":[],"Property":["int"],"Property.T":"int"},"Intellect":{"StatBase":[],"Property":["int"],"Property.T":"int"},"Will":{"StatBase":[],"Property":["int"],"Property.T":"int"},"Equipment":{"ItemCollection":[],"Iterable":["Item"],"Iterable.E":"Item"},"Inventory":{"ItemCollection":[],"Iterable":["Item"],"Iterable.E":"Item"},"Item":{"Comparable":["Item"],"Noun":[]},"DamageBoostReward":{"LoopReward":[]},"ArmorBoostReward":{"LoopReward":[]},"HealthBoostReward":{"LoopReward":[]},"HealingSupplyReward":{"LoopReward":[]},"FoodSupplyReward":{"LoopReward":[]},"ScrollSupplyReward":{"LoopReward":[]},"GoldReward":{"LoopReward":[]},"LightRadiusReward":{"LoopReward":[]},"MovementSpeedReward":{"LoopReward":[]},"LuckyFindsReward":{"LoopReward":[]},"Monster":{"Actor":[],"Noun":[]},"ChangeMonsterStateAction":{"Action":[]},"AsleepState":{"MonsterState":[]},"AwakeState":{"MonsterState":[]},"AfraidState":{"MonsterState":[]},"RangedMove":{"Move":[]},"MotilityFlow":{"Flow":[]},"_SoundFlow":{"Flow":[]},"ConfirmPopup":{"Screen":["Input"],"Screen.T":"Input"},"DirectionDialog":{"Screen":["Input"]},"SkillDirectionDialog":{"Screen":["Input"],"Screen.T":"Input"},"OperateDialog":{"Screen":["Input"],"Screen.T":"Input"},"ElementEffect":{"Effect":[]},"FrameEffect":{"Effect":[]},"ItemEffect":{"Effect":[]},"DamageEffect":{"Effect":[]},"ParticleEffect":{"Effect":[]},"TeleportEffect":{"Effect":[]},"HealEffect":{"Effect":[]},"DetectEffect":{"Effect":[]},"MapEffect":{"Effect":[]},"TreasureEffect":{"Effect":[]},"HowlEffect":{"Effect":[]},"BlinkEffect":{"Effect":[]},"ExitPopup":{"Screen":["Input"],"Screen.T":"Input"},"ForfeitPopup":{"Screen":["Input"],"Screen.T":"Input"},"GameOverScreen":{"Screen":["Input"],"Screen.T":"Input"},"GameScreen":{"Screen":["Input"],"GameScreenInterface":[],"Screen.T":"Input"},"HeroEquipmentDialog":{"HeroInfoDialog":[],"Screen":["Input"],"Screen.T":"Input"},"HeroInfoDialog":{"Screen":["Input"]},"HeroItemLoreDialog":{"HeroInfoDialog":[],"Screen":["Input"],"Screen.T":"Input"},"HeroMonsterLoreDialog":{"HeroInfoDialog":[],"Screen":["Input"],"Screen.T":"Input"},"HeroResistancesDialog":{"HeroInfoDialog":[],"Screen":["Input"],"Screen.T":"Input"},"DropDialog":{"Screen":["Input"],"Screen.T":"Input"},"EquipDialog":{"Screen":["Input"],"Screen.T":"Input"},"ItemDialog":{"Screen":["Input"]},"_AttackSection":{"_Section":[]},"_DefenseSection":{"_Section":[]},"_ResistancesSection":{"_Section":[]},"_TextSection":{"_Section":[]},"PickUpDialog":{"Screen":["Input"],"Screen.T":"Input"},"_PutDialog":{"Screen":["Input"]},"PutCrucibleDialog":{"Screen":["Input"],"Screen.T":"Input"},"PutHomeDialog":{"Screen":["Input"],"Screen.T":"Input"},"SellDialog":{"Screen":["Input"],"Screen.T":"Input"},"TossDialog":{"Screen":["Input"],"Screen.T":"Input"},"TownScreen":{"Screen":["Input"]},"_ItemVerbScreen":{"Screen":["Input"]},"_HomeScreen":{"Screen":["Input"],"Screen.T":"Input"},"_GetScreen":{"_ItemVerbScreen":[],"Screen":["Input"]},"_GetFromHomeScreen":{"_ItemVerbScreen":[],"Screen":["Input"],"Screen.T":"Input"},"_GetFromCrucibleScreen":{"_ItemVerbScreen":[],"Screen":["Input"],"Screen.T":"Input"},"_CrucibleScreen":{"Screen":["Input"],"Screen.T":"Input"},"_ShopScreen":{"Screen":["Input"],"Screen.T":"Input"},"_ShopBuyScreen":{"_ItemVerbScreen":[],"Screen":["Input"],"Screen.T":"Input"},"_CountScreen":{"Screen":["Input"],"Screen.T":"Input"},"UseDialog":{"Screen":["Input"],"Screen.T":"Input"},"LoadingDialog":{"Screen":["Input"],"Screen.T":"Input"},"LoopGameScreen":{"Screen":["Input"],"GameScreenInterface":[],"Screen.T":"Input"},"LoopRewardScreen":{"Screen":["Input"],"Screen.T":"Input"},"MainMenuScreen":{"Screen":["Input"],"Screen.T":"Input"},"NewHeroScreen":{"Screen":["Input"],"Screen.T":"Input"},"NameControl":{"Control":[]},"SelectControl":{"Control":[]},"Popup":{"Screen":["Input"]},"SelectDepthPopup":{"Screen":["Input"],"Screen.T":"Input"},"SelectSkillDialog":{"Screen":["Input"],"Screen.T":"Input"},"SkillDialog":{"Screen":["Input"]},"SkillTypeDialog":{"SkillDialog":[],"Screen":["Input"]},"DisciplineDialog":{"SkillTypeDialog":["Discipline"],"SkillDialog":[],"Screen":["Input"],"Screen.T":"Input","SkillTypeDialog.T":"Discipline"},"SpellDialog":{"SkillTypeDialog":["Spell"],"SkillDialog":[],"Screen":["Input"],"Screen.T":"Input","SkillTypeDialog.T":"Spell"},"TargetDialog":{"Screen":["Input"],"Screen.T":"Input"},"WizardDialog":{"Screen":["Input"],"Screen.T":"Input"},"_SearchDialog":{"Screen":["Input"]},"_WizardDropDialog":{"_SearchDialog":["ItemType"],"Screen":["Input"],"Screen.T":"Input","_SearchDialog.T":"ItemType"},"_WizardSpawnDialog":{"_SearchDialog":["Breed"],"Screen":["Input"],"Screen.T":"Input","_SearchDialog.T":"Breed"},"_WizardTrainDialog":{"_SearchDialog":["Discipline"],"Screen":["Input"],"Screen.T":"Input","_SearchDialog.T":"Discipline"},"PortTerminal":{"Terminal":[]},"RetroTerminal":{"RenderableTerminal":[],"Terminal":[]},"RenderableTerminal":{"Terminal":[]},"Array2D":{"Iterable":["1"],"Iterable.E":"1"},"Circle":{"Iterable":["Vec"],"Iterable.E":"Vec"},"_CircleIterator":{"Iterator":["Vec"]},"Direction":{"Vec":[]},"_LineIterator":{"Iterator":["Vec"]},"Rect":{"Iterable":["Vec"],"Iterable.E":"Vec"},"RectIterator":{"Iterator":["Vec"]},"ByteData":{"TypedData":[]},"Int8List":{"List":["int"],"EfficientLengthIterable":["int"],"TypedData":[],"Iterable":["int"]},"Uint8List":{"List":["int"],"EfficientLengthIterable":["int"],"TypedData":[],"Iterable":["int"]},"Uint8ClampedList":{"List":["int"],"EfficientLengthIterable":["int"],"TypedData":[],"Iterable":["int"]},"Int16List":{"List":["int"],"EfficientLengthIterable":["int"],"TypedData":[],"Iterable":["int"]},"Uint16List":{"List":["int"],"EfficientLengthIterable":["int"],"TypedData":[],"Iterable":["int"]},"Int32List":{"List":["int"],"EfficientLengthIterable":["int"],"TypedData":[],"Iterable":["int"]},"Uint32List":{"List":["int"],"EfficientLengthIterable":["int"],"TypedData":[],"Iterable":["int"]},"Float32List":{"List":["double"],"EfficientLengthIterable":["double"],"TypedData":[],"Iterable":["double"]},"Float64List":{"List":["double"],"EfficientLengthIterable":["double"],"TypedData":[],"Iterable":["double"]}}'));
+  A._Universe_addRules(init.typeUniverse, JSON.parse('{"PlainJavaScriptObject":"LegacyJavaScriptObject","UnknownJavaScriptObject":"LegacyJavaScriptObject","JavaScriptFunction":"LegacyJavaScriptObject","AbortPaymentEvent":"Event0","ExtendableEvent":"Event0","AElement":"SvgElement","GraphicsElement":"SvgElement","AudioElement":"HtmlElement","MediaElement":"HtmlElement","ShadowRoot":"Node","DocumentFragment":"Node","XmlDocument":"Document","PointerEvent":"MouseEvent","CompositionEvent":"UIEvent","DedicatedWorkerGlobalScope":"WorkerGlobalScope","CDataSection":"CharacterData","Text":"CharacterData","MathMLElement":"Element0","HtmlFormControlsCollection":"HtmlCollection","File":"Blob","JSBool":{"bool":[],"TrustedGetRuntimeType":[]},"JSNull":{"TrustedGetRuntimeType":[]},"JSArray":{"List":["1"],"EfficientLengthIterable":["1"],"Iterable":["1"]},"JSUnmodifiableArray":{"JSArray":["1"],"List":["1"],"EfficientLengthIterable":["1"],"Iterable":["1"]},"ArrayIterator":{"Iterator":["1"]},"JSNumber":{"double":[],"num":[],"Comparable":["num"]},"JSInt":{"double":[],"int":[],"num":[],"Comparable":["num"],"TrustedGetRuntimeType":[]},"JSNumNotInt":{"double":[],"num":[],"Comparable":["num"],"TrustedGetRuntimeType":[]},"JSString":{"String":[],"Comparable":["String"],"Pattern":[],"TrustedGetRuntimeType":[]},"LateError":{"Error":[]},"CodeUnits":{"ListBase":["int"],"UnmodifiableListMixin":["int"],"List":["int"],"EfficientLengthIterable":["int"],"Iterable":["int"],"ListBase.E":"int","UnmodifiableListMixin.E":"int"},"EfficientLengthIterable":{"Iterable":["1"]},"ListIterable":{"EfficientLengthIterable":["1"],"Iterable":["1"]},"SubListIterable":{"ListIterable":["1"],"EfficientLengthIterable":["1"],"Iterable":["1"],"ListIterable.E":"1","Iterable.E":"1"},"ListIterator":{"Iterator":["1"]},"MappedIterable":{"Iterable":["2"],"Iterable.E":"2"},"EfficientLengthMappedIterable":{"MappedIterable":["1","2"],"EfficientLengthIterable":["2"],"Iterable":["2"],"Iterable.E":"2"},"MappedIterator":{"Iterator":["2"]},"MappedListIterable":{"ListIterable":["2"],"EfficientLengthIterable":["2"],"Iterable":["2"],"ListIterable.E":"2","Iterable.E":"2"},"WhereIterable":{"Iterable":["1"],"Iterable.E":"1"},"WhereIterator":{"Iterator":["1"]},"TakeIterable":{"Iterable":["1"],"Iterable.E":"1"},"EfficientLengthTakeIterable":{"TakeIterable":["1"],"EfficientLengthIterable":["1"],"Iterable":["1"],"Iterable.E":"1"},"TakeIterator":{"Iterator":["1"]},"TakeWhileIterable":{"Iterable":["1"],"Iterable.E":"1"},"TakeWhileIterator":{"Iterator":["1"]},"SkipIterable":{"Iterable":["1"],"Iterable.E":"1"},"EfficientLengthSkipIterable":{"SkipIterable":["1"],"EfficientLengthIterable":["1"],"Iterable":["1"],"Iterable.E":"1"},"SkipIterator":{"Iterator":["1"]},"WhereTypeIterable":{"Iterable":["1"],"Iterable.E":"1"},"WhereTypeIterator":{"Iterator":["1"]},"UnmodifiableListBase":{"ListBase":["1"],"UnmodifiableListMixin":["1"],"List":["1"],"EfficientLengthIterable":["1"],"Iterable":["1"]},"ReversedListIterable":{"ListIterable":["1"],"EfficientLengthIterable":["1"],"Iterable":["1"],"ListIterable.E":"1","Iterable.E":"1"},"Symbol":{"Symbol0":[]},"_Record_2":{"_Record2":[],"_Record":[]},"_Record_4":{"_RecordN":[],"_Record":[]},"ConstantMapView":{"UnmodifiableMapView":["1","2"],"_UnmodifiableMapView_MapView__UnmodifiableMapMixin":["1","2"],"MapView":["1","2"],"_UnmodifiableMapMixin":["1","2"],"Map":["1","2"]},"ConstantMap":{"Map":["1","2"]},"ConstantStringMap":{"ConstantMap":["1","2"],"Map":["1","2"]},"_KeysOrValues":{"Iterable":["1"],"Iterable.E":"1"},"_KeysOrValuesOrElementsIterator":{"Iterator":["1"]},"GeneralConstantMap":{"ConstantMap":["1","2"],"Map":["1","2"]},"JSInvocationMirror":{"Invocation":[]},"NullError":{"TypeError":[],"Error":[]},"JsNoSuchMethodError":{"Error":[]},"UnknownJsTypeError":{"Error":[]},"_StackTrace":{"StackTrace":[]},"Closure":{"Function":[]},"Closure0Args":{"Function":[]},"Closure2Args":{"Function":[]},"TearOffClosure":{"Function":[]},"StaticClosure":{"Function":[]},"BoundClosure":{"Function":[]},"RuntimeError":{"Error":[]},"JsLinkedHashMap":{"MapBase":["1","2"],"LinkedHashMap":["1","2"],"Map":["1","2"],"MapBase.K":"1","MapBase.V":"2"},"LinkedHashMapKeysIterable":{"EfficientLengthIterable":["1"],"Iterable":["1"],"Iterable.E":"1"},"LinkedHashMapKeyIterator":{"Iterator":["1"]},"LinkedHashMapValuesIterable":{"EfficientLengthIterable":["1"],"Iterable":["1"],"Iterable.E":"1"},"LinkedHashMapValueIterator":{"Iterator":["1"]},"LinkedHashMapEntriesIterable":{"EfficientLengthIterable":["MapEntry<1,2>"],"Iterable":["MapEntry<1,2>"],"Iterable.E":"MapEntry<1,2>"},"LinkedHashMapEntryIterator":{"Iterator":["MapEntry<1,2>"]},"JsConstantLinkedHashMap":{"JsLinkedHashMap":["1","2"],"MapBase":["1","2"],"LinkedHashMap":["1","2"],"Map":["1","2"],"MapBase.K":"1","MapBase.V":"2"},"_Record2":{"_Record":[]},"_RecordN":{"_Record":[]},"JSSyntaxRegExp":{"RegExp":[],"Pattern":[]},"_MatchImplementation":{"RegExpMatch":[],"Match":[]},"_AllMatchesIterable":{"Iterable":["RegExpMatch"],"Iterable.E":"RegExpMatch"},"_AllMatchesIterator":{"Iterator":["RegExpMatch"]},"StringMatch":{"Match":[]},"_StringAllMatchesIterable":{"Iterable":["Match"],"Iterable.E":"Match"},"_StringAllMatchesIterator":{"Iterator":["Match"]},"NativeTypedData":{"TypedData":[]},"NativeByteData":{"TypedData":[],"TrustedGetRuntimeType":[]},"NativeTypedArray":{"JavaScriptIndexingBehavior":["1"],"TypedData":[]},"NativeTypedArrayOfDouble":{"ListBase":["double"],"List":["double"],"JavaScriptIndexingBehavior":["double"],"EfficientLengthIterable":["double"],"TypedData":[],"Iterable":["double"],"FixedLengthListMixin":["double"]},"NativeTypedArrayOfInt":{"ListBase":["int"],"List":["int"],"JavaScriptIndexingBehavior":["int"],"EfficientLengthIterable":["int"],"TypedData":[],"Iterable":["int"],"FixedLengthListMixin":["int"]},"NativeFloat32List":{"ListBase":["double"],"List":["double"],"JavaScriptIndexingBehavior":["double"],"EfficientLengthIterable":["double"],"TypedData":[],"Iterable":["double"],"FixedLengthListMixin":["double"],"TrustedGetRuntimeType":[],"ListBase.E":"double","FixedLengthListMixin.E":"double"},"NativeFloat64List":{"ListBase":["double"],"List":["double"],"JavaScriptIndexingBehavior":["double"],"EfficientLengthIterable":["double"],"TypedData":[],"Iterable":["double"],"FixedLengthListMixin":["double"],"TrustedGetRuntimeType":[],"ListBase.E":"double","FixedLengthListMixin.E":"double"},"NativeInt16List":{"ListBase":["int"],"List":["int"],"JavaScriptIndexingBehavior":["int"],"EfficientLengthIterable":["int"],"TypedData":[],"Iterable":["int"],"FixedLengthListMixin":["int"],"TrustedGetRuntimeType":[],"ListBase.E":"int","FixedLengthListMixin.E":"int"},"NativeInt32List":{"ListBase":["int"],"List":["int"],"JavaScriptIndexingBehavior":["int"],"EfficientLengthIterable":["int"],"TypedData":[],"Iterable":["int"],"FixedLengthListMixin":["int"],"TrustedGetRuntimeType":[],"ListBase.E":"int","FixedLengthListMixin.E":"int"},"NativeInt8List":{"ListBase":["int"],"List":["int"],"JavaScriptIndexingBehavior":["int"],"EfficientLengthIterable":["int"],"TypedData":[],"Iterable":["int"],"FixedLengthListMixin":["int"],"TrustedGetRuntimeType":[],"ListBase.E":"int","FixedLengthListMixin.E":"int"},"NativeUint16List":{"ListBase":["int"],"List":["int"],"JavaScriptIndexingBehavior":["int"],"EfficientLengthIterable":["int"],"TypedData":[],"Iterable":["int"],"FixedLengthListMixin":["int"],"TrustedGetRuntimeType":[],"ListBase.E":"int","FixedLengthListMixin.E":"int"},"NativeUint32List":{"ListBase":["int"],"List":["int"],"JavaScriptIndexingBehavior":["int"],"EfficientLengthIterable":["int"],"TypedData":[],"Iterable":["int"],"FixedLengthListMixin":["int"],"TrustedGetRuntimeType":[],"ListBase.E":"int","FixedLengthListMixin.E":"int"},"NativeUint8ClampedList":{"ListBase":["int"],"List":["int"],"JavaScriptIndexingBehavior":["int"],"EfficientLengthIterable":["int"],"TypedData":[],"Iterable":["int"],"FixedLengthListMixin":["int"],"TrustedGetRuntimeType":[],"ListBase.E":"int","FixedLengthListMixin.E":"int"},"NativeUint8List":{"ListBase":["int"],"List":["int"],"JavaScriptIndexingBehavior":["int"],"EfficientLengthIterable":["int"],"TypedData":[],"Iterable":["int"],"FixedLengthListMixin":["int"],"TrustedGetRuntimeType":[],"ListBase.E":"int","FixedLengthListMixin.E":"int"},"_Error":{"Error":[]},"_TypeError":{"TypeError":[],"Error":[]},"_SyncStarIterator":{"Iterator":["1"]},"_SyncStarIterable":{"Iterable":["1"],"Iterable.E":"1"},"AsyncError":{"Error":[]},"_SyncCompleter":{"_Completer":["1"]},"_Future":{"Future":["1"]},"_Zone":{"Zone":[]},"_RootZone":{"_Zone":[],"Zone":[]},"Queue":{"EfficientLengthIterable":["1"],"Iterable":["1"]},"_LinkedHashSet":{"SetBase":["1"],"Set":["1"],"EfficientLengthIterable":["1"],"Iterable":["1"]},"_LinkedHashSetIterator":{"Iterator":["1"]},"ListBase":{"List":["1"],"EfficientLengthIterable":["1"],"Iterable":["1"]},"MapBase":{"Map":["1","2"]},"MapView":{"Map":["1","2"]},"UnmodifiableMapView":{"_UnmodifiableMapView_MapView__UnmodifiableMapMixin":["1","2"],"MapView":["1","2"],"_UnmodifiableMapMixin":["1","2"],"Map":["1","2"]},"ListQueue":{"Queue":["1"],"ListIterable":["1"],"EfficientLengthIterable":["1"],"Iterable":["1"],"ListIterable.E":"1","Iterable.E":"1"},"_ListQueueIterator":{"Iterator":["1"]},"SetBase":{"Set":["1"],"EfficientLengthIterable":["1"],"Iterable":["1"]},"_SetBase":{"SetBase":["1"],"Set":["1"],"EfficientLengthIterable":["1"],"Iterable":["1"]},"_JsonMap":{"MapBase":["String","@"],"Map":["String","@"],"MapBase.K":"String","MapBase.V":"@"},"_JsonMapKeyIterable":{"ListIterable":["String"],"EfficientLengthIterable":["String"],"Iterable":["String"],"ListIterable.E":"String","Iterable.E":"String"},"JsonUnsupportedObjectError":{"Error":[]},"JsonCyclicError":{"Error":[]},"JsonCodec":{"Codec":["Object?","String"]},"DateTime":{"Comparable":["DateTime"]},"double":{"num":[],"Comparable":["num"]},"int":{"num":[],"Comparable":["num"]},"List":{"EfficientLengthIterable":["1"],"Iterable":["1"]},"num":{"Comparable":["num"]},"RegExpMatch":{"Match":[]},"String":{"Comparable":["String"],"Pattern":[]},"AssertionError":{"Error":[]},"TypeError":{"Error":[]},"ArgumentError":{"Error":[]},"RangeError":{"Error":[]},"IndexError":{"Error":[]},"NoSuchMethodError":{"Error":[]},"UnsupportedError":{"Error":[]},"UnimplementedError":{"Error":[]},"StateError":{"Error":[]},"ConcurrentModificationError":{"Error":[]},"OutOfMemoryError":{"Error":[]},"StackOverflowError":{"Error":[]},"_StringStackTrace":{"StackTrace":[]},"StringBuffer":{"StringSink":[]},"CanvasElement":{"Element0":[],"Node":[],"EventTarget":[]},"Element0":{"Node":[],"EventTarget":[]},"KeyboardEvent":{"Event0":[]},"MouseEvent":{"Event0":[]},"Node":{"EventTarget":[]},"_Html5NodeValidator":{"NodeValidator":[]},"HtmlElement":{"Element0":[],"Node":[],"EventTarget":[]},"AnchorElement":{"Element0":[],"Node":[],"EventTarget":[]},"AreaElement":{"Element0":[],"Node":[],"EventTarget":[]},"BaseElement":{"Element0":[],"Node":[],"EventTarget":[]},"BodyElement":{"Element0":[],"Node":[],"EventTarget":[]},"ButtonElement":{"Element0":[],"Node":[],"EventTarget":[]},"CharacterData":{"Node":[],"EventTarget":[]},"Document":{"Node":[],"EventTarget":[]},"DomRectReadOnly":{"Rectangle":["num"]},"_ChildrenElementList":{"ListBase":["Element0"],"List":["Element0"],"EfficientLengthIterable":["Element0"],"Iterable":["Element0"],"ListBase.E":"Element0"},"_FrozenElementList":{"ListBase":["1"],"List":["1"],"EfficientLengthIterable":["1"],"Iterable":["1"],"ListBase.E":"1"},"FormElement":{"Element0":[],"Node":[],"EventTarget":[]},"HtmlCollection":{"ListBase":["Node"],"ImmutableListMixin":["Node"],"List":["Node"],"JavaScriptIndexingBehavior":["Node"],"EfficientLengthIterable":["Node"],"Iterable":["Node"],"ListBase.E":"Node","ImmutableListMixin.E":"Node"},"HtmlDocument":{"Node":[],"EventTarget":[]},"ImageElement":{"Element0":[],"Node":[],"EventTarget":[]},"_ChildNodeListLazy":{"ListBase":["Node"],"List":["Node"],"EfficientLengthIterable":["Node"],"Iterable":["Node"],"ListBase.E":"Node"},"NodeList":{"ListBase":["Node"],"ImmutableListMixin":["Node"],"List":["Node"],"JavaScriptIndexingBehavior":["Node"],"EfficientLengthIterable":["Node"],"Iterable":["Node"],"ListBase.E":"Node","ImmutableListMixin.E":"Node"},"PreElement":{"Element0":[],"Node":[],"EventTarget":[]},"SelectElement":{"Element0":[],"Node":[],"EventTarget":[]},"Storage0":{"MapBase":["String","String"],"Map":["String","String"],"MapBase.K":"String","MapBase.V":"String"},"TableElement":{"Element0":[],"Node":[],"EventTarget":[]},"TableRowElement":{"Element0":[],"Node":[],"EventTarget":[]},"TableSectionElement":{"Element0":[],"Node":[],"EventTarget":[]},"TemplateElement":{"Element0":[],"Node":[],"EventTarget":[]},"UIEvent":{"Event0":[]},"Window":{"WindowBase":[],"EventTarget":[]},"WorkerGlobalScope":{"EventTarget":[]},"_Attr":{"Node":[],"EventTarget":[]},"_DomRect":{"Rectangle":["num"]},"_NamedNodeMap":{"ListBase":["Node"],"ImmutableListMixin":["Node"],"List":["Node"],"JavaScriptIndexingBehavior":["Node"],"EfficientLengthIterable":["Node"],"Iterable":["Node"],"ListBase.E":"Node","ImmutableListMixin.E":"Node"},"_AttributeMap":{"MapBase":["String","String"],"Map":["String","String"]},"_ElementAttributeMap":{"MapBase":["String","String"],"Map":["String","String"],"MapBase.K":"String","MapBase.V":"String"},"_EventStream":{"Stream":["1"]},"_ElementEventStreamImpl":{"_EventStream":["1"],"Stream":["1"]},"_EventStreamSubscription":{"StreamSubscription":["1"]},"NodeValidatorBuilder":{"NodeValidator":[]},"_SimpleNodeValidator":{"NodeValidator":[]},"_TemplatingNodeValidator":{"NodeValidator":[]},"_SvgNodeValidator":{"NodeValidator":[]},"FixedSizeListIterator":{"Iterator":["1"]},"_DOMWindowCrossFrame":{"WindowBase":[],"EventTarget":[]},"_SameOriginUriPolicy":{"UriPolicy":[]},"_ValidatingTreeSanitizer":{"NodeTreeSanitizer":[]},"FilteredElementList":{"ListBase":["Element0"],"List":["Element0"],"EfficientLengthIterable":["Element0"],"Iterable":["Element0"],"ListBase.E":"Element0"},"JsArray":{"ListBase":["1"],"List":["1"],"EfficientLengthIterable":["1"],"Iterable":["1"],"ListBase.E":"1"},"_JSRandom":{"Random":[]},"_Random":{"Random":[]},"Rectangle":{"_RectangleBase":["1"]},"ScriptElement0":{"SvgElement":[],"Element0":[],"Node":[],"EventTarget":[]},"SvgElement":{"Element0":[],"Node":[],"EventTarget":[]},"GameContent":{"Content":[]},"BarrierAction":{"Action":[]},"BoltAction":{"Action":[]},"HasteAction":{"Action":[]},"FreezeActorAction":{"Action":[]},"PoisonAction":{"Action":[]},"BlindAction":{"Action":[]},"DazzleAction":{"Action":[]},"ResistAction":{"Action":[]},"ConditionAction":{"Action":[]},"DetectAction":{"Action":[]},"EatAction":{"Action":[]},"BurnActorAction":{"Action":[]},"BurnFloorAction":{"Action":[]},"FreezeFloorAction":{"Action":[]},"PoisonFloorAction":{"Action":[]},"WindAction":{"Action":[]},"LightFloorAction":{"Action":[]},"BurningFloorAction":{"Action":[]},"PoisonedFloorAction":{"Action":[]},"FlowAction":{"Action":[]},"FlowSelfAction":{"Action":[]},"FlowFromAction":{"Action":[]},"HealAction":{"Action":[]},"HowlAction":{"Action":[]},"IlluminateSelfAction":{"Action":[]},"IlluminateAction":{"Action":[]},"MappingAction":{"Action":[]},"MappingFlow":{"Flow":[]},"MissiveAction":{"Action":[]},"PerceiveAction":{"Action":[]},"PolymorphAction":{"Action":[]},"AmputateAction":{"Action":[]},"RayAction":{"Action":[]},"RingSelfAction":{"Action":[]},"RingFromAction":{"Action":[]},"RayActionBase":{"Action":[]},"SpawnAction":{"Action":[]},"TeleportAction":{"Action":[]},"OpenBarrelAction":{"Action":[]},"OpenChestAction":{"Action":[]},"_OpenTileAction":{"Action":[]},"Furnishing":{"Decor":[]},"_ItemDrop":{"Drop":[]},"_TagDrop":{"Drop":[]},"_PercentDrop":{"Drop":[]},"_AllOfDrop":{"Drop":[]},"_OneOfDrop":{"Drop":[]},"_RepeatDrop":{"Drop":[]},"_BreedSpawn":{"Spawn":[]},"_TagSpawn":{"Spawn":[]},"_RepeatSpawn":{"Spawn":[]},"_AllOfSpawn":{"Spawn":[]},"AmputateMove":{"Move":[]},"BoltMove":{"Move":[]},"ConeMove":{"Move":[]},"HasteMove":{"Move":[]},"HealMove":{"Move":[]},"HowlMove":{"Move":[]},"MissiveMove":{"Move":[]},"SpawnMove":{"Move":[]},"TeleportMove":{"Move":[]},"Archery":{"TargetSkill":[],"Discipline":[],"UsableSkill":[],"Skill":[],"Comparable":["Skill"]},"ArrowAction":{"Action":[]},"AxeMastery":{"DirectionSkill":[],"Discipline":[],"UsableSkill":[],"Skill":[],"Comparable":["Skill"]},"SweepAction":{"Action":[]},"BattleHardening":{"Discipline":[],"Skill":[],"Comparable":["Skill"]},"ClubMastery":{"DirectionSkill":[],"Discipline":[],"UsableSkill":[],"Skill":[],"Comparable":["Skill"]},"BashAction":{"Action":[]},"Discipline":{"Skill":[],"Comparable":["Skill"]},"DualWield":{"Discipline":[],"Skill":[],"Comparable":["Skill"]},"MasteryDiscipline":{"Discipline":[],"Skill":[],"Comparable":["Skill"]},"UsableMasteryDiscipline":{"Discipline":[],"UsableSkill":[],"Skill":[],"Comparable":["Skill"]},"MasteryAction":{"Action":[]},"SlayDiscipline":{"Discipline":[],"Skill":[],"Comparable":["Skill"]},"SpearMastery":{"DirectionSkill":[],"Discipline":[],"UsableSkill":[],"Skill":[],"Comparable":["Skill"]},"SpearAction":{"Action":[]},"Swordfighting":{"Discipline":[],"Skill":[],"Comparable":["Skill"]},"WhipMastery":{"TargetSkill":[],"Discipline":[],"UsableSkill":[],"Skill":[],"Comparable":["Skill"]},"Spell":{"UsableSkill":[],"Skill":[],"Comparable":["Skill"]},"ActionSpell":{"Spell":[],"UsableSkill":[],"Skill":[],"Comparable":["Skill"]},"TargetSpell":{"Spell":[],"TargetSkill":[],"UsableSkill":[],"Skill":[],"Comparable":["Skill"]},"Catacomb":{"Architecture":[]},"Cavern":{"Architecture":[]},"Dungeon":{"Architecture":[]},"Keep":{"Architecture":[]},"Lake":{"Architecture":[]},"Pit":{"Architecture":[]},"River":{"Architecture":[]},"RoomArchitecture":{"Architecture":[]},"FocusAction":{"Action":[]},"AttackAction":{"Action":[]},"ItemAction":{"Action":[]},"PickUpAction":{"Action":[]},"DropAction":{"Action":[]},"EquipAction":{"Action":[]},"UnequipAction":{"Action":[]},"UseAction":{"Action":[]},"LosAction":{"Action":[]},"TossAction":{"Action":[]},"TossLosAction":{"Action":[]},"WalkAction":{"Action":[]},"OpenDoorAction":{"Action":[]},"CloseDoorAction":{"Action":[]},"RestAction":{"Action":[]},"Actor":{"Noun":[]},"ResistCondition":{"Condition":[]},"HasteCondition":{"Condition":[]},"ColdCondition":{"Condition":[]},"PoisonCondition":{"Condition":[]},"BlindnessCondition":{"Condition":[]},"PerceiveCondition":{"Condition":[]},"VecSet":{"Iterable":["Vec"],"Iterable.E":"Vec"},"ActionBehavior":{"Behavior":[]},"RestBehavior":{"Behavior":[]},"RunBehavior":{"Behavior":[]},"Hero":{"Actor":[],"Noun":[]},"Skill":{"Comparable":["Skill"]},"UsableSkill":{"Skill":[],"Comparable":["Skill"]},"StatBase":{"Property":["int"]},"Property":{"Property.T":"1"},"Strength":{"StatBase":[],"Property":["int"],"Property.T":"int"},"Agility":{"StatBase":[],"Property":["int"],"Property.T":"int"},"Fortitude":{"StatBase":[],"Property":["int"],"Property.T":"int"},"Intellect":{"StatBase":[],"Property":["int"],"Property.T":"int"},"Will":{"StatBase":[],"Property":["int"],"Property.T":"int"},"Equipment":{"ItemCollection":[],"Iterable":["Item"],"Iterable.E":"Item"},"Inventory":{"ItemCollection":[],"Iterable":["Item"],"Iterable.E":"Item"},"Item":{"Comparable":["Item"],"Noun":[]},"DamageBoostReward":{"LoopReward":[]},"ArmorBoostReward":{"LoopReward":[]},"HealthBoostReward":{"LoopReward":[]},"HealingSupplyReward":{"LoopReward":[]},"FoodSupplyReward":{"LoopReward":[]},"ScrollSupplyReward":{"LoopReward":[]},"GoldReward":{"LoopReward":[]},"LightRadiusReward":{"LoopReward":[]},"MovementSpeedReward":{"LoopReward":[]},"LuckyFindsReward":{"LoopReward":[]},"SummonReward":{"LoopReward":[]},"Monster":{"Actor":[],"Noun":[]},"ChangeMonsterStateAction":{"Action":[]},"AsleepState":{"MonsterState":[]},"AwakeState":{"MonsterState":[]},"AfraidState":{"MonsterState":[]},"RangedMove":{"Move":[]},"MotilityFlow":{"Flow":[]},"_SoundFlow":{"Flow":[]},"ConfirmPopup":{"Screen":["Input"],"Screen.T":"Input"},"DirectionDialog":{"Screen":["Input"]},"SkillDirectionDialog":{"Screen":["Input"],"Screen.T":"Input"},"OperateDialog":{"Screen":["Input"],"Screen.T":"Input"},"ElementEffect":{"Effect":[]},"FrameEffect":{"Effect":[]},"ItemEffect":{"Effect":[]},"DamageEffect":{"Effect":[]},"ParticleEffect":{"Effect":[]},"TeleportEffect":{"Effect":[]},"HealEffect":{"Effect":[]},"DetectEffect":{"Effect":[]},"MapEffect":{"Effect":[]},"TreasureEffect":{"Effect":[]},"HowlEffect":{"Effect":[]},"BlinkEffect":{"Effect":[]},"ExitPopup":{"Screen":["Input"],"Screen.T":"Input"},"ForfeitPopup":{"Screen":["Input"],"Screen.T":"Input"},"GameOverScreen":{"Screen":["Input"],"Screen.T":"Input"},"GameScreen":{"Screen":["Input"],"GameScreenInterface":[],"Screen.T":"Input"},"HeroEquipmentDialog":{"HeroInfoDialog":[],"Screen":["Input"],"Screen.T":"Input"},"HeroInfoDialog":{"Screen":["Input"]},"HeroItemLoreDialog":{"HeroInfoDialog":[],"Screen":["Input"],"Screen.T":"Input"},"HeroMonsterLoreDialog":{"HeroInfoDialog":[],"Screen":["Input"],"Screen.T":"Input"},"HeroResistancesDialog":{"HeroInfoDialog":[],"Screen":["Input"],"Screen.T":"Input"},"DropDialog":{"Screen":["Input"],"Screen.T":"Input"},"EquipDialog":{"Screen":["Input"],"Screen.T":"Input"},"ItemDialog":{"Screen":["Input"]},"_AttackSection":{"_Section":[]},"_DefenseSection":{"_Section":[]},"_ResistancesSection":{"_Section":[]},"_TextSection":{"_Section":[]},"PickUpDialog":{"Screen":["Input"],"Screen.T":"Input"},"_PutDialog":{"Screen":["Input"]},"PutCrucibleDialog":{"Screen":["Input"],"Screen.T":"Input"},"PutHomeDialog":{"Screen":["Input"],"Screen.T":"Input"},"SellDialog":{"Screen":["Input"],"Screen.T":"Input"},"TossDialog":{"Screen":["Input"],"Screen.T":"Input"},"TownScreen":{"Screen":["Input"]},"_ItemVerbScreen":{"Screen":["Input"]},"_HomeScreen":{"Screen":["Input"],"Screen.T":"Input"},"_GetScreen":{"_ItemVerbScreen":[],"Screen":["Input"]},"_GetFromHomeScreen":{"_ItemVerbScreen":[],"Screen":["Input"],"Screen.T":"Input"},"_GetFromCrucibleScreen":{"_ItemVerbScreen":[],"Screen":["Input"],"Screen.T":"Input"},"_CrucibleScreen":{"Screen":["Input"],"Screen.T":"Input"},"_ShopScreen":{"Screen":["Input"],"Screen.T":"Input"},"_ShopBuyScreen":{"_ItemVerbScreen":[],"Screen":["Input"],"Screen.T":"Input"},"_CountScreen":{"Screen":["Input"],"Screen.T":"Input"},"UseDialog":{"Screen":["Input"],"Screen.T":"Input"},"LoadingDialog":{"Screen":["Input"],"Screen.T":"Input"},"LoopGameScreen":{"Screen":["Input"],"GameScreenInterface":[],"Screen.T":"Input"},"LoopRewardScreen":{"Screen":["Input"],"Screen.T":"Input"},"MainMenuScreen":{"Screen":["Input"],"Screen.T":"Input"},"NewHeroScreen":{"Screen":["Input"],"Screen.T":"Input"},"NameControl":{"Control":[]},"SelectControl":{"Control":[]},"Popup":{"Screen":["Input"]},"SelectDepthPopup":{"Screen":["Input"],"Screen.T":"Input"},"SelectSkillDialog":{"Screen":["Input"],"Screen.T":"Input"},"SkillDialog":{"Screen":["Input"]},"SkillTypeDialog":{"SkillDialog":[],"Screen":["Input"]},"DisciplineDialog":{"SkillTypeDialog":["Discipline"],"SkillDialog":[],"Screen":["Input"],"Screen.T":"Input","SkillTypeDialog.T":"Discipline"},"SpellDialog":{"SkillTypeDialog":["Spell"],"SkillDialog":[],"Screen":["Input"],"Screen.T":"Input","SkillTypeDialog.T":"Spell"},"TargetDialog":{"Screen":["Input"],"Screen.T":"Input"},"WizardDialog":{"Screen":["Input"],"Screen.T":"Input"},"_SearchDialog":{"Screen":["Input"]},"_WizardDropDialog":{"_SearchDialog":["ItemType"],"Screen":["Input"],"Screen.T":"Input","_SearchDialog.T":"ItemType"},"_WizardSpawnDialog":{"_SearchDialog":["Breed"],"Screen":["Input"],"Screen.T":"Input","_SearchDialog.T":"Breed"},"_WizardTrainDialog":{"_SearchDialog":["Discipline"],"Screen":["Input"],"Screen.T":"Input","_SearchDialog.T":"Discipline"},"PortTerminal":{"Terminal":[]},"RetroTerminal":{"RenderableTerminal":[],"Terminal":[]},"RenderableTerminal":{"Terminal":[]},"Array2D":{"Iterable":["1"],"Iterable.E":"1"},"Circle":{"Iterable":["Vec"],"Iterable.E":"Vec"},"_CircleIterator":{"Iterator":["Vec"]},"Direction":{"Vec":[]},"_LineIterator":{"Iterator":["Vec"]},"Rect":{"Iterable":["Vec"],"Iterable.E":"Vec"},"RectIterator":{"Iterator":["Vec"]},"ByteData":{"TypedData":[]},"Int8List":{"List":["int"],"EfficientLengthIterable":["int"],"TypedData":[],"Iterable":["int"]},"Uint8List":{"List":["int"],"EfficientLengthIterable":["int"],"TypedData":[],"Iterable":["int"]},"Uint8ClampedList":{"List":["int"],"EfficientLengthIterable":["int"],"TypedData":[],"Iterable":["int"]},"Int16List":{"List":["int"],"EfficientLengthIterable":["int"],"TypedData":[],"Iterable":["int"]},"Uint16List":{"List":["int"],"EfficientLengthIterable":["int"],"TypedData":[],"Iterable":["int"]},"Int32List":{"List":["int"],"EfficientLengthIterable":["int"],"TypedData":[],"Iterable":["int"]},"Uint32List":{"List":["int"],"EfficientLengthIterable":["int"],"TypedData":[],"Iterable":["int"]},"Float32List":{"List":["double"],"EfficientLengthIterable":["double"],"TypedData":[],"Iterable":["double"]},"Float64List":{"List":["double"],"EfficientLengthIterable":["double"],"TypedData":[],"Iterable":["double"]}}'));
   A._Universe_addErasedTypes(init.typeUniverse, JSON.parse('{"EfficientLengthIterable":1,"UnmodifiableListBase":1,"NativeTypedArray":1,"_SetBase":1,"Converter":2,"_JsArray_JsObject_ListMixin":1,"Pathfinder":1}'));
   var string$ = {
     Error_: "Error handler must accept one Object or one Object and a StackTrace as arguments, and return a value of the returned future's type",
@@ -40033,6 +40482,7 @@
       ConstantMapView_Symbol_dynamic: findType("ConstantMapView<Symbol0,@>"),
       ConstantStringMap_String_String: findType("ConstantStringMap<String,String>"),
       DateTime: findType("DateTime"),
+      DensityScalars: findType("DensityScalars"),
       Direction: findType("Direction"),
       DirectionSkill: findType("DirectionSkill"),
       Discipline: findType("Discipline"),
@@ -40087,6 +40537,7 @@
       JSArray_ItemLocation: findType("JSArray<ItemLocation>"),
       JSArray_ItemType: findType("JSArray<ItemType>"),
       JSArray_Junction: findType("JSArray<Junction>"),
+      JSArray_LevelArchetype: findType("JSArray<LevelArchetype>"),
       JSArray_List_Vec: findType("JSArray<List<Vec>>"),
       JSArray_LoopReward: findType("JSArray<LoopReward>"),
       JSArray_Map_Stat_int: findType("JSArray<Map<Stat,int>>"),
@@ -40128,6 +40579,7 @@
       KeyBindings_Input: findType("KeyBindings<Input>"),
       KeyRange: findType("KeyRange"),
       KeyboardEvent: findType("KeyboardEvent"),
+      LevelArchetype: findType("LevelArchetype"),
       List_Architecture: findType("List<Architecture>"),
       List_Attack: findType("List<Attack>"),
       List_Color: findType("List<Color>"),
@@ -40135,6 +40587,7 @@
       List_DetectType: findType("List<DetectType>"),
       List_Direction: findType("List<Direction>"),
       List_Glyph: findType("List<Glyph>"),
+      List_Item: findType("List<Item>"),
       List_Junction: findType("List<Junction>"),
       List_List_Color: findType("List<List<Color>>"),
       List_List_Vec: findType("List<List<Vec>>"),
@@ -40463,6 +40916,7 @@
     B.Color_222_156_33 = new A.Color(222, 156, 33);
     B.Color_226_223_240 = new A.Color(226, 223, 240);
     B.Color_22_117_38 = new A.Color(22, 117, 38);
+    B.Color_232_200_21 = new A.Color(232, 200, 21);
     B.Color_255_122_105 = new A.Color(255, 122, 105);
     B.Color_255_238_168 = new A.Color(255, 238, 168);
     B.Color_255_255_255 = new A.Color(255, 255, 255);
@@ -40578,6 +41032,9 @@
     B.ItemQuality_2 = new A.ItemQuality("great");
     B.JsonDecoder_null = new A.JsonDecoder(null);
     B.JsonEncoder_null = new A.JsonEncoder(null);
+    B.LevelArchetype_BOSS_boss = new A.LevelArchetype("BOSS", "boss");
+    B.LevelArchetype_COMBAT_combat = new A.LevelArchetype("COMBAT", "combat");
+    B.LevelArchetype_LOOT_loot = new A.LevelArchetype("LOOT", "loot");
     B.LightRadiusReward_eQB = new A.LightRadiusReward("Illumination", "Increased light radius for next run", "Darkness holds no fear for you");
     B.List_V7A = A._setArrayType(makeConstList([B.Color_222_156_33, B.Color_110_32_13]), type$.JSArray_Color);
     B.List_PNG = A._setArrayType(makeConstList([B.Color_255_238_168, B.Color_179_74_4]), type$.JSArray_Color);
@@ -40650,8 +41107,9 @@
     B.LoopInput_1 = new A.LoopInput("e");
     B.LoopInput_10 = new A.LoopInput("action2");
     B.LoopInput_11 = new A.LoopInput("action3");
-    B.LoopInput_12 = new A.LoopInput("cancel");
-    B.LoopInput_13 = new A.LoopInput("info");
+    B.LoopInput_12 = new A.LoopInput("equip");
+    B.LoopInput_13 = new A.LoopInput("cancel");
+    B.LoopInput_14 = new A.LoopInput("info");
     B.LoopInput_2 = new A.LoopInput("s");
     B.LoopInput_3 = new A.LoopInput("w");
     B.LoopInput_4 = new A.LoopInput("ne");
@@ -40674,7 +41132,6 @@
     B.Object_DD7 = {Y: 0, N: 1, "`": 2};
     B.Map_Am2t0 = new A.ConstantStringMap(B.Object_DD7, ["Yes", "No", "No"], type$.ConstantStringMap_String_String);
     B.Object_dh7 = {L: 0, E: 1, R: 2, O: 3, G: 4, Y: 5};
-    B.Color_232_200_21 = new A.Color(232, 200, 21);
     B.Map_SFjnT = new A.ConstantStringMap(B.Object_dh7, [B.Color_132_126_135, B.Color_72_64_74, B.Color_204_35_57, B.Color_179_74_4, B.Color_222_156_33, B.Color_232_200_21], A.findType("ConstantStringMap<String,Color>"));
     B.Map_TaQlz = new A.GeneralConstantMap([9786, 1, 9787, 2, 9829, 3, 9830, 4, 9827, 5, 9824, 6, 8226, 7, 9688, 8, 9675, 9, 9689, 10, 9794, 11, 9792, 12, 9834, 13, 9835, 14, 9788, 15, 9658, 16, 9668, 17, 8597, 18, 8252, 19, 182, 20, 167, 21, 9644, 22, 8616, 23, 8593, 24, 8595, 25, 8594, 26, 8592, 27, 8735, 28, 8596, 29, 9650, 30, 9660, 31, 8962, 127, 199, 128, 252, 129, 233, 130, 226, 131, 228, 132, 224, 133, 229, 134, 231, 135, 234, 136, 235, 137, 232, 138, 239, 139, 238, 140, 236, 141, 196, 142, 197, 143, 201, 144, 230, 145, 198, 146, 244, 147, 246, 148, 242, 149, 251, 150, 249, 151, 255, 152, 214, 153, 220, 154, 162, 155, 163, 156, 165, 157, 8359, 158, 402, 159, 225, 160, 237, 161, 243, 162, 250, 163, 241, 164, 209, 165, 170, 166, 186, 167, 191, 168, 8976, 169, 172, 170, 189, 171, 188, 172, 161, 173, 171, 174, 187, 175, 9617, 176, 9618, 177, 9619, 178, 9474, 179, 9508, 180, 9569, 181, 9570, 182, 9558, 183, 9557, 184, 9571, 185, 9553, 186, 9559, 187, 9565, 188, 9564, 189, 9563, 190, 9488, 191, 9492, 192, 9524, 193, 9516, 194, 9500, 195, 9472, 196, 9532, 197, 9566, 198, 9567, 199, 9562, 200, 9556, 201, 9577, 202, 9574, 203, 9568, 204, 9552, 205, 9580, 206, 9575, 207, 9576, 208, 9572, 209, 9573, 210, 9561, 211, 9560, 212, 9554, 213, 9555, 214, 9579, 215, 9578, 216, 9496, 217, 9484, 218, 9608, 219, 9604, 220, 9612, 221, 9616, 222, 9600, 223, 945, 224, 223, 225, 915, 226, 960, 227, 931, 228, 963, 229, 181, 230, 964, 231, 934, 232, 920, 233, 937, 234, 948, 235, 8734, 236, 966, 237, 949, 238, 8745, 239, 8801, 240, 177, 241, 8805, 242, 8804, 243, 8992, 244, 8993, 245, 247, 246, 8776, 247, 176, 248, 8729, 249, 183, 250, 8730, 251, 8319, 252, 178, 253, 9632, 254], A.findType("GeneralConstantMap<int,int>"));
     B.Object_empty = {};
@@ -40716,6 +41173,7 @@
     B.SpawnLocation_1 = new A.SpawnLocation("open");
     B.SpawnLocation_2 = new A.SpawnLocation("wall");
     B.SpawnLocation_3 = new A.SpawnLocation("corner");
+    B.SummonReward_3TK = new A.SummonReward("Summon Scrolls", "Start next run with monster-summoning scrolls", "Ancient pacts allow you to call forth allies");
     B.Symbol_call = new A.Symbol("call");
     B.Symmetry_0 = new A.Symmetry("none");
     B.Symmetry_1 = new A.Symmetry("mirrorHorizontal");
@@ -41089,8 +41547,6 @@
     _lazyFinal($, "HowlEffect_dash", "$get$HowlEffect_dash", () => A.Glyph$("-", B.Color_15_130_148, null));
     _lazyFinal($, "HowlEffect_less", "$get$HowlEffect_less", () => A.Glyph$("<", B.Color_15_130_148, null));
     _lazyFinal($, "HowlEffect_greater", "$get$HowlEffect_greater", () => A.Glyph$(">", B.Color_15_130_148, null));
-    _lazyFinal($, "darkerCoolGray", "$get$darkerCoolGray", () => A.Color$(51, 51, 51));
-    _lazyFinal($, "darkWarmGray", "$get$darkWarmGray", () => A.Color$(68, 68, 68));
     _lazyFinal($, "SidebarPanel__resistLetters", "$get$SidebarPanel__resistLetters", () => A.LinkedHashMap_LinkedHashMap$_literal([$.$get$Elements_air(), "A", $.$get$Elements_earth(), "E", $.$get$Elements_fire(), "F", $.$get$Elements_water(), "W", $.$get$Elements_acid(), "A", $.$get$Elements_cold(), "C", $.$get$Elements_lightning(), "L", $.$get$Elements_poison(), "P", $.$get$Elements_dark(), "D", $.$get$Elements_light(), "L", $.$get$Elements_spirit(), "S"], type$.Element_2, type$.String));
     _lazyFinal($, "rng", "$get$rng", () => A.Rng$(A.Primitives_dateNow()));
   })();
