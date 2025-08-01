@@ -89,14 +89,23 @@
     - Ensure data persistence across sessions
     - _Requirements: 4.1, 4.3_
 
-- [ ] 5. Implement runtime tuning console
-  - [ ] 5.1 Create TuningOverlay UI component
+- [x] 5. Implement runtime tuning console
+
+
+
+
+
+  - [x] 5.1 Create TuningOverlay UI component
+
+
     - Build overlay panel showing current scalars
     - Handle keyboard input for scalar adjustments
     - Display archetype-specific multipliers
     - _Requirements: 5.1, 5.4_
 
-  - [ ] 5.2 Integrate tuning overlay with LoopGameScreen
+  - [x] 5.2 Integrate tuning overlay with LoopGameScreen
+
+
     - Add tilde key handler to show/hide overlay
     - Implement arrow key handlers for ±10% adjustments
     - Apply scalar changes to scheduler in real-time

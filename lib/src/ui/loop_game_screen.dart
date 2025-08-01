@@ -35,6 +35,7 @@ import 'panel/panel.dart';
 import 'panel/equipment_status_panel.dart';
 import 'draw.dart';
 import 'storage.dart';
+import 'tuning_overlay.dart';
 
 /// Panel for displaying loop mode controls
 class ControlsPanel extends Panel {
@@ -77,6 +78,8 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   late ActionMapping _actionMapping;
   final LoopManager _loopManager;
   ControlsPanel? _controlsPanel;
+  TuningOverlay? _tuningOverlay;
+  bool _showTuningOverlay = false;
   int _pause = 0;
   HeroSave _previousSave;
   
@@ -122,6 +125,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     _stagePanel = StagePanel(this);
     _equipmentPanel = EquipmentStatusPanel(game);
     _controlsPanel = ControlsPanel(ActionMapping.fromSmartCombat(_smartCombat), _loopManager, game);
+    _tuningOverlay = TuningOverlay(_loopManager.scheduler);
     
     // Initialize dynamic action mapping
     _updateActionMapping();
@@ -160,6 +164,41 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
 
   @override
   bool handleInput(Input input) {
+    // Handle tuning overlay toggle (tilde key maps to cancel)
+    if (input == Input.cancel) {
+      _showTuningOverlay = !_showTuningOverlay;
+      if (_showTuningOverlay) {
+        _tuningOverlay?.show(Rect(0, 0, 0, 0)); // Will be properly sized in render
+      } else {
+        _tuningOverlay?.hide();
+      }
+      dirty();
+      return true;
+    }
+
+    // Handle tuning overlay input when active
+    if (_showTuningOverlay && _tuningOverlay != null) {
+      var handled = false;
+      
+      // Arrow key handling for scalar adjustments
+      if (input == Input.n) {
+        handled = _tuningOverlay!.handleArrowKey('up');
+      } else if (input == Input.s) {
+        handled = _tuningOverlay!.handleArrowKey('down');
+      } else if (input == Input.w) {
+        handled = _tuningOverlay!.handleArrowKey('left');
+      } else if (input == Input.e) {
+        handled = _tuningOverlay!.handleArrowKey('right');
+      } else if (input == Input.tab) {
+        handled = _tuningOverlay!.handleTab();
+      }
+      
+      if (handled) {
+        dirty();
+        return true;
+      }
+    }
+
     // Convert standard input to loop input for simplified controls
     var loopInput = InputConverter.convertToLoopInput(input);
     if (loopInput == null) {
@@ -368,6 +407,11 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     _controlsPanel?.render(terminal);
     _renderMoveCounter(terminal);
     _renderLoopProgress(terminal);
+    
+    // Render tuning overlay on top if active
+    if (_showTuningOverlay && _tuningOverlay != null) {
+      _tuningOverlay!.render(terminal);
+    }
   }
   void _renderMoveCounter(Terminal terminal) {
     var movesRemaining = LoopManager.movesPerLoop - _loopManager.moveCount;

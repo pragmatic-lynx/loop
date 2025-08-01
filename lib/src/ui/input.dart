@@ -71,6 +71,9 @@ class Input {
   /// Quick level up (debug/cheat).
   static const levelUp = Input("levelUp");
 
+  /// Tab key for cycling through options.
+  static const tab = Input("tab");
+
   final String name;
 
   const Input(this.name);
