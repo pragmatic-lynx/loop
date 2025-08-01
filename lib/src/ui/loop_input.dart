@@ -10,9 +10,16 @@ enum LoopInput {
   action1,  // 🗡️ Primary Attack/Interact
   action2,  // ⚡ Magic/Secondary Ability
   action3,  // ❤️ Heal/Consumable
+  action4,  // 🛡️ Resistance/Defense
+
+  // Queue management
+  cycleQueue, // Q - cycle current queue
 
   // Equipment and staircase interaction
   equip,    // E - equip items or interact with staircases
+
+  // Debug functionality
+  debug,    // Z - debug hotkey
 
   // Minimal essential controls
   cancel,   // ESC - pause/menu

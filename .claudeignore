@@ -72,3 +72,6 @@ CLEANUP_CANDIDATES.json
 *.html
 web/main.dart.js.deps
 *_old*
+out.js.deps
+web/styles.css
+*.json

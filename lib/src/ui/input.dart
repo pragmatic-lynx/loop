@@ -77,6 +77,12 @@ class Input {
   /// M key for metrics capture.
   static const metricsCapture = Input("metricsCapture");
 
+  /// Q key for cycling queues.
+  static const cycleQueue = Input("cycleQueue");
+
+  /// Z key for debug functionality.
+  static const debug = Input("debug");
+
   final String name;
 
   const Input(this.name);

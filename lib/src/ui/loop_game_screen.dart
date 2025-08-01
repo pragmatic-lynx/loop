@@ -8,14 +8,21 @@ import 'package:piecemeal/piecemeal.dart';
 
 import '../engine/action/action.dart';
 import '../engine/action/action_mapping.dart';
+import '../engine/action/attack.dart';
+import '../engine/action/item.dart';
+import '../engine/action/toss.dart';
 import '../engine/action/walk.dart';
+import '../engine/core/combat.dart';
+import '../engine/core/element.dart';
+import '../engine/items/inventory.dart';
 import '../engine/core/actor.dart';
 import '../engine/core/content.dart';
 import '../engine/core/game.dart';
 import '../engine/hero/hero_save.dart';
 import '../engine/loop/level_archetype.dart';
 import '../engine/loop/loop_manager.dart';
-import '../engine/loop/smart_combat.dart';
+import '../engine/loop/action_queues.dart';
+import '../engine/loop/debug_helper.dart';
 import '../engine/stage/tile.dart';
 import '../content/tiles.dart';
 import '../hues.dart';
@@ -61,6 +68,7 @@ class ControlsPanel extends Panel {
     terminal.writeAt(1, 5, "1: 🗡️ ${actionMapping.action1Label}", lightBlue);
     terminal.writeAt(1, 6, "2: ⚡ ${actionMapping.action2Label}", lima);
     terminal.writeAt(1, 7, "3: ❤️ ${actionMapping.action3Label}", pink);
+    terminal.writeAt(1, 8, "4: 🛡️ ${actionMapping.action4Label}", aqua);
   }
 }
 
@@ -75,7 +83,8 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   late final SidebarPanel _sidebarPanel;
   late final StagePanel _stagePanel;
   late final EquipmentStatusPanel _equipmentPanel;
-  final SmartCombat _smartCombat;
+  final ActionQueues _actionQueues;
+  final DebugHelper _debugHelper;
   late ActionMapping _actionMapping;
   final LoopManager _loopManager;
   ControlsPanel? _controlsPanel;
@@ -116,7 +125,8 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   Actor? get currentTargetActor => null; // No target selection in loop mode
 
   LoopGameScreen(this._storage, this.game, this._loopManager)
-      : _smartCombat = SmartCombat(game),
+      : _actionQueues = ActionQueues(game),
+        _debugHelper = DebugHelper(game),
         _previousSave = game.hero.save.clone(),
         _logPanel = LogPanel(game.log),
         itemPanel = ItemPanel(game) {
@@ -125,7 +135,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     _sidebarPanel = SidebarPanel(this);
     _stagePanel = StagePanel(this);
     _equipmentPanel = EquipmentStatusPanel(game);
-    _controlsPanel = ControlsPanel(ActionMapping.fromSmartCombat(_smartCombat), _loopManager, game);
+    _controlsPanel = ControlsPanel(ActionMapping.fromQueues(_actionQueues), _loopManager, game);
     _tuningOverlay = TuningOverlay(_loopManager.scheduler);
     
     // Initialize dynamic action mapping
@@ -137,7 +147,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   
   /// Update action mapping with current game state
   void _updateActionMapping() {
-    _actionMapping = ActionMapping.fromSmartCombat(_smartCombat);
+    _actionMapping = ActionMapping.fromQueues(_actionQueues);
     _controlsPanel?.updateActionMapping(_actionMapping);
     dirty();
   }
@@ -264,26 +274,52 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
           return true;
         }
         
-        // Otherwise try primary action
-        action = _smartCombat.handlePrimaryAction();
+        // Ranged attack - set queue context and handle
+        _actionQueues.setCurrentQueue(1);
+        action = _handleRangedAction();
         if (action == null) {
-          game.log.message("No primary action available.");
+          game.log.message("No ranged weapon available.");
           dirty();
         }
 
       case LoopInput.action2:
-        action = _smartCombat.handleSecondaryAction();
+        // Magic - set queue context and handle
+        _actionQueues.setCurrentQueue(2);
+        action = _handleMagicAction();
         if (action == null) {
-          game.log.message("No secondary action available.");
+          game.log.message("No magic available.");
           dirty();
         }
 
       case LoopInput.action3:
-        action = _smartCombat.handleHealAction();
+        // Heal - set queue context and handle
+        _actionQueues.setCurrentQueue(3);
+        action = _handleHealAction();
         if (action == null) {
           game.log.message("No healing available.");
           dirty();
         }
+      case LoopInput.action4:
+        // Resistance - set queue context and handle
+        _actionQueues.setCurrentQueue(4);
+        action = _handleResistanceAction();
+        if (action == null) {
+          game.log.message("No resistance items available.");
+          dirty();
+        }
+        
+      case LoopInput.cycleQueue:
+        // Cycle the current queue
+        _actionQueues.cycleCurrentQueue();
+        _updateActionMapping();
+        game.log.message("Cycled queue.");
+        return true;
+        
+      case LoopInput.debug:
+        // Debug functionality - add random items
+        _debugHelper.addRandomTestItems();
+        _updateActionMapping();
+        return true;
 
       case LoopInput.equip:
         // First try to interact with staircase if standing on one
@@ -298,8 +334,49 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
           return true;
         }
         
+        // Check for items to pick up at current position
+        var items = game.stage.itemsAt(game.hero.pos);
+        if (items.isNotEmpty) {
+          var item = items.first;
+          
+          // Special handling for weapons - replace current weapon
+          if (item.canEquip && (item.equipSlot == 'hand')) {
+            // This is a weapon, so replace current weapon
+            var unequippedItems = game.hero.equipment.equip(item);
+            game.stage.removeItem(item, game.hero.pos);
+            
+            // Drop any unequipped weapons on the ground
+            for (var unequippedItem in unequippedItems) {
+              game.stage.addItem(unequippedItem, game.hero.pos);
+              game.log.message('Dropped ${unequippedItem.type.name}.');
+            }
+            
+            game.hero.pickUp(game, item);
+            game.log.message('Equipped ${item.type.name}.');
+            _updateActionMapping();
+            return true;
+          } else {
+            // Regular item pickup
+            var result = game.hero.inventory.tryAdd(item);
+            if (result.added > 0) {
+              game.log.message('Picked up ${item.clone(result.added)}.');
+              
+              if (result.remaining == 0) {
+                game.stage.removeItem(item, game.hero.pos);
+              }
+              
+              game.hero.pickUp(game, item);
+              _updateActionMapping();
+              return true;
+            } else {
+              game.log.message('Your inventory is full.');
+              return true;
+            }
+          }
+        }
+        
         // For now, just show a message that equipment is not available in loop mode
-        game.log.message("Equipment management not available in loop mode.");
+        game.log.message("Nothing to pick up or interact with.");
         dirty();
         return true;
     }
@@ -402,7 +479,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     _equipmentPanel.show(Rect(size.x - rightWidth, 0, rightWidth, equipmentHeight));
     
     // Controls panel at bottom right
-    var controlsHeight = 8;
+    var controlsHeight = 10; // Increased for 4th button
     _controlsPanel?.show(Rect(size.x - rightWidth, size.y - controlsHeight, rightWidth, controlsHeight));
     
     // Log panel at top center
@@ -548,5 +625,149 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     _previousSave = game.hero.save;
     _loopManager.reset();
     ui.goTo(GameOverScreen(_storage, _previousSave!, _previousSave!));
+  }
+  
+  /// Handle ranged weapon action
+  Action? _handleRangedAction() {
+    var rangedItem = _actionQueues.getRangedQueueItem();
+    
+    // Debug: Show what we found
+    game.log.message("Debug: Ranged item: ${rangedItem.name}, available: ${rangedItem.isAvailable}");
+    
+    if (!rangedItem.isAvailable) {
+      // Try to auto-equip a ranged weapon
+      if (_actionQueues.autoEquipRangedWeapon()) {
+        _updateActionMapping();
+        rangedItem = _actionQueues.getRangedQueueItem();
+        game.log.message("Debug: After auto-equip: ${rangedItem.name}, available: ${rangedItem.isAvailable}");
+      }
+    }
+    
+    if (!rangedItem.isAvailable || rangedItem.item == null) {
+      return null;
+    }
+    
+    // Try to use the Archery skill if available
+    var archerySkill = _findArcherySkill();
+    if (archerySkill != null) {
+      var target = _findRangedTarget();
+      if (target == null) {
+        game.log.message("No target in range.");
+        return null;
+      }
+      
+      // Use archery skill if we have it
+      var level = game.hero.skills.level(archerySkill);
+      if (level > 0) {
+        game.log.message("Debug: Using archery skill level $level");
+        return archerySkill.onGetTargetAction(game, level, target.pos);
+      }
+    }
+    
+    // Fallback: try using the weapon as a tossable item
+    var weapon = rangedItem.item!;
+    if (weapon.canToss) {
+      var target = _findRangedTarget();
+      if (target == null) {
+        game.log.message("No target in range.");
+        return null;
+      }
+      
+      game.log.message("Debug: Tossing ${weapon.type.name} at target");
+      // Create a hit for the toss action
+      var hit = weapon.toss!.attack.createHit();
+      return TossAction(ItemLocation.equipment, weapon, hit, target.pos);
+    } else {
+      // If we can't toss it, just do a regular attack (this might not work well)
+      var target = _findRangedTarget();
+      if (target == null) {
+        game.log.message("No target in range.");
+        return null;
+      }
+      
+      game.log.message("Debug: Melee attacking target with ${rangedItem.name}");
+      return AttackAction(target);
+    }
+  }
+  
+  /// Handle magic item action
+  Action? _handleMagicAction() {
+    var magicItem = _actionQueues.getMagicQueueItem();
+    if (!magicItem.isAvailable || magicItem.item == null) {
+      return null;
+    }
+    
+    var action = UseAction(ItemLocation.inventory, magicItem.item!);
+    
+    // Replace the used item with a new one after use
+    _actionQueues.replaceUsedItem(magicItem.item!);
+    
+    return action;
+  }
+  
+  /// Handle resistance item action
+  Action? _handleResistanceAction() {
+    var resistanceItem = _actionQueues.getResistanceQueueItem();
+    if (!resistanceItem.isAvailable || resistanceItem.item == null) {
+      return null;
+    }
+    
+    // Always allow using resistance items, even if already have the effect
+    var action = UseAction(ItemLocation.inventory, resistanceItem.item!);
+    
+    // Replace the used item with a new one after use
+    _actionQueues.replaceUsedItem(resistanceItem.item!);
+    
+    return action;
+  }
+  
+  /// Handle heal item action
+  Action? _handleHealAction() {
+    var healItem = _actionQueues.getHealQueueItem();
+    if (!healItem.isAvailable || healItem.item == null) {
+      return null;
+    }
+    
+    // Always allow healing - even if it will overfill
+    var action = UseAction(ItemLocation.inventory, healItem.item!);
+    
+    // Replace the used item with a new one after use
+    _actionQueues.replaceUsedItem(healItem.item!);
+    
+    return action;
+  }
+  
+  /// Find the archery skill
+  dynamic _findArcherySkill() {
+    try {
+      for (var skill in game.content.skills) {
+        if (skill.name.toLowerCase() == 'archery') {
+          return skill;
+        }
+      }
+    } catch (e) {
+      game.log.message('Debug: Error finding archery skill: $e');
+    }
+    return null;
+  }
+  
+  /// Find target for ranged attack
+  Actor? _findRangedTarget() {
+    // Find nearest visible enemy
+    Actor? nearest;
+    var nearestDistance = 999;
+    
+    for (var actor in game.stage.actors) {
+      if (actor == game.hero || !actor.isAlive) continue;
+      if (!game.heroCanPerceive(actor)) continue;
+      
+      var distance = (actor.pos - game.hero.pos).rookLength;
+      if (distance < nearestDistance) {
+        nearest = actor;
+        nearestDistance = distance;
+      }
+    }
+    
+    return nearest;
   }
 }

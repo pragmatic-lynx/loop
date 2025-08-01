@@ -152,6 +152,8 @@ void main() {
   _ui.keyPress.bind(Input.levelUp, KeyCode.l, shift: true, alt: true);
   _ui.keyPress.bind(Input.tab, KeyCode.tab);
   _ui.keyPress.bind(Input.metricsCapture, KeyCode.m, shift: true);
+  _ui.keyPress.bind(Input.cycleQueue, KeyCode.q);
+  _ui.keyPress.bind(Input.debug, KeyCode.z);
 
   // Loop mode simplified controls (1,2,3,4 action buttons)
   // These will be handled by a separate input handler for loop mode
@@ -160,7 +162,7 @@ void main() {
   _ui.keyPress.bind(Input.selectSkill, KeyCode.one);   // Primary action (1)
   _ui.keyPress.bind(Input.use, KeyCode.two);           // Secondary action (2)
   _ui.keyPress.bind(Input.drop, KeyCode.three);        // Heal/Consumable (3)
-  _ui.keyPress.bind(Input.equip, KeyCode.four);        // Escape/Move (4)
+  _ui.keyPress.bind(Input.toss, KeyCode.four);         // Resistance/Defense (4)
 
   _ui.push(MainMenuScreen(content));
 
