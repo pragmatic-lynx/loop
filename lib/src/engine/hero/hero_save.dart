@@ -27,6 +27,9 @@ class HeroSave {
   /// If `true`, then the hero is deleted from storage when they die.
   final bool permadeath;
 
+  /// Number of level-ups pending to be displayed at end of loop
+  int pendingLevels = 0;
+
   int get level => experienceLevel(experience);
 
   var _inventory = Inventory(ItemLocation.inventory, Option.inventoryCapacity);

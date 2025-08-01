@@ -16,6 +16,7 @@ import '../engine/core/combat.dart';
 import '../engine/core/element.dart';
 import '../engine/items/inventory.dart';
 import '../engine/core/actor.dart';
+import '../engine/core/constants.dart';
 import '../engine/core/content.dart';
 import '../engine/core/game.dart';
 import '../engine/hero/hero_save.dart';
@@ -23,16 +24,20 @@ import '../engine/loop/level_archetype.dart';
 import '../engine/loop/loop_manager.dart';
 import '../engine/loop/action_queues.dart';
 import '../engine/loop/debug_helper.dart';
+import '../engine/loop/loop_reward.dart';
+import '../engine/loop/smart_combat.dart';
 import '../engine/stage/tile.dart';
 import '../content/tiles.dart';
 import '../hues.dart';
 import 'exit_popup.dart';
 import 'game_over_screen.dart';
+import 'game_screen.dart';
 import 'game_screen_interface.dart';
 import 'hero_equipment_dialog.dart';
 import 'item/equip_dialog.dart';
 import 'input.dart';
 import 'input_converter.dart';
+import 'level_up_screen.dart';
 import 'loop_input.dart';
 import 'loop_reward_screen.dart';
 import 'panel/log_panel.dart';
@@ -622,9 +627,37 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   }
 
   void _handleLoopExit() {
-    _previousSave = game.hero.save;
-    _loopManager.reset();
-    ui.goTo(GameOverScreen(_storage, _previousSave!, _previousSave!));
+    // Award XP bonus for descending stairs
+    game.hero.gainExperience(GameConstants.stairXpBonus);
+    
+    // Check if we need to show level-up screen before proceeding
+    if (game.hero.save.pendingLevels > 0) {
+      // Show level-up screen, then continue to next level
+      ui.push(LevelUpScreen(
+        hero: game.hero.save,
+        pendingLevels: game.hero.save.pendingLevels,
+        storage: _storage,
+      ));
+      
+      // Clear pending levels after showing screen
+      game.hero.save.pendingLevels = 0;
+    }
+    
+    // Continue to next level instead of ending the game
+    _startNextLevel();
+  }
+
+  /// Start the next level after stairs or level completion
+  void _startNextLevel() {
+    // Increment the loop and continue
+    _loopManager.selectReward(LoopReward.generateRewardOptions(1).first);
+    
+    // Create a new game for the next level
+    var depth = _loopManager.getCurrentDepth();
+    var newGame = GameScreen.loop(_storage, game.content, game.hero.save, _loopManager, depth);
+    
+    // Replace current screen with new game screen
+    ui.goTo(LoopGameScreen.create(_storage, game.content, game.hero.save, _loopManager));
   }
   
   /// Handle ranged weapon action

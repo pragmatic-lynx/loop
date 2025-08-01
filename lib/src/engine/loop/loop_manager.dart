@@ -133,6 +133,15 @@ class LoopManager {
     print('LOOP_START: Loop $currentLoop - $nextArchetype archetype, Threat: $threatLevel, Depth: ${getCurrentDepth()}');
     print('DIFFICULTY_SCALARS: Enemy=${currentArchetypeMetadata?.scalars.enemyMultiplier ?? 1.0}x, Item=${currentArchetypeMetadata?.scalars.itemMultiplier ?? 1.0}x');
   }
+
+  /// Finishes the current loop and handles any pending level-ups
+  /// Returns true if level-up screen should be shown
+  bool finishLoop(HeroSave hero) {
+    if (hero.pendingLevels > 0) {
+      return true; // Signal that level-up screen should be shown
+    }
+    return false;
+  }
   
   /// Get current depth for dungeon generation
   int getCurrentDepth() {

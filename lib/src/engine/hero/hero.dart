@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:piecemeal/piecemeal.dart';
@@ -5,6 +6,7 @@ import 'package:piecemeal/piecemeal.dart';
 import '../action/action.dart';
 import '../core/actor.dart';
 import '../core/combat.dart';
+import '../core/constants.dart';
 import '../core/element.dart';
 import '../core/energy.dart';
 import '../core/game.dart';
@@ -30,6 +32,9 @@ class Hero extends Actor {
 
   /// Monsters the hero has already seen. Makes sure we don't double count them.
   final Set<Monster> _seenMonsters = {};
+
+  /// XP curve table loaded from assets or defaults
+  List<int> xpTable = GameConstants.defaultXpCurve;
 
   Behavior? _behavior;
 
@@ -120,6 +125,9 @@ class Hero extends Actor {
   Hero(Vec pos, this.save, this._allSkills) : super(pos.x, pos.y) {
     // Give the hero energy so they can act before all of the monsters.
     energy.energy = Energy.actionCost;
+
+    // Try to load XP curve from assets
+    _loadXpCurve();
 
     refreshProperties();
 
@@ -327,8 +335,7 @@ class Hero extends Actor {
       skill.killMonster(this, action, monster);
     }
 
-    experience += monster.experience;
-    refreshProperties();
+    gainExperience(monster.experience);
   }
 
   @override
@@ -437,6 +444,52 @@ class Hero extends Actor {
     _focus = (_focus + focus * scale).ceil().clamp(0, intellect.maxFocus);
   }
 
+  /// Loads XP curve from assets or falls back to defaults
+  void _loadXpCurve() {
+    // Try to load from assets/xp_curve.json
+    try {
+      // In a web environment, we'd need to use HTTP requests to load assets
+      // For now, use the default curve as fallback
+      // TODO: Implement proper asset loading for web deployment
+      xpTable = GameConstants.defaultXpCurve;
+      
+      // Log that we're using default curve
+      print('Using default XP curve (${xpTable.length} levels)');
+    } catch (e) {
+      // Fallback to default curve if loading fails
+      xpTable = GameConstants.defaultXpCurve;
+      print('Failed to load XP curve from assets, using defaults: $e');
+    }
+  }
+
+  /// Gains experience and handles immediate level-ups
+  void gainExperience(int amount) {
+    if (amount <= 0) return;
+    
+    var oldLevel = level;
+    experience += amount;
+    var newLevel = _calculateLevel(experience);
+    
+    if (newLevel > oldLevel) {
+      save.pendingLevels += newLevel - oldLevel;
+      
+      // Show quick toast notification for level-up
+      save.log.gain('You reached level $newLevel!');
+      
+      // TODO: Play level-up sound effect (levelup.ogg)
+    }
+    
+    refreshProperties();
+  }
+  
+  /// Calculate level from experience using XP table
+  int _calculateLevel(int exp) {
+    for (var level = 1; level < xpTable.length; level++) {
+      if (exp < xpTable[level]) return level - 1;
+    }
+    return xpTable.length - 1;
+  }
+
   /// Refreshes all hero state whose change should be logged.
   ///
   /// For example, if the hero equips a helm that increases intellect, we want
@@ -543,15 +596,17 @@ class Hero extends Actor {
 }
 
 int experienceLevel(int experience) {
-  for (var level = 1; level <= Hero.maxLevel; level++) {
-    if (experience < experienceLevelCost(level)) return level - 1;
+  // Use default curve for backwards compatibility
+  var curve = GameConstants.defaultXpCurve;
+  for (var level = 1; level < curve.length; level++) {
+    if (experience < curve[level]) return level - 1;
   }
-
-  return Hero.maxLevel;
+  return curve.length - 1;
 }
 
 /// Returns how much experience is needed to reach [level].
 int experienceLevelCost(int level) {
-  if (level > Hero.maxLevel) throw RangeError.value(level, "level");
-  return math.pow(level - 1, 3).toInt() * 1000;
+  var curve = GameConstants.defaultXpCurve;
+  if (level >= curve.length) return curve.last;
+  return curve[level];
 }
