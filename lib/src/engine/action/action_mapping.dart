@@ -2,47 +2,37 @@
 
 import '../core/game.dart';
 import '../hero/hero.dart';
+import '../loop/smart_combat.dart';
 
 /// Maps simplified loop input controls to context-aware action labels
-/// Provides dynamic button labeling based on hero's current state and abilities
+/// Provides dynamic button labeling based on SmartCombat analysis
 class ActionMapping {
   final String action1Label;
   final String action2Label;
   final String action3Label;
-  final String action4Label;
 
   ActionMapping({
     required this.action1Label,
     required this.action2Label,
     required this.action3Label,
-    required this.action4Label,
   });
 
-  /// Creates action mapping based on hero's current state and equipment
-  factory ActionMapping.fromHero(Hero hero, Game game) {
-    // Action 1: Primary attack/interact
-    String action1 = "Attack";
-    var weapons = hero.equipment.weapons;
-    if (weapons.isNotEmpty) {
-      action1 = "Use ${weapons.first.nounText}";
-    }
-
-    // Action 2: Secondary action (spells, special abilities)
-    String action2 = "Cast";
-    // TODO: Check for available spells/abilities
-
-    // Action 3: Healing/consumables
-    String action3 = "Heal";
-    // TODO: Check for healing items in inventory
-
-    // Action 4: Escape/defensive action
-    String action4 = "Escape";
+  /// Creates dynamic action mapping using SmartCombat analysis
+  factory ActionMapping.fromSmartCombat(SmartCombat smartCombat) {
+    var action1Info = smartCombat.getPrimaryActionInfo();
+    var action2Info = smartCombat.getSecondaryActionInfo();
+    var action3Info = smartCombat.getHealActionInfo();
 
     return ActionMapping(
-      action1Label: action1,
-      action2Label: action2,
-      action3Label: action3,
-      action4Label: action4,
+      action1Label: action1Info.displayText,
+      action2Label: action2Info.displayText,
+      action3Label: action3Info.displayText,
     );
+  }
+
+  /// Legacy method for backwards compatibility
+  factory ActionMapping.fromHero(Hero hero, Game game) {
+    var smartCombat = SmartCombat(game);
+    return ActionMapping.fromSmartCombat(smartCombat);
   }
 }

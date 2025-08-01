@@ -87,13 +87,11 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   LoopGameScreen(this.game, this.storage, {required HeroSave heroSave})
       : _loopManager = LoopManager(),
         _smartCombat = SmartCombat(game),
-        _actionMapping = ActionMapping(
-          action1Label: 'Attack',
-          action2Label: 'Cast',
-          action3Label: 'Heal',
-          action4Label: 'Escape',
-        ),
         _logPanel = LogPanel(game.log) {
+    
+    // Initialize dynamic action mapping
+    _updateActionMapping();
+    
     // Initialize sidebar panel after constructor
     _sidebarPanel = SidebarPanel(this);
     
@@ -105,6 +103,12 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     
     // Initialize game state
     _dirty = true;
+  }
+  
+  /// Update action mapping with current game state
+  void _updateActionMapping() {
+    _actionMapping = ActionMapping.fromSmartCombat(_smartCombat);
+    dirty();
   }
 
   /// Factory constructor creates a game for the current loop
@@ -190,20 +194,13 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
           game.log.message("No healing available.");
           dirty();
         }
-
-      case LoopInput.action4:
-        action = _smartCombat.handleEscapeAction();
-        if (action == null) {
-          game.log.message("No escape action available.");
-          dirty();
-        }
     }
 
     if (action != null) {
       game.hero.setNextAction(action);
       
       // Update action mapping after each action (abilities may change)
-      _actionMapping = ActionMapping.fromHero(game.hero, game);
+      _updateActionMapping();
     }
 
     return true;
@@ -216,7 +213,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     }
 
     // Update action mapping when returning to screen
-    _actionMapping = ActionMapping.fromHero(game.hero, game);
+    _updateActionMapping();
   }
 
   @override
@@ -312,12 +309,11 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     terminal.writeAt(
         rightSide, 3, 'Loop: ${_loopManager.currentLoop}'.padLeft(20), pink);
 
-    // Draw action buttons
+    // Draw action buttons with emojis for clarity
     terminal.writeAt(rightSide, 5, 'Actions:', ash);
-    terminal.writeAt(rightSide, 6, '1. ${_actionMapping.action1Label}');
-    terminal.writeAt(rightSide, 7, '2. ${_actionMapping.action2Label}');
-    terminal.writeAt(rightSide, 8, '3. ${_actionMapping.action3Label}');
-    terminal.writeAt(rightSide, 9, '4. ${_actionMapping.action4Label}');
+    terminal.writeAt(rightSide, 6, '1. 🗡️ ${_actionMapping.action1Label}');
+    terminal.writeAt(rightSide, 7, '2. ⚡ ${_actionMapping.action2Label}');
+    terminal.writeAt(rightSide, 8, '3. ❤️ ${_actionMapping.action3Label}');
 
     // Draw log messages - using a fixed rectangle for now
     _logPanel.render(terminal);
@@ -369,10 +365,9 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
 
     // Controls
     terminal.writeAt(x + 2, y + 3, "Arrow Keys/WASD: Move", ash, darkWarmGray);
-    terminal.writeAt(x + 2, y + 4, "1: ${_actionMapping.action1Label}", lightBlue, darkWarmGray);
-    terminal.writeAt(x + 2, y + 5, "2: ${_actionMapping.action2Label}", lima, darkWarmGray);
-    terminal.writeAt(x + 2, y + 6, "3: ${_actionMapping.action3Label}", pink, darkWarmGray);
-    terminal.writeAt(x + 2, y + 7, "4: ${_actionMapping.action4Label}", yellow, darkWarmGray);
+    terminal.writeAt(x + 2, y + 4, "1: 🗡️ ${_actionMapping.action1Label}", lightBlue, darkWarmGray);
+    terminal.writeAt(x + 2, y + 5, "2: ⚡ ${_actionMapping.action2Label}", lima, darkWarmGray);
+    terminal.writeAt(x + 2, y + 6, "3: ❤️ ${_actionMapping.action3Label}", pink, darkWarmGray);
 
     terminal.writeAt(x + 2, y + 9, "TAB: Toggle this help", lightWarmGray, darkWarmGray);
     terminal.writeAt(x + 2, y + 10, "ESC: Pause", lightWarmGray, darkWarmGray);

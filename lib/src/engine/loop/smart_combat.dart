@@ -45,6 +45,13 @@ class SmartCombat {
   
   SmartCombat(this.game) : hero = game.hero;
   
+  /// Handle action1 - 🗡️ Primary Attack/Interact
+  SmartActionInfo getPrimaryActionInfo() {
+    var action = handlePrimaryAction();
+    var label = _getPrimaryActionLabel();
+    return SmartActionInfo(action: action, label: label);
+  }
+  
   /// Handle action1 - Primary Attack/Interact
   Action? handlePrimaryAction() {
     // Auto-pickup any useful items at current position (BEFORE attacking)
@@ -83,6 +90,13 @@ class SmartCombat {
     return null;
   }
   
+  /// Handle action2 - ⚡ Magic/Secondary Ability
+  SmartActionInfo getSecondaryActionInfo() {
+    var action = handleSecondaryAction();
+    var label = _getSecondaryActionLabel();
+    return SmartActionInfo(action: action, label: label);
+  }
+  
   /// Handle action2 - Secondary Attack/Spell
   Action? handleSecondaryAction() {
     // Try to cast the best offensive spell at nearest enemy
@@ -102,6 +116,14 @@ class SmartCombat {
     
     // Fall back to melee attack
     return handlePrimaryAction();
+  }
+  
+  /// Handle action3 - ❤️ Heal/Consumable
+  SmartActionInfo getHealActionInfo() {
+    var action = handleHealAction();
+    var label = _getHealActionLabel();
+    var count = _getHealItemCount();
+    return SmartActionInfo(action: action, label: label, count: count);
   }
   
   /// Handle action3 - Heal/Consumable
@@ -133,7 +155,7 @@ class SmartCombat {
     return null;
   }
   
-  /// Handle action4 - Movement/Escape
+  /// Handle action4 - Movement/Escape (Legacy - no longer used in 3-button UI)
   Action? handleEscapeAction() {
     // If we're in danger (low health, surrounded), try to escape
     if (_isInDanger()) {
@@ -428,5 +450,101 @@ class SmartCombat {
     
     // If no equipment, just pick the first item
     return items.isNotEmpty ? items.first : null;
+  }
+  
+  /// Get dynamic label for primary action button
+  String _getPrimaryActionLabel() {
+    // Check for adjacent enemies
+    var target = _findAdjacentEnemy();
+    if (target != null) {
+      var weapon = hero.equipment.weapons.isNotEmpty ? 
+          hero.equipment.weapons.first : null;
+      if (weapon != null) {
+        return 'Attack';
+      }
+      return 'Punch';
+    }
+    
+    // Check for items to pick up
+    var items = game.stage.itemsAt(hero.pos);
+    if (items.isNotEmpty) {
+      var item = _findBestItemToPick(items);
+      if (item != null) {
+        return 'Take ${item.type.name}';
+      }
+    }
+    
+    // Check for doors/objects
+    var operablePos = _findOperableAdjacent();
+    if (operablePos != null) {
+      return 'Open';
+    }
+    
+    // Movement toward enemy
+    var nearestEnemy = _findNearestEnemy();
+    if (nearestEnemy != null) {
+      return 'Move';
+    }
+    
+    return 'Attack';
+  }
+  
+  /// Get dynamic label for secondary action button
+  String _getSecondaryActionLabel() {
+    var target = _findBestSpellTarget();
+    if (target != null) {
+      var spell = _getBestOffensiveSpell();
+      if (spell != null) {
+        return 'Cast'; // TODO: Use actual spell name when implemented
+      }
+    }
+    
+    // Check for ranged weapons
+    if (_hasRangedWeapon()) {
+      return 'Shoot';
+    }
+    
+    return 'Magic';
+  }
+  
+  /// Get dynamic label for heal action button
+  String _getHealActionLabel() {
+    if (hero.health >= hero.maxHealth * 0.8) {
+      return 'Healthy';
+    }
+    
+    var healingPotion = _findBestHealingItem();
+    if (healingPotion != null) {
+      return 'Heal';
+    }
+    
+    var healingSpell = _getBestHealingSpell();
+    if (healingSpell != null) {
+      return 'Heal';
+    }
+    
+    return 'Rest';
+  }
+  
+  /// Get count of healing items for button display
+  String? _getHealItemCount() {
+    var healingItems = 0;
+    for (var item in hero.inventory) {
+      if (_isHealingItem(item)) {
+        healingItems += item.count;
+      }
+    }
+    
+    return healingItems > 0 ? '($healingItems)' : null;
+  }
+  
+  /// Check if item is a healing item
+  bool _isHealingItem(Item item) {
+    var name = item.type.name.toLowerCase();
+    return name.contains('healing') ||
+           name.contains('potion') ||
+           name.contains('elixir') ||
+           name.contains('balm') ||
+           name.contains('salve');
   }
 }
