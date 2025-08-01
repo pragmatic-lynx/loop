@@ -45,24 +45,14 @@ class ControlsPanel extends Panel {
   @override
   void renderPanel(Terminal terminal) {
     Draw.frame(terminal, 0, 0, terminal.width, terminal.height, label: "CONTROLS");
-    terminal.writeAt(1, 1, "LOOP MODE CONTROLS", gold);
-    terminal.writeAt(1, 3, "Movement:", ash);
-    terminal.writeAt(1, 4, "Arrow Keys/WASD", lightWarmGray);
-    terminal.writeAt(1, 5, "Wait: .", lightWarmGray);
-    terminal.writeAt(1, 7, "Actions:", ash);
-    terminal.writeAt(1, 8, "1: 🗡️ ${actionMapping.action1Label}", lightBlue);
-    terminal.writeAt(1, 9, "2: ⚡ ${actionMapping.action2Label}", lima);
-    terminal.writeAt(1, 10, "3: ❤️ ${actionMapping.action3Label}", pink);
-    terminal.writeAt(1, 12, "Other:", ash);
-    terminal.writeAt(1, 13, "ESC: Pause", lightWarmGray);
-    terminal.writeAt(1, 14, "TAB: Help", lightWarmGray);
-    terminal.writeAt(1, 16, "Stats:", ash);
-    terminal.writeAt(1, 17, "Health: ${game.hero.health}/${game.hero.maxHealth}", red);
-    terminal.writeAt(1, 18, "Gold: ${game.hero.gold}", peaGreen);
-    terminal.writeAt(1, 19, "Floor: ${game.depth}", lightBlue);
-    var movesRemaining = LoopManager.movesPerLoop - loopManager.moveCount;
-    terminal.writeAt(1, 21, "Loop ${loopManager.currentLoop}:", carrot);
-    terminal.writeAt(1, 22, "$movesRemaining moves left", ash);
+    terminal.writeAt(1, 1, "Movement:", ash);
+    terminal.writeAt(1, 2, "Arrow Keys", lightWarmGray);
+    // add a space 
+    terminal.writeAt(1, 3, " ", ash);
+    terminal.writeAt(1, 4, "Actions:", ash);
+    terminal.writeAt(1, 5, "1: 🗡️ ${actionMapping.action1Label}", lightBlue);
+    terminal.writeAt(1, 6, "2: ⚡ ${actionMapping.action2Label}", lima);
+    terminal.writeAt(1, 7, "3: ❤️ ${actionMapping.action3Label}", pink);
   }
 }
 
