@@ -2,10 +2,10 @@
 
 import '../core/game.dart';
 import '../hero/hero.dart';
-import '../loop/smart_combat.dart';
+import '../loop/action_queues.dart';
 
 /// Maps simplified loop input controls to context-aware action labels
-/// Provides dynamic button labeling based on SmartCombat analysis
+/// Provides dynamic button labeling based on queue system
 class ActionMapping {
   final String action1Label;
   final String action2Label;
@@ -17,22 +17,22 @@ class ActionMapping {
     required this.action3Label,
   });
 
-  /// Creates dynamic action mapping using SmartCombat analysis
-  factory ActionMapping.fromSmartCombat(SmartCombat smartCombat) {
-    var action1Info = smartCombat.getPrimaryActionInfo();
-    var action2Info = smartCombat.getSecondaryActionInfo();
-    var action3Info = smartCombat.getHealActionInfo();
+  /// Creates dynamic action mapping using ActionQueues
+  factory ActionMapping.fromQueues(ActionQueues queues) {
+    var rangedItem = queues.getRangedQueueItem();
+    var magicItem = queues.getMagicQueueItem();
+    var healItem = queues.getHealQueueItem();
 
     return ActionMapping(
-      action1Label: action1Info.displayText,
-      action2Label: action2Info.displayText,
-      action3Label: action3Info.displayText,
+      action1Label: rangedItem.displayText,
+      action2Label: magicItem.displayText,
+      action3Label: healItem.displayText,
     );
   }
 
   /// Legacy method for backwards compatibility
   factory ActionMapping.fromHero(Hero hero, Game game) {
-    var smartCombat = SmartCombat(game);
-    return ActionMapping.fromSmartCombat(smartCombat);
+    var queues = ActionQueues(game);
+    return ActionMapping.fromQueues(queues);
   }
 }

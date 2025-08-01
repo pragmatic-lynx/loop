@@ -38,9 +38,17 @@ class InputConverter {
       case Input.drop:         // Mapped to '3' key
         return LoopInput.action3;
       
+      // Queue management
+      case Input.cycleQueue:   // Mapped to 'Q' key
+        return LoopInput.cycleQueue;
+      
       // Equipment and staircase interaction
       case Input.equip:        // Mapped to 'E' key
         return LoopInput.equip;
+      
+      // Debug functionality
+      case Input.debug:        // Mapped to 'Z' key
+        return LoopInput.debug;
       
       // Essential controls
       case Input.cancel:

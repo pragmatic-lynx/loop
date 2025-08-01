@@ -8,14 +8,18 @@ import 'package:piecemeal/piecemeal.dart';
 
 import '../engine/action/action.dart';
 import '../engine/action/action_mapping.dart';
+import '../engine/action/attack.dart';
+import '../engine/action/item.dart';
 import '../engine/action/walk.dart';
+import '../engine/items/inventory.dart';
 import '../engine/core/actor.dart';
 import '../engine/core/content.dart';
 import '../engine/core/game.dart';
 import '../engine/hero/hero_save.dart';
 import '../engine/loop/level_archetype.dart';
 import '../engine/loop/loop_manager.dart';
-import '../engine/loop/smart_combat.dart';
+import '../engine/loop/action_queues.dart';
+import '../engine/loop/debug_helper.dart';
 import '../engine/stage/tile.dart';
 import '../content/tiles.dart';
 import '../hues.dart';
@@ -75,7 +79,8 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   late final SidebarPanel _sidebarPanel;
   late final StagePanel _stagePanel;
   late final EquipmentStatusPanel _equipmentPanel;
-  final SmartCombat _smartCombat;
+  final ActionQueues _actionQueues;
+  final DebugHelper _debugHelper;
   late ActionMapping _actionMapping;
   final LoopManager _loopManager;
   ControlsPanel? _controlsPanel;
@@ -116,7 +121,8 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   Actor? get currentTargetActor => null; // No target selection in loop mode
 
   LoopGameScreen(this._storage, this.game, this._loopManager)
-      : _smartCombat = SmartCombat(game),
+      : _actionQueues = ActionQueues(game),
+        _debugHelper = DebugHelper(game),
         _previousSave = game.hero.save.clone(),
         _logPanel = LogPanel(game.log),
         itemPanel = ItemPanel(game) {
@@ -125,7 +131,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     _sidebarPanel = SidebarPanel(this);
     _stagePanel = StagePanel(this);
     _equipmentPanel = EquipmentStatusPanel(game);
-    _controlsPanel = ControlsPanel(ActionMapping.fromSmartCombat(_smartCombat), _loopManager, game);
+    _controlsPanel = ControlsPanel(ActionMapping.fromQueues(_actionQueues), _loopManager, game);
     _tuningOverlay = TuningOverlay(_loopManager.scheduler);
     
     // Initialize dynamic action mapping
@@ -137,7 +143,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   
   /// Update action mapping with current game state
   void _updateActionMapping() {
-    _actionMapping = ActionMapping.fromSmartCombat(_smartCombat);
+    _actionMapping = ActionMapping.fromQueues(_actionQueues);
     _controlsPanel?.updateActionMapping(_actionMapping);
     dirty();
   }
@@ -264,26 +270,44 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
           return true;
         }
         
-        // Otherwise try primary action
-        action = _smartCombat.handlePrimaryAction();
+        // Ranged attack - set queue context and handle
+        _actionQueues.setCurrentQueue(1);
+        action = _handleRangedAction();
         if (action == null) {
-          game.log.message("No primary action available.");
+          game.log.message("No ranged weapon available.");
           dirty();
         }
 
       case LoopInput.action2:
-        action = _smartCombat.handleSecondaryAction();
+        // Magic - set queue context and handle
+        _actionQueues.setCurrentQueue(2);
+        action = _handleMagicAction();
         if (action == null) {
-          game.log.message("No secondary action available.");
+          game.log.message("No magic available.");
           dirty();
         }
 
       case LoopInput.action3:
-        action = _smartCombat.handleHealAction();
+        // Heal - set queue context and handle
+        _actionQueues.setCurrentQueue(3);
+        action = _handleHealAction();
         if (action == null) {
           game.log.message("No healing available.");
           dirty();
         }
+        
+      case LoopInput.cycleQueue:
+        // Cycle the current queue
+        _actionQueues.cycleCurrentQueue();
+        _updateActionMapping();
+        game.log.message("Cycled queue.");
+        return true;
+        
+      case LoopInput.debug:
+        // Debug functionality - add random items
+        _debugHelper.addRandomTestItems();
+        _updateActionMapping();
+        return true;
 
       case LoopInput.equip:
         // First try to interact with staircase if standing on one
@@ -548,5 +572,76 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     _previousSave = game.hero.save;
     _loopManager.reset();
     ui.goTo(GameOverScreen(_storage, _previousSave!, _previousSave!));
+  }
+  
+  /// Handle ranged weapon action
+  Action? _handleRangedAction() {
+    var rangedItem = _actionQueues.getRangedQueueItem();
+    if (!rangedItem.isAvailable) {
+      // Try to auto-equip a ranged weapon
+      if (_actionQueues.autoEquipRangedWeapon()) {
+        _updateActionMapping();
+        rangedItem = _actionQueues.getRangedQueueItem();
+      }
+    }
+    
+    if (!rangedItem.isAvailable || rangedItem.item == null) {
+      return null;
+    }
+    
+    // Find target for ranged attack
+    var target = _findRangedTarget();
+    if (target == null) {
+      game.log.message("No target in range.");
+      return null;
+    }
+    
+    return AttackAction(target);
+  }
+  
+  /// Handle magic item action
+  Action? _handleMagicAction() {
+    var magicItem = _actionQueues.getMagicQueueItem();
+    if (!magicItem.isAvailable || magicItem.item == null) {
+      return null;
+    }
+    
+    return UseAction(ItemLocation.inventory, magicItem.item!);
+  }
+  
+  /// Handle heal item action
+  Action? _handleHealAction() {
+    var healItem = _actionQueues.getHealQueueItem();
+    if (!healItem.isAvailable || healItem.item == null) {
+      return null;
+    }
+    
+    // Only heal if we need it
+    if (game.hero.health >= game.hero.maxHealth * 0.8) {
+      game.log.message("You don't need healing right now.");
+      return null;
+    }
+    
+    return UseAction(ItemLocation.inventory, healItem.item!);
+  }
+  
+  /// Find target for ranged attack
+  Actor? _findRangedTarget() {
+    // Find nearest visible enemy
+    Actor? nearest;
+    var nearestDistance = 999;
+    
+    for (var actor in game.stage.actors) {
+      if (actor == game.hero || !actor.isAlive) continue;
+      if (!game.heroCanPerceive(actor)) continue;
+      
+      var distance = (actor.pos - game.hero.pos).rookLength;
+      if (distance < nearestDistance) {
+        nearest = actor;
+        nearestDistance = distance;
+      }
+    }
+    
+    return nearest;
   }
 }
