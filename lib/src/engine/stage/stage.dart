@@ -144,11 +144,14 @@ class Stage {
     if (_actorsByTile[actor.pos] == actor) {
       _actorsByTile[actor.pos] = null;
     } else {
-      // Find and clear any stale references
-      for (var pos in _actorsByTile.keys.toList()) {
-        if (_actorsByTile[pos] == actor) {
-          _actorsByTile[pos] = null;
-          break;
+      // Find and clear any stale references by checking all positions
+      for (var y = 0; y < _actorsByTile.height; y++) {
+        for (var x = 0; x < _actorsByTile.width; x++) {
+          var pos = Vec(x, y);
+          if (_actorsByTile[pos] == actor) {
+            _actorsByTile[pos] = null;
+            break;
+          }
         }
       }
     }

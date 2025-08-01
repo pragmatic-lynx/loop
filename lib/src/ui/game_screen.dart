@@ -18,7 +18,6 @@ import 'forfeit_popup.dart';
 import 'game_over_screen.dart';
 import 'hero_info_dialog.dart';
 import 'input.dart';
-import 'inventory_dialog.dart';
 import 'item/drop_dialog.dart';
 import 'item/equip_dialog.dart';
 import 'item/item_dialog.dart';
