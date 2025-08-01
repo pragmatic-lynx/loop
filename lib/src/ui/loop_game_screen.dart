@@ -26,7 +26,9 @@ import 'panel/log_panel.dart';
 import 'panel/sidebar_panel.dart';
 import 'panel/stage_panel.dart';
 import 'panel/item_panel.dart';
+import 'panel/panel.dart';
 import 'draw.dart';
+import 'storage.dart';
 
 /// Panel for displaying loop mode controls
 class ControlsPanel extends Panel {
@@ -158,14 +160,11 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     switch (input) {
       case LoopInput.cancel:
         // Pause menu or forfeit
-        _showActionHelp = !_showActionHelp;
-        dirty();
+        // TODO: Implement pause menu
         return true;
 
       case LoopInput.info:
-        // Show/hide action mapping help
-        _showActionHelp = !_showActionHelp;
-        dirty();
+        // Show/hide action mapping help - no longer needed since always visible
         return true;
 
       // Movement inputs
