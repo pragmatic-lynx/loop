@@ -18,6 +18,7 @@ import '../engine/loop/smart_combat.dart';
 import '../engine/action/action_mapping.dart';
 import '../engine/action/action.dart';
 import '../engine/action/walk.dart';
+import '../debug.dart';
 // Direction is available from piecemeal package
 import 'game_screen_interface.dart';
 import 'input.dart';
@@ -98,6 +99,9 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     
     // Initialize stage panel with a minimal GameScreen instance
     stagePanel = StagePanel(GameScreen(storage, game));
+    
+    // Bind debug screen (important for UI framework)
+    Debug.bindGameScreen(this);
     
     // Initialize game state
     _dirty = true;
@@ -198,9 +202,6 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     if (action != null) {
       game.hero.setNextAction(action);
       
-      // Mark screen as dirty to trigger redraw
-      dirty();
-      
       // Update action mapping after each action (abilities may change)
       _actionMapping = ActionMapping.fromHero(game.hero, game);
     }
@@ -220,17 +221,14 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
 
   @override
   void update() {
+    print("LoopGameScreen.update() called");
+    
     if (_pause > 0) {
       _pause--;
       return;
     }
 
     var result = game.update();
-
-    // Mark screen dirty if game made progress (hero moved, etc.)
-    if (result.madeProgress) {
-      dirty();
-    }
 
     // Track moves for loop system
     if (result.madeProgress) {
@@ -256,7 +254,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
       return;
     }
 
-    // Update panels
+    // Update panels - exactly like the regular GameScreen
     if (stagePanel.update(result.events)) dirty();
     if (result.needsRefresh) dirty();
   }
@@ -284,8 +282,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
 
   @override
   void render(Terminal terminal) {
-    // Only render if screen is dirty
-    if (!_dirty) return;
+    print("LoopGameScreen.render() called");
     
     // Clear the terminal first
     terminal.clear();
@@ -335,9 +332,6 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     if (_showActionHelp) {
       _renderActionHelp(terminal);
     }
-
-    // Mark as clean after rendering
-    _dirty = false;
   }
 
   /// Render the action button help overlay

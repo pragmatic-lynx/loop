@@ -13,6 +13,29 @@ import '../stage/tile.dart';
 import '../items/item.dart';
 import '../items/inventory.dart';
 
+/// Smart action info containing both the action to perform and UI display info
+class SmartActionInfo {
+  final Action? action;
+  final String label;
+  final String? count;  // For items like "(3)"
+  final bool isAvailable;
+  
+  SmartActionInfo({
+    required this.action,
+    required this.label,
+    this.count,
+    this.isAvailable = true,
+  });
+  
+  /// Full display text including count
+  String get displayText {
+    if (count != null && count!.isNotEmpty) {
+      return '$label $count';
+    }
+    return label;
+  }
+}
+
 
 /// Handles smart, automated combat decisions for roguelite loop mode
 /// Takes the complexity out of skill/spell management for ADHD players
