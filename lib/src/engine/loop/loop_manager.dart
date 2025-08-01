@@ -130,7 +130,11 @@ class LoopManager {
   void _generateArchetypeMetadata() {
     var archetype = _scheduler.getNextArchetype(currentLoop - 1); // 0-based indexing
     var scalars = _scheduler.getScalars(archetype);
-    currentArchetypeMetadata = ArchetypeMetadata(archetype, scalars, currentLoop);
+    currentArchetypeMetadata = ArchetypeMetadata(
+      archetype: archetype,
+      scalars: scalars,
+      loopNumber: currentLoop,
+    );
   }
   
   /// Get the current archetype metadata for level generation

@@ -16,6 +16,7 @@
 
 
 
+
   - [x] 2.1 Modify LoopManager to use DifficultyScheduler
 
 
@@ -26,16 +27,29 @@
 
 
 
-  - [ ] 2.2 Extend Architect class to accept density scalars
+  - [x] 2.2 Extend Architect class to accept density scalars
+
+
+
+
+
     - Add optional scalars parameter to buildStage method
     - Modify ArchitecturalStyle.pick() to apply enemy/item multipliers
     - Ensure scalars are applied during decoration phase
     - _Requirements: 3.1, 3.2, 3.3_
 
-- [ ] 3. Implement archetype metadata tracking
+- [x] 3. Implement archetype metadata tracking
+
+
+
+
+
+
   - [ ] 3.1 Create ArchetypeMetadata class
     - Store archetype, scalars, and loop number
     - Add serialization methods for logging
+
+
     - _Requirements: 1.2, 4.2_
 
   - [ ] 3.2 Add metadata to Game class

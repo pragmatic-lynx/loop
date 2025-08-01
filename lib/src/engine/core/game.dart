@@ -54,6 +54,9 @@ class Game {
   
   /// Archetype metadata for level generation (optional)
   final ArchetypeMetadata? archetypeMetadata;
+  
+  /// Get the current level's archetype metadata for logging and debugging
+  ArchetypeMetadata? getArchetypeMetadata() => archetypeMetadata;
 
   Game(this.content, this.depth, HeroSave save, {int? width, int? height, this.archetypeMetadata})
       : hero = Hero(Vec.zero, save, content.skills) {
