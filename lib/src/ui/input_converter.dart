@@ -38,6 +38,10 @@ class InputConverter {
       case Input.drop:         // Mapped to '3' key
         return LoopInput.action3;
       
+      // Equipment and staircase interaction
+      case Input.equip:        // Mapped to 'E' key
+        return LoopInput.equip;
+      
       // Essential controls
       case Input.cancel:
         return LoopInput.cancel;
