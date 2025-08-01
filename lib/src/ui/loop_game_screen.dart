@@ -19,6 +19,7 @@ import '../engine/core/actor.dart';
 import '../engine/core/constants.dart';
 import '../engine/core/content.dart';
 import '../engine/core/game.dart';
+import '../engine/hero/hero.dart';
 import '../engine/hero/hero_save.dart';
 import '../engine/loop/level_archetype.dart';
 import '../engine/loop/loop_manager.dart';
@@ -29,6 +30,7 @@ import '../engine/loop/smart_combat.dart';
 import '../engine/stage/tile.dart';
 import '../content/tiles.dart';
 import '../hues.dart';
+import '../debug.dart';
 import 'exit_popup.dart';
 import 'game_over_screen.dart';
 import 'game_screen.dart';
@@ -219,6 +221,17 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
         dirty();
         return true;
       }
+    }
+
+    // Handle debug-only auto-level-up (Shift+Alt+L)
+    if (input == Input.levelUp) {
+      if (Debug.enabled) {
+        _quickLevelUp();
+      } else {
+        game.log.message("Debug features are disabled.");
+        dirty();
+      }
+      return true;
     }
 
     // Convert standard input to loop input for simplified controls
@@ -802,5 +815,17 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     }
     
     return nearest;
+  }
+  
+  /// Quick level up for debug purposes (Shift+Alt+L)
+  void _quickLevelUp() {
+    if (game.hero.level == Hero.maxLevel) {
+      game.log.message("Already at max level.");
+    } else {
+      game.hero.experience = experienceLevelCost(game.hero.level + 1);
+      game.hero.refreshProperties();
+      game.log.message("Debug: Level up! You are now level ${game.hero.level}.");
+    }
+    dirty();
   }
 }
