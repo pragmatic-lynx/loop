@@ -1,12 +1,11 @@
 // lib/src/engine/loop/loop_manager.dart
 
-import '../hero/hero_save.dart';
 import '../core/content.dart';
-import 'loop_reward.dart';
-import 'hero_preset.dart';
-import 'difficulty_scheduler.dart';
+import '../hero/hero_save.dart';
 import 'archetype_metadata.dart';
-import 'level_archetype.dart';
+import 'difficulty_scheduler.dart';
+import 'hero_preset.dart';
+import 'loop_reward.dart';
 // TODO: Re-enable when build issues are resolved
 // import 'item/loop_item_manager.dart';
 
