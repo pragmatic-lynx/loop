@@ -322,8 +322,29 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
           return true;
         }
         
+        // Check for items to pick up at current position
+        var items = game.stage.itemsAt(game.hero.pos);
+        if (items.isNotEmpty) {
+          var item = items.first;
+          var result = game.hero.inventory.tryAdd(item);
+          if (result.added > 0) {
+            game.log.message('Picked up ${item.clone(result.added)}.');
+            
+            if (result.remaining == 0) {
+              game.stage.removeItem(item, game.hero.pos);
+            }
+            
+            game.hero.pickUp(game, item);
+            _updateActionMapping();
+            return true;
+          } else {
+            game.log.message('Your inventory is full.');
+            return true;
+          }
+        }
+        
         // For now, just show a message that equipment is not available in loop mode
-        game.log.message("Equipment management not available in loop mode.");
+        game.log.message("Nothing to pick up or interact with.");
         dirty();
         return true;
     }
@@ -577,11 +598,16 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   /// Handle ranged weapon action
   Action? _handleRangedAction() {
     var rangedItem = _actionQueues.getRangedQueueItem();
+    
+    // Debug: Show what we found
+    game.log.message("Debug: Ranged item: ${rangedItem.name}, available: ${rangedItem.isAvailable}");
+    
     if (!rangedItem.isAvailable) {
       // Try to auto-equip a ranged weapon
       if (_actionQueues.autoEquipRangedWeapon()) {
         _updateActionMapping();
         rangedItem = _actionQueues.getRangedQueueItem();
+        game.log.message("Debug: After auto-equip: ${rangedItem.name}, available: ${rangedItem.isAvailable}");
       }
     }
     
@@ -596,6 +622,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
       return null;
     }
     
+    game.log.message("Debug: Attacking target with ${rangedItem.name}");
     return AttackAction(target);
   }
   
@@ -616,9 +643,9 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
       return null;
     }
     
-    // Only heal if we need it
-    if (game.hero.health >= game.hero.maxHealth * 0.8) {
-      game.log.message("You don't need healing right now.");
+    // Only heal if we need it (any missing health)
+    if (game.hero.health >= game.hero.maxHealth) {
+      game.log.message("You are already at full health.");
       return null;
     }
     

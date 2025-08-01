@@ -255,7 +255,10 @@ class ActionQueues {
            name.contains('dart') ||
            name.contains('sling') ||
            name.contains('javelin') ||
-           name.contains('throwing');
+           name.contains('throwing') ||
+           name.contains('short bow') ||
+           name.contains('longbow') ||
+           (item.attack?.isRanged ?? false); // Use the attack's range property
   }
   
   /// Check if item is a magic item
