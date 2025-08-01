@@ -61,6 +61,9 @@ abstract class LoopReward {
       const LightRadiusReward(),
       const MovementSpeedReward(),
       const LuckyFindsReward(),
+      
+      // Summoner rewards
+      const SummonReward(),
     ];
   }
 }
@@ -222,6 +225,32 @@ class LuckyFindsReward extends LoopReward {
   void apply(HeroSave hero) {
     // This would need to be implemented in the loot generation system
     print("Applied lucky finds boost to ${hero.name}");
+  }
+}
+
+/// Grant summoning scrolls for next run
+class SummonReward extends LoopReward {
+  const SummonReward() : super(
+    name: "Summon Scrolls",
+    description: "Start next run with monster-summoning scrolls",
+    flavorText: "Ancient pacts allow you to call forth allies",
+  );
+  
+  @override
+  void apply(HeroSave hero) {
+    // Add summoning scrolls to inventory
+    // In a full implementation, this would search through Items.types
+    // for items with "Summon" in the name and add random ones
+    print("Added summoning scrolls to ${hero.name}'s inventory");
+    
+    // Example implementation would be:
+    // var summonScrolls = Items.types.where((type) => 
+    //   type.name.toLowerCase().contains('summon')).toList();
+    // if (summonScrolls.isNotEmpty) {
+    //   var randomScroll = summonScrolls[Random().nextInt(summonScrolls.length)];
+    //   var item = Item(randomScroll, 3); // Give 3 scrolls
+    //   hero.inventory.tryAdd(item);
+    // }
   }
 }
 

@@ -32,6 +32,7 @@ import 'panel/sidebar_panel.dart';
 import 'panel/stage_panel.dart';
 import 'panel/item_panel.dart';
 import 'panel/panel.dart';
+import 'panel/equipment_status_panel.dart';
 import 'draw.dart';
 import 'storage.dart';
 
@@ -71,6 +72,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   final ItemPanel itemPanel;
   late final SidebarPanel _sidebarPanel;
   late final StagePanel _stagePanel;
+  late final EquipmentStatusPanel _equipmentPanel;
   final SmartCombat _smartCombat;
   late ActionMapping _actionMapping;
   final LoopManager _loopManager;
@@ -118,6 +120,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     // Initialize panels
     _sidebarPanel = SidebarPanel(this);
     _stagePanel = StagePanel(this);
+    _equipmentPanel = EquipmentStatusPanel(game);
     _controlsPanel = ControlsPanel(ActionMapping.fromSmartCombat(_smartCombat), _loopManager, game);
     
     // Initialize dynamic action mapping
@@ -330,11 +333,24 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     }
     var centerWidth = size.x - leftWidth - rightWidth;
     itemPanel.hide();
+    
+    // Left sidebar
     _sidebarPanel.show(Rect(0, 0, leftWidth, size.y));
-    _controlsPanel?.show(Rect(size.x - rightWidth, 0, rightWidth, size.y));
+    
+    // Equipment panel at top right
+    var equipmentHeight = 12;
+    _equipmentPanel.show(Rect(size.x - rightWidth, 0, rightWidth, equipmentHeight));
+    
+    // Controls panel at bottom right
+    var controlsHeight = 8;
+    _controlsPanel?.show(Rect(size.x - rightWidth, size.y - controlsHeight, rightWidth, controlsHeight));
+    
+    // Log panel at top center
     var logHeight = 3 + (size.y - 30) ~/ 2;
     logHeight = math.min(logHeight, 8);
     _logPanel.show(Rect(leftWidth, 0, centerWidth, logHeight));
+    
+    // Stage panel in center, leaving space for controls
     _stagePanel.show(Rect(leftWidth, logHeight, centerWidth, size.y - logHeight));
   }
 
@@ -344,6 +360,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     _stagePanel.render(terminal);
     _logPanel.render(terminal);
     _sidebarPanel.render(terminal);
+    _equipmentPanel.render(terminal);
     itemPanel.render(terminal);
     _controlsPanel?.render(terminal);
     _renderMoveCounter(terminal);

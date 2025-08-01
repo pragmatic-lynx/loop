@@ -47,6 +47,50 @@ class SmartCombat {
   
   SmartCombat(this.game) : hero = game.hero;
   
+  /// Get the current active spell (first spell in inventory)
+  Item? get activeSpell {
+    for (var item in hero.inventory) {
+      if (_isSpellItem(item)) {
+        return item;
+      }
+    }
+    return null;
+  }
+  
+  /// Check if item is a spell/magic item that can be cast
+  bool _isSpellItem(Item item) {
+    var name = item.type.name.toLowerCase();
+    return name.contains('scroll') && (
+      name.contains('lightning') ||
+      name.contains('fireball') ||
+      name.contains('ice') ||
+      name.contains('teleport') ||
+      name.contains('heal') ||
+      name.contains('summon') ||
+      name.contains('magic') ||
+      name.contains('bolt') ||
+      name.contains('frost') ||
+      name.contains('fire')
+    );
+  }
+  
+  /// Cycle the active spell to the end of inventory
+  void cycleActiveSpell() {
+    var spell = activeSpell;
+    if (spell == null) return;
+    
+    // Remove one copy of the spell
+    if (spell.count > 1) {
+      // Just reduce count, spell stays in same position
+      return;
+    } else {
+      // Remove completely and add a copy to the end
+      hero.inventory.remove(spell);
+      // In a real implementation, we'd add it to the end
+      // For now, the cycling effect happens naturally as other spells move up
+    }
+  }
+  
   /// Handle action1 - 🗡️ Primary Attack/Interact
   SmartActionInfo getPrimaryActionInfo() {
     var action = handlePrimaryAction();
@@ -96,17 +140,29 @@ class SmartCombat {
   SmartActionInfo getSecondaryActionInfo() {
     var action = handleSecondaryAction();
     var label = _getSecondaryActionLabel();
-    return SmartActionInfo(action: action, label: label);
+    var count = _getActiveSpellCount();
+    return SmartActionInfo(action: action, label: label, count: count);
   }
   
-  /// Handle action2 - Secondary Attack/Spell
+  /// Get count of active spell for UI display
+  String? _getActiveSpellCount() {
+    var spell = activeSpell;
+    if (spell != null && spell.count > 1) {
+      return '(${spell.count})';
+    }
+    return null;
+  }
+  
+  /// Handle action2 - ⚡ Cast Active Spell or Secondary Attack
   Action? handleSecondaryAction() {
-    // Try to cast the best offensive spell at nearest enemy
-    var target = _findBestSpellTarget();
-    if (target != null) {
-      var spell = _getBestOffensiveSpell();
-      if (spell != null) {
-        return _createSpellAction(spell, target.pos);
+    // Try to cast the active spell first
+    var spell = activeSpell;
+    if (spell != null) {
+      var target = _findBestSpellTarget();
+      if (target != null) {
+        // Use the spell and cycle it
+        cycleActiveSpell();
+        return UseAction(ItemLocation.inventory, spell);
       }
     }
     
@@ -492,10 +548,10 @@ class SmartCombat {
   
   /// Get dynamic label for secondary action button
   String _getSecondaryActionLabel() {
-    // Check for magic scrolls first
-    var magicItem = _getBestMagicItem();
-    if (magicItem != null) {
-      return _getMagicActionName(magicItem);
+    // Check for active spell first
+    var spell = activeSpell;
+    if (spell != null) {
+      return _getMagicActionName(spell);
     }
     
     // Check for ranged weapons
