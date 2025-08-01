@@ -5,10 +5,11 @@ import 'package:malison/malison_web.dart';
 import 'package:piecemeal/piecemeal.dart';
 
 import '../engine.dart';
-import '../hues.dart';
+import '../hues.dart' as hues;
 import 'confirm_popup.dart';
 import 'draw.dart';
 import 'game_screen.dart';
+import 'loop_game_screen.dart';
 import 'input.dart';
 import 'new_hero_screen.dart';
 import 'storage.dart';
@@ -49,12 +50,12 @@ const _charColors = [
 ];
 
 const _colors = {
-  "L": lightWarmGray,
-  "E": warmGray,
-  "R": red,
-  "O": carrot,
-  "G": gold,
-  "Y": yellow
+  "L": hues.lightWarmGray,
+  "E": hues.warmGray,
+  "R": hues.red,
+  "O": hues.carrot,
+  "G": hues.gold,
+  "Y": hues.yellow
 };
 
 class MainMenuScreen extends Screen<Input> {
@@ -84,7 +85,21 @@ class MainMenuScreen extends Screen<Input> {
 
   final LoopManager loopManager = LoopManager();
   
-  MainMenuScreen(this.content) : storage = Storage(content);
+  MainMenuScreen(this.content) : storage = Storage(content) {
+    // Create a default loop mode hero if none exist
+    _ensureDefaultHero();
+  }
+  
+  /// Ensure there's always a default hero for loop mode
+  void _ensureDefaultHero() {
+    if (storage.heroes.isEmpty) {
+      print("Creating default Loop Mode hero...");
+      var defaultHero = content.createHero("Loop Runner");
+      defaultHero.gold = 2000; // Give extra starting gold for loop mode
+      storage.heroes.add(defaultHero);
+      storage.save();
+    }
+  }
 
   void _startLoopModeWithExistingHero(HeroSave hero) {
     print("Starting loop mode with existing hero: ${hero.name}");
@@ -99,15 +114,8 @@ class MainMenuScreen extends Screen<Input> {
     loopManager.moveCount = 0;
     loopManager.threatLevel = 2; // Start at threat level 2 so depth = 1 + 2 = 3
     
-    var depth = loopManager.getCurrentDepth();
-    print("Creating game at depth $depth...");
-    var game = Game(content, depth, hero, width: 60, height: 34);
-    
-    print("Generating dungeon...");
-    for (var _ in game.generate()) {}
-    
-    print("Going to game screen with loop manager...");
-    ui.push(GameScreen(storage, game, loopManager: loopManager));
+    print("Starting Loop Game Screen with smart 3-button UI!");
+    ui.push(LoopGameScreen.create(storage, content, hero, loopManager));
   }
 
   @override
@@ -261,23 +269,23 @@ class MainMenuScreen extends Screen<Input> {
       }
     }
 
-    centerTerminal.writeAt(3, 18, 'Which hero shall you play? v0.2', UIHue.text);
+    centerTerminal.writeAt(3, 18, '🎮 LOOP MODE v0.2 - Smart 3-Button UI!', hues.UIHue.text);
 
     Draw.hLine(centerTerminal, 3, 20, centerTerminal.width - 6);
     Draw.hLine(centerTerminal, 3, 29, centerTerminal.width - 6);
 
     if (storage.heroes.isEmpty) {
       centerTerminal.writeAt(
-          3, 21, '(No heroes. Please create a new one.)', UIHue.disabled);
+          3, 21, '(No heroes. Please create a new one.)', hues.UIHue.disabled);
     } else {
       if (_scroll > 0) {
         centerTerminal.writeAt(
-            centerTerminal.width ~/ 2, 20, "▲", UIHue.selection);
+            centerTerminal.width ~/ 2, 20, "▲", hues.UIHue.selection);
       }
 
       if (_scroll < storage.heroes.length - _listHeight) {
         centerTerminal.writeAt(
-            centerTerminal.width ~/ 2, 29, "▼", UIHue.selection);
+            centerTerminal.width ~/ 2, 29, "▼", hues.UIHue.selection);
       }
 
       for (var i = 0; i < _listHeight; i++) {
@@ -286,14 +294,14 @@ class MainMenuScreen extends Screen<Input> {
 
         var hero = storage.heroes[heroIndex];
 
-        var primary = UIHue.primary;
-        var secondary = UIHue.secondary;
+        var primary = hues.UIHue.primary;
+        var secondary = hues.UIHue.secondary;
         if (heroIndex == selectedHero) {
-          primary = UIHue.selection;
-          secondary = UIHue.selection;
+          primary = hues.UIHue.selection;
+          secondary = hues.UIHue.selection;
 
           centerTerminal.drawChar(
-              2, 21 + i, CharCode.blackRightPointingPointer, UIHue.selection);
+              2, 21 + i, CharCode.blackRightPointingPointer, hues.UIHue.selection);
         }
 
         centerTerminal.writeAt(3, 21 + i, hero.name, primary);
@@ -307,7 +315,7 @@ class MainMenuScreen extends Screen<Input> {
     }
 
     Draw.helpKeys(terminal, {
-      "OK": "Play",
+      "OK": "🗡️⚡❤️ Start Loop Mode",
       "↕": "Change selection",
       "N": "Create a new hero",
       "D": "Delete hero",
@@ -377,7 +385,7 @@ class MainMenuScreen extends Screen<Input> {
       if (visibility < 128) {
         color = color.blend(shadow, lerpDouble(visibility, 0, 127, 1.0, 0.0));
       } else if (visibility > 128) {
-        color = color.add(ash, lerpDouble(visibility, 128, 255, 0.0, 0.2));
+        color = color.add(hues.ash, lerpDouble(visibility, 128, 255, 0.0, 0.2));
       }
 
       if (tile.actorIllumination > 0) {
