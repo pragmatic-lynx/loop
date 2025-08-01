@@ -111,11 +111,18 @@
     - Apply scalar changes to scheduler in real-time
     - _Requirements: 5.1, 5.2, 5.3_
 
-- [ ] 6. Build metrics snapshot system
-  - [ ] 6.1 Create MetricsCollector class
+- [-] 6. Build metrics snapshot system
+
+
+
+  - [x] 6.1 Create MetricsCollector class
+
+
     - Track loop progress, deaths, turn times, damage stats
     - Implement JSON serialization for metrics data
     - _Requirements: 6.2, 6.3_
+
+
 
   - [ ] 6.2 Add F5 metrics capture to LoopGameScreen
     - Handle F5 key press to trigger metrics dump

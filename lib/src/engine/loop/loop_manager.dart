@@ -6,6 +6,7 @@ import 'archetype_metadata.dart';
 import 'difficulty_scheduler.dart';
 import 'hero_preset.dart';
 import 'loop_reward.dart';
+import 'metrics_collector.dart';
 // TODO: Re-enable when build issues are resolved
 // import 'item/loop_item_manager.dart';
 
@@ -41,6 +42,9 @@ class LoopManager {
   
   /// Current level's archetype metadata
   ArchetypeMetadata? currentArchetypeMetadata;
+  
+  /// Metrics collector for gameplay analysis
+  final MetricsCollector _metricsCollector = MetricsCollector();
   
   /// Initialize the loop system
   LoopManager();
@@ -78,6 +82,7 @@ class LoopManager {
     }
     
     moveCount++;
+    _metricsCollector.recordTurn();
     print('Move recorded: $moveCount/$movesPerLoop (Loop $currentLoop)');
     
     // Check if it's time for reward selection
@@ -144,6 +149,14 @@ class LoopManager {
   /// Get the difficulty scheduler for external access
   DifficultyScheduler get scheduler => _scheduler;
   
+  /// Get the metrics collector for external access
+  MetricsCollector get metricsCollector => _metricsCollector;
+  
+  /// Record a hero death for metrics
+  void recordDeath() {
+    _metricsCollector.recordDeath();
+  }
+  
   /// Check if hero should be given temporary bonuses
   void applyActiveRewards(HeroSave hero) {
     for (var reward in activeRewards) {
@@ -169,6 +182,7 @@ class LoopManager {
     currentPreset = null;
     currentRewardOptions.clear();
     activeRewards.clear();
+    _metricsCollector.reset();
   }
   
   /// Get status info for UI

@@ -74,6 +74,9 @@ class Input {
   /// Tab key for cycling through options.
   static const tab = Input("tab");
 
+  /// M key for metrics capture.
+  static const metricsCapture = Input("metricsCapture");
+
   final String name;
 
   const Input(this.name);

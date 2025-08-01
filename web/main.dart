@@ -151,6 +151,7 @@ void main() {
   _ui.keyPress.bind(Input.wizard, KeyCode.w, shift: true, alt: true);
   _ui.keyPress.bind(Input.levelUp, KeyCode.l, shift: true, alt: true);
   _ui.keyPress.bind(Input.tab, KeyCode.tab);
+  _ui.keyPress.bind(Input.metricsCapture, KeyCode.m, shift: true);
 
   // Loop mode simplified controls (1,2,3,4 action buttons)
   // These will be handled by a separate input handler for loop mode

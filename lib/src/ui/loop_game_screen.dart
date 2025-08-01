@@ -164,6 +164,12 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
 
   @override
   bool handleInput(Input input) {
+    // Handle F5 metrics capture
+    if (input == Input.metricsCapture) {
+      _captureMetrics();
+      return true;
+    }
+
     // Handle tuning overlay toggle (tilde key maps to cancel)
     if (input == Input.cancel) {
       _showTuningOverlay = !_showTuningOverlay;
@@ -352,6 +358,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     // Check if hero died
     if (!game.hero.isAlive) {
       print("Hero died! Restarting loop.");
+      _loopManager.recordDeath();
       _loopManager.reset();
       ui.goTo(GameOverScreen(_storage, game.hero.save, game.hero.save));
       return;
@@ -467,6 +474,21 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     }
     var loopText = "L${_loopManager.currentLoop}";
     terminal.writeAt(x - loopText.length - 1, y, loopText, ash, darkerCoolGray);
+  }
+
+  /// Capture and log current metrics snapshot
+  void _captureMetrics() {
+    var snapshot = _loopManager.metricsCollector.createSnapshot(game, _loopManager.currentLoop);
+    var jsonOutput = snapshot.toJson();
+    
+    // Log to game log for immediate visibility
+    game.log.message("METRICS: $jsonOutput");
+    
+    // Also print to console for debugging
+    print("Metrics Snapshot: $jsonOutput");
+    
+    // Mark screen as dirty to show the log message
+    dirty();
   }
 
   void _handleLoopExit() {
