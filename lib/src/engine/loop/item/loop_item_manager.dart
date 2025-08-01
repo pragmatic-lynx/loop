@@ -1,6 +1,5 @@
 // lib/src/engine/loop/item/loop_item_manager.dart
 
-import 'dart:math';
 import '../../core/content.dart';
 import '../../hero/hero_save.dart';
 import '../../items/item.dart';
