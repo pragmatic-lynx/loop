@@ -1,6 +1,8 @@
 # Implementation Plan
 
-- [ ] 1. Create core archetype and scheduling infrastructure
+- [-] 1. Create core archetype and scheduling infrastructure
+
+
 
   - Create `LevelArchetype` enum with COMBAT, LOOT, BOSS values
   - Implement `DensityScalars` class for enemy/item multipliers
