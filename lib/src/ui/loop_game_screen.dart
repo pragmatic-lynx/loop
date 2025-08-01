@@ -26,11 +26,35 @@ import 'panel/log_panel.dart';
 import 'panel/sidebar_panel.dart';
 import 'panel/stage_panel.dart';
 import 'panel/item_panel.dart';
+import 'panel/panel.dart';
+import 'draw.dart';
 import 'storage.dart';
 
-// Color constants for help overlay
-final Color darkerCoolGray = Color(0x33, 0x33, 0x33);
-final Color darkWarmGray = Color(0x44, 0x44, 0x44);
+/// Panel for displaying loop mode controls
+class ControlsPanel extends Panel {
+  ActionMapping actionMapping;
+  final LoopManager loopManager;
+  final Game game;
+  
+  ControlsPanel(this.actionMapping, this.loopManager, this.game);
+  
+  void updateActionMapping(ActionMapping newMapping) {
+    actionMapping = newMapping;
+  }
+  
+  @override
+  void renderPanel(Terminal terminal) {
+    Draw.frame(terminal, 0, 0, terminal.width, terminal.height, label: "CONTROLS");
+    terminal.writeAt(1, 1, "Movement:", ash);
+    terminal.writeAt(1, 2, "Arrow Keys", lightWarmGray);
+    // add a space 
+    terminal.writeAt(1, 3, " ", ash);
+    terminal.writeAt(1, 4, "Actions:", ash);
+    terminal.writeAt(1, 5, "1: 🗡️ ${actionMapping.action1Label}", lightBlue);
+    terminal.writeAt(1, 6, "2: ⚡ ${actionMapping.action2Label}", lima);
+    terminal.writeAt(1, 7, "3: ❤️ ${actionMapping.action3Label}", pink);
+  }
+}
 
 /// Simplified game screen for roguelite loop mode
 /// Focuses on fast, ADHD-friendly gameplay with minimal complexity
@@ -45,8 +69,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   final SmartCombat _smartCombat;
   late ActionMapping _actionMapping;
   final LoopManager _loopManager;
-  
-  bool _showActionHelp = false;
+  ControlsPanel? _controlsPanel;
   int _pause = 0;
   
   @override
@@ -88,6 +111,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     // Initialize panels
     _sidebarPanel = SidebarPanel(this);
     _stagePanel = StagePanel(this);
+    _controlsPanel = ControlsPanel(ActionMapping.fromSmartCombat(_smartCombat), _loopManager, game);
     
     // Initialize dynamic action mapping
     _updateActionMapping();
@@ -99,6 +123,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   /// Update action mapping with current game state
   void _updateActionMapping() {
     _actionMapping = ActionMapping.fromSmartCombat(_smartCombat);
+    _controlsPanel?.updateActionMapping(_actionMapping);
     dirty();
   }
 
@@ -139,14 +164,11 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     switch (input) {
       case LoopInput.cancel:
         // Pause menu or forfeit
-        _showActionHelp = !_showActionHelp;
-        dirty();
+        // TODO: Implement pause menu
         return true;
 
       case LoopInput.info:
-        // Show/hide action mapping help
-        _showActionHelp = !_showActionHelp;
-        dirty();
+        // Show/hide action mapping help - no longer needed since always visible
         return true;
 
       // Movement inputs
@@ -260,90 +282,88 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   @override
   void resize(Vec size) {
     var leftWidth = 21;
-
+    var rightWidth = 25;
     if (size.x > 160) {
       leftWidth = 29;
+      rightWidth = 30;
     } else if (size.x > 150) {
       leftWidth = 25;
+      rightWidth = 28;
     }
-
-    var centerWidth = size.x - leftWidth;
-
-    // Hide item panel in loop mode for simplicity
+    var centerWidth = size.x - leftWidth - rightWidth;
     itemPanel.hide();
-    
-    // Set up panel bounds exactly like the working GameScreen
     _sidebarPanel.show(Rect(0, 0, leftWidth, size.y));
-
+    _controlsPanel?.show(Rect(size.x - rightWidth, 0, rightWidth, size.y));
     var logHeight = 3 + (size.y - 30) ~/ 2;
-    logHeight = math.min(logHeight, 8); // Smaller log for more focus
-
+    logHeight = math.min(logHeight, 8);
     _logPanel.show(Rect(leftWidth, 0, centerWidth, logHeight));
     _stagePanel.show(Rect(leftWidth, logHeight, centerWidth, size.y - logHeight));
   }
 
   @override
   void render(Terminal terminal) {
-    // Clear the terminal first
     terminal.clear();
-    
-    // Render panels in the same order as working GameScreen
     _stagePanel.render(terminal);
     _logPanel.render(terminal);
-    // Note: render sidebar after stage panel so visible monsters are calculated first
     _sidebarPanel.render(terminal);
     itemPanel.render(terminal);
-
-    // Show action help overlay if toggled
-    if (_showActionHelp) {
-      _renderActionHelp(terminal);
-    }
+    _controlsPanel?.render(terminal);
+    _renderMoveCounter(terminal);
+    _renderLoopProgress(terminal);
   }
-
-  /// Render the action button help overlay
-  void _renderActionHelp(Terminal terminal) {
-    var width = 30;
-    var height = 12;
-    var x = (terminal.width - width) ~/ 2;
-    var y = (terminal.height - height) ~/ 2;
-
-    // Draw background
-    for (var dy = 0; dy < height; dy++) {
-      for (var dx = 0; dx < width; dx++) {
-        terminal.writeAt(x + dx, y + dy, " ", darkerCoolGray, darkWarmGray);
-      }
-    }
-
-    // Border
-    terminal.writeAt(x, y, "╔", ash, darkWarmGray);
-    terminal.writeAt(x + width - 1, y, "╗", ash, darkWarmGray);
-    terminal.writeAt(x, y + height - 1, "╚", ash, darkWarmGray);
-    terminal.writeAt(x + width - 1, y + height - 1, "╝", ash, darkWarmGray);
-
-    for (var dx = 1; dx < width - 1; dx++) {
-      terminal.writeAt(x + dx, y, "═", ash, darkWarmGray);
-      terminal.writeAt(x + dx, y + height - 1, "═", ash, darkWarmGray);
-    }
-
-    for (var dy = 1; dy < height - 1; dy++) {
-      terminal.writeAt(x, y + dy, "║", ash, darkWarmGray);
-      terminal.writeAt(x + width - 1, y + dy, "║", ash, darkWarmGray);
-    }
-
-    // Title
-    terminal.writeAt(x + 2, y + 1, "LOOP MODE CONTROLS", gold, darkWarmGray);
-
-    // Controls
-    terminal.writeAt(x + 2, y + 3, "Arrow Keys/WASD: Move", ash, darkWarmGray);
-    terminal.writeAt(x + 2, y + 4, "1: 🗡️ ${_actionMapping.action1Label}", lightBlue, darkWarmGray);
-    terminal.writeAt(x + 2, y + 5, "2: ⚡ ${_actionMapping.action2Label}", lima, darkWarmGray);
-    terminal.writeAt(x + 2, y + 6, "3: ❤️ ${_actionMapping.action3Label}", pink, darkWarmGray);
-
-    terminal.writeAt(x + 2, y + 9, "TAB: Toggle this help", lightWarmGray, darkWarmGray);
-    terminal.writeAt(x + 2, y + 10, "ESC: Pause", lightWarmGray, darkWarmGray);
-
-    // Current loop info in help
+  void _renderMoveCounter(Terminal terminal) {
     var movesRemaining = LoopManager.movesPerLoop - _loopManager.moveCount;
-    terminal.writeAt(x + 2, y + height - 2, "Loop ${_loopManager.currentLoop}: $movesRemaining moves left", carrot, darkWarmGray);
+    var text = "$movesRemaining";
+    var leftWidth = 21;
+    var rightWidth = 25;
+    if (terminal.width > 160) {
+      leftWidth = 29;
+      rightWidth = 30;
+    } else if (terminal.width > 150) {
+      leftWidth = 25;
+      rightWidth = 28;
+    }
+    var centerWidth = terminal.width - leftWidth - rightWidth;
+    var x = leftWidth + (centerWidth - text.length) ~/ 2;
+    var y = 1;
+    var color = ash;
+    if (movesRemaining <= 10) {
+      color = red;
+    } else if (movesRemaining <= 20) {
+      color = carrot;
+    } else if (movesRemaining <= 30) {
+      color = yellow;
+    }
+    terminal.writeAt(x - 1, y, "[", lightWarmGray, darkerCoolGray);
+    terminal.writeAt(x, y, text, color, darkerCoolGray);
+    terminal.writeAt(x + text.length, y, "]", lightWarmGray, darkerCoolGray);
+  }
+  void _renderLoopProgress(Terminal terminal) {
+    var progress = _loopManager.moveCount / LoopManager.movesPerLoop;
+    var barWidth = 20;
+    var leftWidth = 21;
+    var rightWidth = 25;
+    if (terminal.width > 160) {
+      leftWidth = 29;
+      rightWidth = 30;
+    } else if (terminal.width > 150) {
+      leftWidth = 25;
+      rightWidth = 28;
+    }
+    var centerWidth = terminal.width - leftWidth - rightWidth;
+    var x = leftWidth + (centerWidth - barWidth) ~/ 2;
+    var y = 2;
+    for (var i = 0; i < barWidth; i++) {
+      terminal.writeAt(x + i, y, "▒", darkWarmGray, darkerCoolGray);
+    }
+    var fillWidth = (progress * barWidth).round();
+    for (var i = 0; i < fillWidth; i++) {
+      var color = lightBlue;
+      if (progress > 0.8) color = carrot;
+      if (progress > 0.9) color = red;
+      terminal.writeAt(x + i, y, "█", color, darkerCoolGray);
+    }
+    var loopText = "L${_loopManager.currentLoop}";
+    terminal.writeAt(x - loopText.length - 1, y, loopText, ash, darkerCoolGray);
   }
 }
