@@ -57,32 +57,47 @@ class SidebarPanel extends Panel {
         gold);
 
     // Show loop information if in loop mode
-    var yOffset = 4;
+    var y = 4;
     if (_gameScreen.loopManager != null) {
-      yOffset = _drawLoopInfo(terminal, yOffset);
-      yOffset++;
+      y = _drawLoopInfo(terminal, y) + 1;
     }
 
-    _drawStats(hero, terminal, yOffset);
+    // Draw stats (takes 2 lines)
+    _drawStats(hero, terminal, y);
+    y += 3;
 
-    // TODO: Decide on a consistent set of colors for attributes and use them
-    // consistently through the UI.
-    _drawHealth(hero, terminal, yOffset + 3);
-    _drawLevel(hero, terminal, 8);
-    _drawGold(hero, terminal, 9);
+    // Draw health bar
+    _drawHealth(hero, terminal, y);
+    y += 1;
+    
+    // Draw level and gold
+    _drawLevel(hero, terminal, y);
+    y += 1;
+    _drawGold(hero, terminal, y);
+    y += 1;
 
-    _drawArmor(hero, terminal, 10);
-    _drawDefense(hero, terminal, 11);
-    _drawWeapons(hero, terminal, 12);
+    // Draw armor and defense
+    _drawArmor(hero, terminal, y);
+    y += 1;
+    _drawDefense(hero, terminal, y);
+    y += 1;
+    _drawWeapons(hero, terminal, y);
+    y += 2; // Extra space before meters
 
-    _drawFood(hero, terminal, 15);
-    _drawFocus(hero, terminal, 16);
-    _drawFury(hero, terminal, 17);
+    // Draw meters
+    _drawFood(hero, terminal, y);
+    y += 1;
+    _drawFocus(hero, terminal, y);
+    y += 1;
+    _drawFury(hero, terminal, y);
+    y += 2; // Extra space before monsters
 
     // Draw the nearby monsters.
-    terminal.writeAt(1, 19, "@", _gameScreen.heroColor);
-    terminal.writeAt(3, 19, hero.save.name, UIHue.text);
-    _drawHealthBar(terminal, 20, hero);
+    terminal.writeAt(1, y, "@", _gameScreen.heroColor);
+    terminal.writeAt(3, y, hero.save.name, UIHue.text);
+    y += 1;
+    _drawHealthBar(terminal, y, hero);
+    y += 1;
 
     var visibleMonsters = _gameScreen.stagePanel.visibleMonsters;
     visibleMonsters.sort((a, b) {
@@ -92,7 +107,6 @@ class SidebarPanel extends Panel {
     });
 
     for (var i = 0; i < 10 && i < visibleMonsters.length; i++) {
-      var y = 21 + i * 2;
       if (y >= terminal.height - 2) break;
 
       var monster = visibleMonsters[i];
@@ -115,8 +129,10 @@ class SidebarPanel extends Panel {
           (_gameScreen.currentTargetActor == monster)
               ? UIHue.selection
               : UIHue.text);
+      y += 1;
 
-      _drawHealthBar(terminal, y + 1, monster);
+      _drawHealthBar(terminal, y, monster);
+      y += 1;
     }
   }
 
