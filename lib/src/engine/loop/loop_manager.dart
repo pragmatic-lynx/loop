@@ -83,7 +83,11 @@ class LoopManager {
     
     moveCount++;
     _metricsCollector.recordTurn();
-    print('Move recorded: $moveCount/$movesPerLoop (Loop $currentLoop)');
+    
+    // Debug info with archetype context
+    var archetypeInfo = currentArchetypeMetadata != null ? 
+        '${currentArchetypeMetadata!.archetype.name}' : 'unknown';
+    print('MOVE_RECORDED: $moveCount/$movesPerLoop (Loop $currentLoop, $archetypeInfo archetype)');
     
     // Check if it's time for reward selection
     if (moveCount >= movesPerLoop) {
@@ -99,7 +103,9 @@ class LoopManager {
     // Generate 3 random reward options
     currentRewardOptions = LoopReward.generateRewardOptions(3);
     
-    print('Loop $currentLoop complete! $moveCount moves made. Time for rewards!');
+    var archetypeInfo = currentArchetypeMetadata != null ? 
+        '${currentArchetypeMetadata!.archetype.name}' : 'unknown';
+    print('LOOP_COMPLETE: Loop $currentLoop ($archetypeInfo archetype) - $moveCount moves made. Time for rewards!');
   }
   
   /// Apply a selected reward and prepare for next loop
@@ -109,7 +115,8 @@ class LoopManager {
       return;
     }
     
-    print('Selecting reward: ${reward.name}');
+    var prevArchetype = currentArchetypeMetadata?.archetype.name ?? 'unknown';
+    print('REWARD_SELECTED: ${reward.name} (from $prevArchetype archetype)');
     activeRewards.add(reward);
     isRewardSelection = false;
     
@@ -119,8 +126,12 @@ class LoopManager {
     currentLoop++; // Increment loop counter
     isLoopActive = true; // Reactivate the loop for the next round
     
-    print('Selected reward: ${reward.name}. Threat level now: $threatLevel, Loop: $currentLoop');
-    print('Next depth will be: ${getCurrentDepth()}');
+    // Generate metadata for the next loop
+    _generateArchetypeMetadata();
+    var nextArchetype = currentArchetypeMetadata?.archetype.name ?? 'unknown';
+    
+    print('LOOP_START: Loop $currentLoop - $nextArchetype archetype, Threat: $threatLevel, Depth: ${getCurrentDepth()}');
+    print('DIFFICULTY_SCALARS: Enemy=${currentArchetypeMetadata?.scalars.enemyMultiplier ?? 1.0}x, Item=${currentArchetypeMetadata?.scalars.itemMultiplier ?? 1.0}x');
   }
   
   /// Get current depth for dungeon generation
@@ -154,6 +165,9 @@ class LoopManager {
   
   /// Record a hero death for metrics
   void recordDeath() {
+    var archetypeInfo = currentArchetypeMetadata != null ? 
+        '${currentArchetypeMetadata!.archetype.name}' : 'unknown';
+    print('HERO_DEATH: Loop $currentLoop ($archetypeInfo archetype) - Move $moveCount/${movesPerLoop}');
     _metricsCollector.recordDeath();
   }
   

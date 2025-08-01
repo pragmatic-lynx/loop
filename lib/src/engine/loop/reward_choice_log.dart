@@ -1,5 +1,6 @@
-import 'dart:io';
+// lib/src/engine/loop/reward_choice_log.dart
 
+import 'dart:convert';
 import 'level_archetype.dart';
 
 /// Logs reward choices with archetype context for analysis
@@ -56,91 +57,94 @@ class RewardChoiceLog {
   }
 }
 
-/// Manages logging of reward choices to CSV file
+/// Manages logging of reward choices for web-compatible analysis
 class RewardChoiceLogger {
-  static const String _logFileName = 'reward_choices.csv';
-  static bool _headerWritten = false;
+  static final List<RewardChoiceLog> _logEntries = [];
+  static bool _headerLogged = false;
 
-  /// Log a reward choice to CSV file
-  static Future<void> logChoice(RewardChoiceLog entry) async {
+  /// Log a reward choice (web-compatible version)
+  static void logChoice(RewardChoiceLog entry) {
     try {
-      final file = File(_logFileName);
+      _logEntries.add(entry);
       
-      // Write header if this is the first entry
-      if (!_headerWritten && !await file.exists()) {
-        await file.writeAsString('${RewardChoiceLog.csvHeader()}\n');
-        _headerWritten = true;
+      // Log header on first entry
+      if (!_headerLogged) {
+        print('REWARD_LOG_HEADER: ${RewardChoiceLog.csvHeader()}');
+        _headerLogged = true;
       }
       
-      // Append the log entry
-      await file.writeAsString('${entry.toCsvRow()}\n', mode: FileMode.append);
+      // Log the entry in CSV format for easy analysis
+      print('REWARD_LOG_ENTRY: ${entry.toCsvRow()}');
       
-      print('Logged reward choice: ${entry.toString()}');
+      // Also log in JSON format for debugging
+      print('Reward choice logged: ${jsonEncode(entry.toJson())}');
     } catch (e) {
       print('Error logging reward choice: $e');
     }
   }
 
   /// Log a reward choice with current timestamp
-  static Future<void> logChoiceNow(
+  static void logChoiceNow(
     int loopNumber,
     LevelArchetype archetype,
     String choiceId,
-  ) async {
+  ) {
     final entry = RewardChoiceLog.create(loopNumber, archetype, choiceId);
-    await logChoice(entry);
+    logChoice(entry);
   }
 
   /// Get all logged entries (for debugging/analysis)
-  static Future<List<RewardChoiceLog>> getLoggedEntries() async {
-    try {
-      final file = File(_logFileName);
-      if (!await file.exists()) {
-        return [];
-      }
-
-      final lines = await file.readAsLines();
-      final entries = <RewardChoiceLog>[];
-
-      // Skip header line
-      for (int i = 1; i < lines.length; i++) {
-        final parts = lines[i].split(',');
-        if (parts.length >= 4) {
-          try {
-            final entry = RewardChoiceLog(
-              loopNumber: int.parse(parts[0]),
-              archetype: LevelArchetype.values.firstWhere(
-                (a) => a.name == parts[1],
-                orElse: () => LevelArchetype.combat,
-              ),
-              choiceId: parts[2],
-              timestamp: DateTime.parse(parts[3]),
-            );
-            entries.add(entry);
-          } catch (e) {
-            print('Error parsing log entry: ${lines[i]} - $e');
-          }
-        }
-      }
-
-      return entries;
-    } catch (e) {
-      print('Error reading reward choice log: $e');
-      return [];
-    }
+  static List<RewardChoiceLog> getLoggedEntries() {
+    return List.unmodifiable(_logEntries);
   }
 
-  /// Clear the log file (for testing)
-  static Future<void> clearLog() async {
-    try {
-      final file = File(_logFileName);
-      if (await file.exists()) {
-        await file.delete();
-        _headerWritten = false;
-        print('Cleared reward choice log');
-      }
-    } catch (e) {
-      print('Error clearing reward choice log: $e');
+  /// Export all logs as CSV string for external analysis
+  static String exportToCsv() {
+    if (_logEntries.isEmpty) return RewardChoiceLog.csvHeader();
+    
+    final buffer = StringBuffer();
+    buffer.writeln(RewardChoiceLog.csvHeader());
+    
+    for (final entry in _logEntries) {
+      buffer.writeln(entry.toCsvRow());
     }
+    
+    return buffer.toString();
+  }
+
+  /// Export all logs as JSON string for external analysis
+  static String exportToJson() {
+    return jsonEncode(_logEntries.map((e) => e.toJson()).toList());
+  }
+
+  /// Clear the log entries (for testing)
+  static void clearLog() {
+    _logEntries.clear();
+    _headerLogged = false;
+    print('Cleared reward choice log');
+  }
+
+  /// Print summary of logged entries
+  static void printSummary() {
+    if (_logEntries.isEmpty) {
+      print('No reward choices logged yet');
+      return;
+    }
+
+    print('=== Reward Choice Summary ===');
+    print('Total entries: ${_logEntries.length}');
+    
+    // Group by archetype
+    final archetypeGroups = <LevelArchetype, List<RewardChoiceLog>>{};
+    for (final entry in _logEntries) {
+      archetypeGroups.putIfAbsent(entry.archetype, () => []).add(entry);
+    }
+    
+    for (final archetype in LevelArchetype.values) {
+      final entries = archetypeGroups[archetype] ?? [];
+      print('${archetype.name}: ${entries.length} choices');
+    }
+    
+    print('=============================');
   }
 }

@@ -13,6 +13,7 @@ import '../engine/core/actor.dart';
 import '../engine/core/content.dart';
 import '../engine/core/game.dart';
 import '../engine/hero/hero_save.dart';
+import '../engine/loop/level_archetype.dart';
 import '../engine/loop/loop_manager.dart';
 import '../engine/loop/smart_combat.dart';
 import '../engine/stage/tile.dart';
@@ -474,6 +475,48 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     }
     var loopText = "L${_loopManager.currentLoop}";
     terminal.writeAt(x - loopText.length - 1, y, loopText, ash, darkerCoolGray);
+    
+    // Add archetype display
+    _renderArchetypeInfo(terminal);
+  }
+  
+  void _renderArchetypeInfo(Terminal terminal) {
+    var metadata = _loopManager.getArchetypeMetadata();
+    if (metadata == null) return;
+    
+    var leftWidth = 21;
+    if (terminal.width > 160) {
+      leftWidth = 29;
+    } else if (terminal.width > 150) {
+      leftWidth = 25;
+    }
+    
+    var archetype = metadata.archetype;
+    var archetypeText = archetype.name.toUpperCase();
+    var color = _getArchetypeColor(archetype);
+    
+    // Display archetype in top-left corner of the stage area
+    terminal.writeAt(leftWidth + 1, 4, archetypeText, color, darkerCoolGray);
+    
+    // Display scalars if tuning overlay is not active (to avoid clutter)
+    if (!_showTuningOverlay) {
+      var scalars = metadata.scalars;
+      var enemyText = "E:${(scalars.enemyMultiplier * 100).round()}%";
+      var itemText = "I:${(scalars.itemMultiplier * 100).round()}%";
+      terminal.writeAt(leftWidth + 1, 5, enemyText, lightWarmGray, darkerCoolGray);
+      terminal.writeAt(leftWidth + 8, 5, itemText, lightWarmGray, darkerCoolGray);
+    }
+  }
+  
+  Color _getArchetypeColor(LevelArchetype archetype) {
+    switch (archetype) {
+      case LevelArchetype.combat:
+        return red;
+      case LevelArchetype.loot:
+        return gold;
+      case LevelArchetype.boss:
+        return purple;
+    }
   }
 
   /// Capture and log current metrics snapshot

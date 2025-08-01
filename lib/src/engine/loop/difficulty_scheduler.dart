@@ -48,22 +48,50 @@ class DifficultyScheduler {
 
   /// Update the scalars for a specific archetype
   void updateScalars(LevelArchetype archetype, double enemyMultiplier, double itemMultiplier) {
+    // Validate inputs
+    if (enemyMultiplier < 0.1 || enemyMultiplier > 5.0) {
+      print('Warning: Enemy multiplier $enemyMultiplier is outside valid range [0.1, 5.0], clamping.');
+      enemyMultiplier = enemyMultiplier.clamp(0.1, 5.0);
+    }
+    if (itemMultiplier < 0.1 || itemMultiplier > 5.0) {
+      print('Warning: Item multiplier $itemMultiplier is outside valid range [0.1, 5.0], clamping.');
+      itemMultiplier = itemMultiplier.clamp(0.1, 5.0);
+    }
+    
     scalars[archetype] = DensityScalars(
       enemyMultiplier: enemyMultiplier,
       itemMultiplier: itemMultiplier,
     );
+    
+    print('SCALARS_UPDATED: ${archetype.name} - Enemy: ${enemyMultiplier}x, Item: ${itemMultiplier}x');
   }
 
   /// Update just the enemy multiplier for an archetype
   void updateEnemyMultiplier(LevelArchetype archetype, double multiplier) {
+    // Validate input
+    if (multiplier < 0.1 || multiplier > 5.0) {
+      print('Warning: Enemy multiplier $multiplier is outside valid range [0.1, 5.0], clamping.');
+      multiplier = multiplier.clamp(0.1, 5.0);
+    }
+    
     var current = scalars[archetype] ?? DensityScalars();
     scalars[archetype] = current.copyWith(enemyMultiplier: multiplier);
+    
+    print('ENEMY_SCALAR_UPDATED: ${archetype.name} - ${multiplier}x');
   }
 
   /// Update just the item multiplier for an archetype
   void updateItemMultiplier(LevelArchetype archetype, double multiplier) {
+    // Validate input
+    if (multiplier < 0.1 || multiplier > 5.0) {
+      print('Warning: Item multiplier $multiplier is outside valid range [0.1, 5.0], clamping.');
+      multiplier = multiplier.clamp(0.1, 5.0);
+    }
+    
     var current = scalars[archetype] ?? DensityScalars();
     scalars[archetype] = current.copyWith(itemMultiplier: multiplier);
+    
+    print('ITEM_SCALAR_UPDATED: ${archetype.name} - ${multiplier}x');
   }
 
   /// Get current status for debugging
