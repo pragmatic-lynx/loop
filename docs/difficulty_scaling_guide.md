@@ -157,6 +157,4 @@ print('Current schedule: ${status['schedule']}');
 print('Current scalars: ${status['scalars']}');
 ```
 
-## Conclusion
 
-The difficulty scheduling system provides flexible control over enemy and item spawn rates. By adjusting these values, you can create a wide range of gameplay experiences, from relaxed exploration to intense combat challenges.

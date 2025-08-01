@@ -66,25 +66,24 @@ class EquipmentStatusPanel extends Panel {
         var damage = "${weapon.attack!.damage} dmg";
         terminal.writeAt(1, y + 2, "  $damage", coolGray);
       }
-      y += 3;
+      y += 4;
     } else {
       terminal.writeAt(1, y + 1, "🗡️ Fists", lightBlue);
       terminal.writeAt(1, y + 2, "  1 dmg", coolGray);
-      y += 3;
+      y += 4;
     }
     
-    // Show all equipment slots
+    y += 1; // Extra space before armor section
+    terminal.writeAt(1, y, "Armor:", ash);
+    y += 1;
+    
+    // Show all equipment slots with more space
     for (var i = 0; i < hero.equipment.slots.length; i++) {
       var item = hero.equipment.slots[i];
       var slotName = hero.equipment.slotTypes[i];
       
       // Skip weapons since we already showed active weapon above
       if (weapons.contains(item)) continue;
-      
-      // Capitalize first letter
-      var displaySlot = slotName[0].toUpperCase() + slotName.substring(1);
-      
-      terminal.writeAt(1, y, "$displaySlot:", ash);
       
       if (item != null) {
         var itemText = item.type.name;
@@ -93,18 +92,18 @@ class EquipmentStatusPanel extends Panel {
         }
         
         var icon = _getSlotIcon(slotName);
-        terminal.writeAt(1, y + 1, "$icon $itemText", _getSlotColor(item));
+        terminal.writeAt(1, y, "$icon $itemText", _getSlotColor(item));
         
-        // Show relevant stats
+        // Show relevant stats on next line
         if (item.baseArmor > 0) {
-          terminal.writeAt(1, y + 2, "  ${item.baseArmor} armor", coolGray);
-          y += 3;
-        } else {
-          y += 2;
+          terminal.writeAt(1, y + 1, "  ${item.baseArmor} armor", coolGray);
         }
-      } else {
-        terminal.writeAt(1, y + 1, "  (empty)", darkCoolGray);
         y += 2;
+      } else {
+        // Show slot name for empty slots
+        var displaySlot = slotName[0].toUpperCase() + slotName.substring(1);
+        terminal.writeAt(1, y, "($displaySlot)", darkCoolGray);
+        y += 1;
       }
     }
     

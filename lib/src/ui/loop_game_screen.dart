@@ -51,6 +51,7 @@ import 'panel/equipment_status_panel.dart';
 import 'draw.dart';
 import 'storage.dart';
 import 'tuning_overlay.dart';
+import 'inventory_dialog.dart';
 
 /// Panel for displaying loop mode controls
 class ControlsPanel extends Panel {
@@ -79,6 +80,9 @@ class ControlsPanel extends Panel {
     // Context-aware E action
     var eAction = _getEActionDescription();
     terminal.writeAt(1, 9, "E: ${eAction.icon} ${eAction.description}", eAction.color);
+    
+    // Extra keys
+    terminal.writeAt(1, 11, "J: 📦 Inventory", ash);
   }
   
   ({String icon, String description, Color color}) _getEActionDescription() {
@@ -213,6 +217,12 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
 
   @override
   bool handleInput(Input input) {
+    // Handle inventory dialog
+    if (input == Input.inventory) {
+      ui.push(InventoryDialog(game));
+      return true;
+    }
+    
     // Handle F5 metrics capture
     if (input == Input.metricsCapture) {
       _captureMetrics();

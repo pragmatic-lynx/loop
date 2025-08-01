@@ -31,8 +31,8 @@ class InventoryDialog extends Screen<Input> {
   bool keyDown(int keyCode, {required bool shift, required bool alt}) {
     if (alt) return false;
     
-    // Close on escape or I key
-    if (keyCode == KeyCode.escape || keyCode == KeyCode.i) {
+    // Close on escape or J key
+    if (keyCode == KeyCode.escape || keyCode == KeyCode.j) {
       ui.pop();
       return true;
     }
@@ -55,7 +55,7 @@ class InventoryDialog extends Screen<Input> {
     
     // Show help
     Draw.helpKeys(terminal, {
-      'I/Esc': 'Close',
+      'J/Esc': 'Close',
     });
     
     var y = top + 1;
