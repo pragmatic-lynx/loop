@@ -27,6 +27,7 @@ pubspec.yaml
 COPYRIGHT
 *.yaml
 test
+test_smart_ui
 *.png
 note
 doc
