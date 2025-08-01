@@ -736,7 +736,7 @@ void worms() {
   family("w", dodge: 10, meander: 30, flags: "fearless").groups("worm");
   breed("hell worm", 3, pink, 30, speed: -2).attack("crawl[s] on", 5);
 
-  breed("cave hell worm", 7, sandal, 80, speed: -2)
+  breed("alaskan bull worm", 7, sandal, 80, speed: -2)
       .attack("crawl[s] on", 12, Elements.acid);
 }
 
