@@ -55,10 +55,9 @@ import 'tuning_overlay.dart';
 /// Panel for displaying loop mode controls
 class ControlsPanel extends Panel {
   ActionMapping actionMapping;
-  final LoopManager loopManager;
-  final Game game;
+  final LoopGameScreen _gameScreen;
   
-  ControlsPanel(this.actionMapping, this.loopManager, this.game);
+  ControlsPanel(this.actionMapping, this._gameScreen);
   
   void updateActionMapping(ActionMapping newMapping) {
     actionMapping = newMapping;
@@ -76,6 +75,38 @@ class ControlsPanel extends Panel {
     terminal.writeAt(1, 6, "2: ⚡ ${actionMapping.action2Label}", lima);
     terminal.writeAt(1, 7, "3: ❤️ ${actionMapping.action3Label}", pink);
     terminal.writeAt(1, 8, "4: 🛡️ ${actionMapping.action4Label}", aqua);
+    
+    // Context-aware E action
+    var eAction = _getEActionDescription();
+    terminal.writeAt(1, 9, "E: ${eAction.icon} ${eAction.description}", eAction.color);
+  }
+  
+  ({String icon, String description, Color color}) _getEActionDescription() {
+    var game = _gameScreen.game;
+    
+    // Check if standing on exit stairs
+    var portal = game.stage[game.hero.pos].portal;
+    if (portal == TilePortals.exit) {
+      if (_gameScreen._loopManager != null) {
+        return (icon: "🚪", description: "Exit Floor", color: gold);
+      } else {
+        return (icon: "🚪", description: "Exit Dungeon", color: gold);
+      }
+    }
+    
+    // Check for items to pick up
+    var items = game.stage.itemsAt(game.hero.pos);
+    if (items.isNotEmpty) {
+      var item = items.first;
+      if (item.canEquip && (item.equipSlot == 'hand')) {
+        return (icon: "⚔️", description: "Equip ${item.type.name}", color: lightBlue);
+      } else {
+        return (icon: "📦", description: "Pick up ${item.type.name}", color: tan);
+      }
+    }
+    
+    // Default action when nothing special is available
+    return (icon: "❌", description: "Nothing to interact with", color: darkCoolGray);
   }
 }
 
@@ -142,7 +173,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     _sidebarPanel = SidebarPanel(this);
     _stagePanel = StagePanel(this);
     _equipmentPanel = EquipmentStatusPanel(game);
-    _controlsPanel = ControlsPanel(ActionMapping.fromQueues(_actionQueues), _loopManager, game);
+    _controlsPanel = ControlsPanel(ActionMapping.fromQueues(_actionQueues), this);
     _tuningOverlay = TuningOverlay(_loopManager.scheduler);
     
     // Initialize dynamic action mapping
