@@ -15,13 +15,13 @@ void birds() {
     ..fly()
     ..count(3, 6);
 
-  breed("crow", 4, darkCoolGray, 10, speed: 2, meander: 30)
+  breed("hell crow", 4, darkCoolGray, 10, speed: 2, meander: 30)
     ..attack("bite[s]", 5)
     ..drop("Feather", percent: 30);
   describe(""""What harm can a stupid little crow do?" you think as it and its
       murderous friends dive towards your eyes, claws extended.""");
 
-  breed("raven", 6, coolGray, 16, meander: 15)
+  breed("hell raven", 6, coolGray, 16, meander: 15)
     ..attack("bite[s]", 5)
     ..attack("claw[s]", 4)
     ..drop("Feather", percent: 30)
@@ -44,7 +44,7 @@ void faeFolk() {
     ..defense(10, "{1} flits out of the way.")
     ..fly()
     ..preferOpen();
-  breed("forest sprite", 2, mint, 6)
+  breed("forest demon", 2, mint, 6)
     ..attack("scratch[es]", 3)
     ..missive(Missive.insult, rate: 4)
     ..sparkBolt(rate: 12, damage: 4)
@@ -52,7 +52,7 @@ void faeFolk() {
     ..drop("magic", percent: 30)
     ..drop("Insect Wing", percent: 30);
 
-  breed("house sprite", 5, lightBlue, 10)
+  breed("house demon", 5, lightBlue, 10)
     ..attack("poke[s]", 5)
     ..missive(Missive.insult, rate: 4)
     ..stoneBolt(rate: 10, damage: 4)
@@ -61,7 +61,7 @@ void faeFolk() {
     ..drop("magic", percent: 30)
     ..drop("Insect Wing", percent: 30);
 
-  breed("mischievous sprite", 7, pink, 24)
+  breed("mischievous demon", 7, pink, 24)
     ..attack("poke[s]", 6)
     ..missive(Missive.insult, rate: 4)
     ..windBolt(rate: 10, damage: 8)
@@ -70,7 +70,7 @@ void faeFolk() {
     ..drop("magic", percent: 30)
     ..drop("Insect Wing", percent: 30);
 
-  breed("Tink", 8, peaGreen, 40, meander: 10)
+  breed("Belial", 8, peaGreen, 40, meander: 10)
     ..unique(pronoun: Pronoun.she)
     ..attack("poke[s]", 8)
     ..missive(Missive.insult, rate: 4)
@@ -93,7 +93,7 @@ void hybrids() {
     ..sense(see: 10, hear: 12);
 
   // TODO: Cause disease when scratched?
-  breed("harpy", 25, lilac, 50, speed: 2)
+  breed("hell harpy", 25, lilac, 50, speed: 2)
     ..fly()
     ..count(2, 5)
     ..attack("bite[s]", 10)
@@ -102,7 +102,7 @@ void hybrids() {
     ..missive(Missive.screech)
     ..drop("Feather", percent: 50);
 
-  breed("griffin", 35, gold, 200)
+  breed("hell griffin", 35, gold, 200)
     ..attack("bite[s]", 20)
     ..attack("scratch[es]", 15)
     ..drop("Feather", percent: 50);
@@ -141,7 +141,7 @@ void quest() {
 
 void reptiles() {
   family("R").groups("herp");
-  breed("frog", 1, lima, 4, dodge: 30, meander: 30)
+  breed("hell frog", 1, lima, 4, dodge: 30, meander: 30)
     ..sense(see: 6, hear: 4)
     ..swim()
     ..attack("hop[s] on", 2);
@@ -151,15 +151,15 @@ void reptiles() {
     ..sense(see: 6, hear: 5)
     ..preferOpen()
     ..emanate(3);
-  breed("juvenile salamander", 7, pink, 20)
+  breed("lesser fire demon", 7, pink, 20)
     ..attack("bite[s]", 14, Elements.fire)
     ..fireCone(rate: 16, damage: 20, range: 4);
 
-  breed("salamander", 13, red, 30)
+  breed("fire demon", 13, red, 30)
     ..attack("bite[s]", 18, Elements.fire)
     ..fireCone(rate: 16, damage: 30, range: 5);
 
-  breed("three-headed salamander", 23, maroon, 90)
+  breed("three-headed fire demon", 23, maroon, 90)
     ..attack("bite[s]", 24, Elements.fire)
     ..fireCone(rate: 10, damage: 20, range: 5);
 }
@@ -168,11 +168,11 @@ void snakes() {
   family("S", dodge: 30, meander: 30)
     ..groups("snake")
     ..sense(see: 4, hear: 7);
-  breed("water snake", 1, lima, 11).attack("bite[s]", 3);
+  breed("hell serpent", 1, lima, 11).attack("bite[s]", 3);
 
-  breed("brown snake", 3, tan, 25).attack("bite[s]", 4);
+  breed("hell snake", 3, tan, 25).attack("bite[s]", 4);
 
-  breed("cave snake", 8, lightCoolGray, 40).attack("bite[s]", 10);
+  breed("cave hell serpent", 8, lightCoolGray, 40).attack("bite[s]", 10);
 }
 
 void trolls() {}

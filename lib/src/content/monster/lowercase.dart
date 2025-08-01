@@ -14,18 +14,18 @@ void arachnids() {
     ..groups("spider")
     ..sense(see: 4, hear: 2)
     ..stain(Tiles.spiderweb);
-  breed("little brown spider", 3, tan, 2, dodge: 30, meander: 40)
+  breed("lesser hell spider", 3, tan, 2, dodge: 30, meander: 40)
       .attack("bite[s]", 5, Elements.poison);
   describe("Seems harmless enough. What's that dripping from its pedipalps?");
 
-  breed("gray spider", 7, coolGray, 20, dodge: 30, meander: 30)
+  breed("gray hell spider", 7, coolGray, 20, dodge: 30, meander: 30)
       .attack("bite[s]", 5, Elements.poison);
 
-  breed("spiderling", 9, ash, 14, dodge: 35, meander: 50)
+  breed("hell spawn", 9, ash, 14, dodge: 35, meander: 50)
     ..count(2, 7)
     ..attack("bite[s]", 10, Elements.poison);
 
-  breed("giant spider", 12, darkBlue, 40, meander: 30)
+  breed("hell spider", 12, darkBlue, 40, meander: 30)
       .attack("bite[s]", 7, Elements.poison);
   describe("""Like a large dog, if the dog had eight articulated legs, eight
   glittering eyes, and wanted nothing more than to kill you.""");
@@ -37,14 +37,14 @@ void bats() {
     ..sense(see: 2, hear: 8)
     ..fly()
     ..preferOpen();
-  breed("brown bat", 1, tan, 4, frequency: 0.5, meander: 50)
+  breed("lesser imp", 1, tan, 4, frequency: 0.5, meander: 50)
     ..defense(20, "{1} flits out of the way.")
     ..count(2, 4)
     ..attack("bite[s]", 3);
 
-  breed("giant bat", 4, brown, 24, meander: 30).attack("bite[s]", 6);
+  breed("imp", 4, brown, 24, meander: 30).attack("bite[s]", 6);
 
-  breed("cave bat", 6, lightCoolGray, 30, meander: 40)
+  breed("cave imp", 6, lightCoolGray, 30, meander: 40)
     ..defense(20, "{1} flits out of the way.")
     ..count(2, 5)
     ..attack("bite[s]", 6);
@@ -55,27 +55,27 @@ void canines() {
     ..groups("canine")
     ..sense(see: 5, hear: 10);
 
-  breed("mangy cur", 2, buttermilk, 11)
+  breed("hell pup", 2, buttermilk, 11)
     ..count(4)
     ..attack("bite[s]", 4)
     ..howl(range: 6);
 
-  breed("wild dog", 4, lightCoolGray, 20)
+  breed("hellhound", 4, lightCoolGray, 20)
     ..count(4)
     ..attack("bite[s]", 6)
     ..howl(range: 8);
 
-  breed("mongrel", 7, carrot, 28)
+  breed("feral hellhound", 7, carrot, 28)
     ..count(2, 5)
     ..attack("bite[s]", 8)
     ..howl();
 
-  breed("wolf", 26, ash, 60)
+  breed("dire hellhound", 26, ash, 60)
     ..count(3, 6)
     ..attack("bite[s]", 12)
     ..howl();
 
-  breed("varg", 30, coolGray, 80)
+  breed("greater hellhound", 30, coolGray, 80)
     ..count(2, 6)
     ..attack("bite[s]", 16)
     ..howl();
@@ -107,17 +107,17 @@ void dragons() {
   // TODO: Juvenile and elder dragons.
   // TODO: Minions?
   var dragons = {
-    "forest": [Element.none, peaGreen, sherwood],
-    "brown": [Elements.earth, sandal, tan],
-    "blue": [Elements.water, lightBlue, blue],
-    "white": [Elements.cold, lightCoolGray, ash],
-    "purple": [Elements.poison, lilac, purple],
-    "green": [Elements.acid, lima, olive],
-    "silver": [Elements.lightning, lightAqua, lightBlue],
-    "red": [Elements.fire, pink, red],
-    "gold": [Elements.light, buttermilk, gold],
-    "black": [Elements.dark, coolGray, darkCoolGray],
-    "ethereal": [Elements.spirit, aqua, darkBlue]
+    "hell": [Element.none, peaGreen, sherwood],
+    "earth hell": [Elements.earth, sandal, tan],
+    "frost hell": [Elements.water, lightBlue, blue],
+    "ice hell": [Elements.cold, lightCoolGray, ash],
+    "poison hell": [Elements.poison, lilac, purple],
+    "acid hell": [Elements.acid, lima, olive],
+    "storm hell": [Elements.lightning, lightAqua, lightBlue],
+    "fire hell": [Elements.fire, pink, red],
+    "light hell": [Elements.light, buttermilk, gold],
+    "shadow hell": [Elements.dark, coolGray, darkCoolGray],
+    "spirit hell": [Elements.spirit, aqua, darkBlue]
   };
 
   var i = 0;
@@ -173,20 +173,20 @@ void eyes() {
     ..fly()
     ..preferOpen();
 
-  breed("lazy eye", 5, lightBlue, 20)
+  breed("watching eye", 5, lightBlue, 20)
     ..attack("stare[s] at", 8)
     ..sparkBolt(rate: 5, damage: 12, range: 8);
 
-  breed("mad eye", 9, pink, 40)
+  breed("demon eye", 9, pink, 40)
     ..attack("stare[s] at", 8)
     ..windBolt(rate: 6, damage: 15);
 
-  breed("floating eye", 15, buttermilk, 60)
+  breed("floating demon eye", 15, buttermilk, 60)
     ..attack("stare[s] at", 10)
     ..sparkBolt(rate: 4, damage: 24)
     ..teleport(range: 7);
 
-  breed("baleful eye", 20, carrot, 80)
+  breed("baleful demon eye", 20, carrot, 80)
     ..attack("gaze[s] into", 12)
     ..fireBolt(rate: 4, damage: 20)
     ..waterBolt(rate: 4, damage: 20)
@@ -220,7 +220,7 @@ void felines() {
   family("f")
     ..sense(see: 10, hear: 8)
     ..groups("feline");
-  breed("stray cat", 1, gold, 11, speed: 1, meander: 30)
+  breed("hell cat", 1, gold, 11, speed: 1, meander: 30)
     ..missive(Missive.hiss, rate: 4)
     ..attack("bite[s]", 5)
     ..attack("scratch[es]", 4);
@@ -231,7 +231,7 @@ void goblins() {
     ..sense(see: 8, hear: 4)
     ..groups("goblin")
     ..openDoors();
-  breed("goblin peon", 4, sandal, 30, meander: 20)
+  breed("lesser demon", 4, sandal, 30, meander: 20)
     ..count(4)
     ..attack("stab[s]", 8)
     ..missive(Missive.insult, rate: 8)
@@ -239,7 +239,7 @@ void goblins() {
     ..drop("spear", percent: 5)
     ..drop("healing", percent: 10);
 
-  breed("goblin archer", 6, peaGreen, 36)
+  breed("demon archer", 6, peaGreen, 36)
     ..count(2)
     ..minion("goblin", 0, 3)
     ..attack("stab[s]", 4)
@@ -249,7 +249,7 @@ void goblins() {
     ..drop("dagger", percent: 5)
     ..drop("healing", percent: 10);
 
-  breed("goblin fighter", 6, tan, 58)
+  breed("demon fighter", 6, tan, 58)
     ..count(2)
     ..minion("goblin", 1, 4)
     ..attack("stab[s]", 12)
@@ -259,7 +259,7 @@ void goblins() {
     ..drop("resistance", percent: 5)
     ..drop("healing", percent: 10);
 
-  breed("goblin warrior", 8, lightCoolGray, 68)
+  breed("demon warrior", 8, lightCoolGray, 68)
     ..count(2)
     ..minion("goblin", 1, 5)
     ..attack("stab[s]", 16)
@@ -270,7 +270,7 @@ void goblins() {
     ..drop("healing", percent: 10)
     ..flags("protective");
 
-  breed("goblin mage", 9, darkBlue, 50)
+  breed("demon mage", 9, darkBlue, 50)
     ..minion("goblin", 1, 4)
     ..attack("whip[s]", 7)
     ..fireBolt(rate: 12, damage: 12)
@@ -279,7 +279,7 @@ void goblins() {
     ..drop("robe", percent: 10)
     ..drop("magic", percent: 30);
 
-  breed("goblin ranger", 12, sherwood, 60)
+  breed("demon ranger", 12, sherwood, 60)
     ..minion("goblin", 0, 5)
     ..attack("stab[s]", 10)
     ..arrow(rate: 3, damage: 12)
@@ -288,7 +288,7 @@ void goblins() {
     ..drop("armor", percent: 10)
     ..drop("magic", percent: 20);
 
-  breed("Erlkonig, the Goblin Prince", 14, darkCoolGray, 120)
+  breed("Belphegor, the Demon Prince", 14, darkCoolGray, 120)
     ..unique(pronoun: Pronoun.he)
     ..minion("goblin", 4, 8)
     ..attack("hit[s]", 10)
@@ -310,7 +310,7 @@ void insects() {
     ..groups("bug")
     ..sense(see: 5, hear: 2);
   // TODO: Spawn as eggs which can hatch into cockroaches?
-  breed("giant cockroach[es]", 1, brown, 4, frequency: 0.4)
+  breed("hell roach[es]", 1, brown, 4, frequency: 0.4)
     ..count(2, 5)
     ..preferCorner()
     ..attack("crawl[s] on", 2)
@@ -319,14 +319,14 @@ void insects() {
   describe("""It's not quite as easy to squash one of these when it's as long as
       your arm.""");
 
-  breed("giant centipede", 3, red, 14, speed: 2, meander: 20)
+  breed("hell centipede", 3, red, 14, speed: 2, meander: 20)
     ..attack("crawl[s] on", 4)
     ..attack("bite[s]", 8);
 
   family("i", tracking: 3, meander: 40, flags: "fearless")
     ..groups("fly")
     ..sense(see: 5, hear: 2);
-  breed("firefly", 8, carrot, 6, speed: 1, meander: 70)
+  breed("fire imp", 8, carrot, 6, speed: 1, meander: 70)
     ..count(3, 8)
     ..attack("bite[s]", 12, Elements.fire)
     ..drop("Insect Wing", percent: 40);
@@ -338,7 +338,7 @@ void jellies() {
     ..sense(see: 3, hear: 1)
     ..preferWall()
     ..count(4);
-  breed("green jelly", 1, lima, 5)
+  breed("soul devourer", 1, lima, 5)
     ..stain(Tiles.greenJellyStain)
     ..attack("crawl[s] on", 3);
   // TODO: More elements.
@@ -348,40 +348,40 @@ void jellies() {
     ..sense(see: 2, hear: 1)
     ..preferCorner()
     ..count(4);
-  breed("green slime", 2, peaGreen, 8)
+  breed("green soul mass", 2, peaGreen, 8)
     ..stain(Tiles.greenJellyStain)
     ..attack("crawl[s] on", 4)
     ..spawn(rate: 4);
 
-  breed("frosty slime", 4, ash, 14)
+  breed("frozen soul mass", 4, ash, 14)
     ..stain(Tiles.whiteJellyStain)
     ..attack("crawl[s] on", 5, Elements.cold)
     ..spawn(rate: 4);
 
-  breed("mud slime", 6, tan, 20)
+  breed("earth soul mass", 6, tan, 20)
     ..stain(Tiles.brownJellyStain)
     ..attack("crawl[s] on", 8, Elements.earth)
     ..spawn(rate: 4);
 
-  breed("smoking slime", 15, red, 30)
+  breed("burning soul mass", 15, red, 30)
     ..emanate(4)
     ..stain(Tiles.redJellyStain)
     ..attack("crawl[s] on", 10, Elements.fire)
     ..spawn(rate: 4);
 
-  breed("sparkling slime", 20, purple, 40)
+  breed("electric soul mass", 20, purple, 40)
     ..emanate(3)
     ..stain(Tiles.violetJellyStain)
     ..attack("crawl[s] on", 12, Elements.lightning)
     ..spawn(rate: 4);
 
   // TODO: Erode nearby walls?
-  breed("caustic slime", 25, mint, 50)
+  breed("acid soul mass", 25, mint, 50)
     ..stain(Tiles.greenJellyStain)
     ..attack("crawl[s] on", 13, Elements.acid)
     ..spawn(rate: 4);
 
-  breed("virulent slime", 35, sherwood, 60)
+  breed("poison soul mass", 35, sherwood, 60)
     ..stain(Tiles.greenJellyStain)
     ..attack("crawl[s] on", 14, Elements.poison)
     ..spawn(rate: 4);
@@ -416,7 +416,7 @@ void kobolds() {
     ..drop("teleportation", percent: 20);
 
   family("k", meander: 20).groups("kobold");
-  breed("kobold", 3, red, 20)
+  breed("demon imp", 3, red, 20)
     ..count(3)
     ..minion("canine", 0, 3)
     ..attack("poke[s]", 4)
@@ -425,7 +425,7 @@ void kobolds() {
     ..drop("equipment", percent: 10)
     ..drop("magic", percent: 20);
 
-  breed("kobold shaman", 4, darkBlue, 20)
+  breed("imp shaman", 4, darkBlue, 20)
     ..count(2)
     ..minion("canine", 0, 3)
     ..attack("hit[s]", 4)
@@ -434,7 +434,7 @@ void kobolds() {
     ..drop("robe", percent: 10)
     ..drop("magic", percent: 20);
 
-  breed("kobold trickster", 5, gold, 24)
+  breed("imp trickster", 5, gold, 24)
     ..attack("hit[s]", 5)
     ..missive(Missive.insult)
     ..sparkBolt(rate: 5, damage: 8)
@@ -443,7 +443,7 @@ void kobolds() {
     ..drop("treasure", percent: 35)
     ..drop("magic", percent: 20);
 
-  breed("kobold priest", 6, blue, 30)
+  breed("imp priest", 6, blue, 30)
     ..count(2)
     ..minion("kobold", 1, 3)
     ..attack("club[s]", 6)
@@ -477,7 +477,7 @@ void kobolds() {
     ..drop("robe", percent: 10)
     ..drop("magic", percent: 30);
 
-  breed("Feng", 10, carrot, 80, speed: 1, meander: 10)
+  breed("Malphas", 10, carrot, 80, speed: 1, meander: 10)
     ..unique(pronoun: Pronoun.he)
     ..minion("kobold", 4, 10)
     ..minion("canine", 1, 3)
@@ -501,14 +501,14 @@ void lizardMen() {
     ..groups("saurian")
     ..sense(see: 10, hear: 5)
     ..defense(5, "{2} [are|is] deflected by its scales.");
-  breed("lizard guard", 11, gold, 26)
+  breed("hell lizard", 11, gold, 26)
     ..attack("claw[s]", 8)
     ..attack("bite[s]", 10)
     ..drop("treasure", percent: 30)
     ..drop("armor", percent: 10)
     ..drop("spear", percent: 10);
 
-  breed("lizard protector", 15, lima, 30)
+  breed("hell lizard guard", 15, lima, 30)
     ..minion("saurian", 0, 2)
     ..attack("claw[s]", 10)
     ..attack("bite[s]", 14)
@@ -516,7 +516,7 @@ void lizardMen() {
     ..drop("armor", percent: 10)
     ..drop("spear", percent: 10);
 
-  breed("armored lizard", 17, lightCoolGray, 38)
+  breed("armored hell lizard", 17, lightCoolGray, 38)
     ..minion("saurian", 0, 2)
     ..attack("claw[s]", 10)
     ..attack("bite[s]", 15)
@@ -524,7 +524,7 @@ void lizardMen() {
     ..drop("armor", percent: 20)
     ..drop("spear", percent: 10);
 
-  breed("scaled guardian", 19, darkCoolGray, 50)
+  breed("hell guardian", 19, darkCoolGray, 50)
     ..minion("saurian", 0, 3)
     ..minion("salamander", 0, 2)
     ..attack("claw[s]", 10)
@@ -532,7 +532,7 @@ void lizardMen() {
     ..drop("treasure", percent: 40)
     ..drop("equipment", percent: 10);
 
-  breed("saurian", 21, carrot, 64)
+  breed("hell saurian", 21, carrot, 64)
     ..minion("saurian", 1, 4)
     ..minion("salamander", 0, 2)
     ..attack("claw[s]", 12)
@@ -553,21 +553,21 @@ void orcs() {
     ..groups("orc")
     ..openDoors()
     ..flags("protective");
-  breed("orc", 28, carrot, 100)
+  breed("demon", 28, carrot, 100)
     ..count(3, 6)
     ..attack("stab[s]", 12)
     ..drop("treasure", percent: 20)
     ..drop("equipment", percent: 5)
     ..drop("spear", percent: 5);
 
-  breed("orc brute", 29, mint, 120)
+  breed("demon brute", 29, mint, 120)
     ..minion("orc", 2, 5)
     ..attack("bash[es]", 16)
     ..drop("treasure", percent: 20)
     ..drop("club", percent: 10)
     ..drop("armor", percent: 10);
 
-  breed("orc soldier", 30, lightCoolGray, 140)
+  breed("demon soldier", 30, lightCoolGray, 140)
     ..count(4, 6)
     ..minion("orcus", 1, 5)
     ..attack("stab[s]", 20)
@@ -575,7 +575,7 @@ void orcs() {
     ..drop("axe", percent: 10)
     ..drop("armor", percent: 10);
 
-  breed("orc chieftain", 31, red, 180)
+  breed("demon chieftain", 31, red, 180)
     ..minion("orcus", 2, 10)
     ..attack("stab[s]", 10)
     ..drop("treasure", count: 2, percent: 40)
@@ -591,7 +591,7 @@ void people() {
     ..sense(see: 10, hear: 5)
     ..openDoors()
     ..emanate(2);
-  breed("Harold the Misfortunate", 1, lilac, 30)
+  breed("Harold the Damned", 1, lilac, 30)
     ..unique(pronoun: Pronoun.he)
     ..attack("hit[s]", 3)
     ..missive(Missive.clumsy)
@@ -600,7 +600,7 @@ void people() {
     ..drop("armor", percent: 30, depthOffset: 4)
     ..drop("magic", percent: 40, depthOffset: 4);
 
-  breed("hapless adventurer", 1, buttermilk, 14, dodge: 15, meander: 30)
+  breed("lost soul", 1, buttermilk, 14, dodge: 15, meander: 30)
     ..attack("hit[s]", 3)
     ..missive(Missive.clumsy, rate: 12)
     ..drop("treasure", percent: 15)
@@ -609,7 +609,7 @@ void people() {
     ..drop("magic", percent: 20)
     ..flags("cowardly");
 
-  breed("simpering knave", 2, carrot, 17)
+  breed("tormented soul", 2, carrot, 17)
     ..attack("hit[s]", 2)
     ..attack("stab[s]", 4)
     ..drop("treasure", percent: 20)
@@ -618,7 +618,7 @@ void people() {
     ..drop("magic", percent: 20)
     ..flags("cowardly");
 
-  breed("decrepit mage", 3, purple, 20, meander: 30)
+  breed("damned sorcerer", 3, purple, 20, meander: 30)
     ..attack("hit[s]", 2)
     ..sparkBolt(rate: 10, damage: 8)
     ..drop("treasure", percent: 15)
@@ -628,7 +628,7 @@ void people() {
     ..drop("robe", percent: 10)
     ..drop("boots", percent: 5);
 
-  breed("unlucky ranger", 5, peaGreen, 30, dodge: 25, meander: 20)
+  breed("damned ranger", 5, peaGreen, 30, dodge: 25, meander: 20)
     ..attack("slash[es]", 2)
     ..arrow(rate: 4, damage: 2)
     ..missive(Missive.clumsy, rate: 10)
@@ -637,7 +637,7 @@ void people() {
     ..drop("bow", percent: 10)
     ..drop("body", percent: 20);
 
-  breed("drunken priest", 5, blue, 34, meander: 40)
+  breed("fallen priest", 5, blue, 34, meander: 40)
     ..attack("hit[s]", 8)
     ..heal(rate: 15, amount: 8)
     ..missive(Missive.clumsy)
@@ -655,30 +655,30 @@ void rodents() {
     ..groups("rodent")
     ..sense(see: 4, hear: 6)
     ..preferWall();
-  breed("[mouse|mice]", 1, sandal, 3, frequency: 0.7)
+  breed("hell [mouse|mice]", 1, sandal, 3, frequency: 0.7)
     ..count(6)
     ..attack("bite[s]", 3)
     ..attack("scratch[es]", 2);
 
-  breed("sewer rat", 2, coolGray, 8, meander: 20)
+  breed("hell rat", 2, coolGray, 8, meander: 20)
     ..count(4)
     ..attack("bite[s]", 4)
     ..attack("scratch[es]", 3);
 
-  breed("sickly rat", 3, peaGreen, 10)
+  breed("diseased hell rat", 3, peaGreen, 10)
     ..attack("bite[s]", 8, Elements.poison)
     ..attack("scratch[es]", 4);
 
-  breed("plague rat", 6, lima, 20)
+  breed("plague hell rat", 6, lima, 20)
     ..count(4)
     ..attack("bite[s]", 15, Elements.poison)
     ..attack("scratch[es]", 8);
 
-  breed("giant rat", 8, carrot, 40)
+  breed("giant hell rat", 8, carrot, 40)
     ..attack("bite[s]", 12)
     ..attack("scratch[es]", 8);
 
-  breed("The Rat King", 8, maroon, 120)
+  breed("The Hell Rat King", 8, maroon, 120)
     ..unique(pronoun: Pronoun.he)
     ..attack("bite[s]", 16)
     ..attack("scratch[es]", 10)
@@ -691,13 +691,13 @@ void slugs() {
   family("s", tracking: 2, flags: "fearless", speed: -3, dodge: 5, meander: 30)
     ..groups("slug")
     ..sense(see: 3, hear: 1);
-  breed("giant slug", 3, olive, 20).attack("crawl[s] on", 8);
+  breed("hell slug", 3, olive, 20).attack("crawl[s] on", 8);
 
-  breed("suppurating slug", 6, lima, 50)
+  breed("poison hell slug", 6, lima, 50)
       .attack("crawl[s] on", 12, Elements.poison);
 
   // TODO: Leave a trail.
-  breed("acidic slug", 9, olive, 70).attack("crawl[s] on", 16, Elements.acid);
+  breed("acid hell slug", 9, olive, 70).attack("crawl[s] on", 16, Elements.acid);
 }
 
 void troglodytes() {}
@@ -708,35 +708,35 @@ void vines() {
   family("v", flags: "fearless immobile")
     ..groups("vine")
     ..sense(see: 10, hear: 10);
-  breed("choker", 16, peaGreen, 40).attack("strangle", 12);
+  breed("hell vine", 16, peaGreen, 40).attack("strangle", 12);
   // TODO: Touch to confuse?
-  breed("nightshade", 19, lilac, 50)
+  breed("poison hell vine", 19, lilac, 50)
     ..whip(rate: 3, damage: 10)
     ..attack("touch[es]", 12, Elements.poison);
-  breed("creeper", 22, lima, 60)
+  breed("creeping hell vine", 22, lima, 60)
     ..spawn(preferStraight: true)
     ..whip(rate: 3, damage: 10)
     ..attack("strangle", 8);
-  breed("strangler", 26, sherwood, 80).attack("strangle", 14);
+  breed("strangling hell vine", 26, sherwood, 80).attack("strangle", 14);
 }
 
 void worms() {
   family("w", dodge: 15, meander: 40, flags: "fearless")
     ..groups("worm")
     ..sense(see: 2, hear: 3);
-  breed("blood worm", 1, maroon, 4, frequency: 0.5)
+  breed("blood hell worm", 1, maroon, 4, frequency: 0.5)
     ..count(3, 7)
     ..attack("crawl[s] on", 5);
 
-  breed("fire worm", 10, carrot, 6)
+  breed("fire hell worm", 10, carrot, 6)
     ..count(2, 6)
     ..preferWall()
     ..attack("crawl[s] on", 5, Elements.fire);
 
   family("w", dodge: 10, meander: 30, flags: "fearless").groups("worm");
-  breed("giant earthworm", 3, pink, 30, speed: -2).attack("crawl[s] on", 5);
+  breed("hell worm", 3, pink, 30, speed: -2).attack("crawl[s] on", 5);
 
-  breed("giant cave worm", 7, sandal, 80, speed: -2)
+  breed("alaskan bull worm", 7, sandal, 80, speed: -2)
       .attack("crawl[s] on", 12, Elements.acid);
 }
 
@@ -746,16 +746,16 @@ void skeletons() {
     ..sense(see: 4, hear: 4);
   // TODO: Special room/trap where these get spawned and come up from the
   // ground?
-  breed("bony hand", 3, coolGray, 18, frequency: 3.0, meander: 40, speed: -1)
+  breed("demon bone hand", 3, coolGray, 18, frequency: 3.0, meander: 40, speed: -1)
       .attack("claw[s]", 6);
 
-  breed("bony arm", 4, lightCoolGray, 26, frequency: 4.0, meander: 40)
+  breed("demon bone arm", 4, lightCoolGray, 26, frequency: 4.0, meander: 40)
       .attack("claw[s]", 8);
 
-  breed("severed skull", 7, sandal, 33, frequency: 3.0, meander: 40, speed: -2)
+  breed("demon skull", 7, sandal, 33, frequency: 3.0, meander: 40, speed: -2)
       .attack("bite[s]", 10);
 
-  breed("decapitated skeleton", 10, buttermilk, 44, frequency: 4.0, meander: 60)
+  breed("headless bone demon", 10, buttermilk, 44, frequency: 4.0, meander: 60)
     ..sense(see: 0, hear: 0)
     ..openDoors()
     ..attack("claw[s]", 7)
@@ -763,51 +763,51 @@ void skeletons() {
     ..drop("weapon", percent: 10)
     ..drop("armor", percent: 10);
 
-  breed("armless skeleton", 12, mint, 50, frequency: 4.0)
+  breed("armless bone demon", 12, mint, 50, frequency: 4.0)
     ..attack("bite[s]", 9)
     ..attack("kick[s]", 7)
     ..drop("treasure", percent: 30)
     ..drop("armor", percent: 10);
 
-  breed("one-armed skeleton", 13, lima, 60, frequency: 5.0)
+  breed("one-armed bone demon", 13, lima, 60, frequency: 5.0)
     ..openDoors()
     ..attack("claw[s]", 7)
-    ..amputate("armless skeleton", "bony arm", "{1}'s arm falls off!")
-    ..amputate("armless skeleton", "bony hand", "{1}'s hand falls off!")
+    ..amputate("armless bone demon", "demon bone arm", "{1}'s arm falls off!")
+    ..amputate("armless bone demon", "demon bone hand", "{1}'s hand falls off!")
     ..drop("treasure", percent: 30)
     ..drop("weapon", percent: 5)
     ..drop("armor", percent: 10);
 
-  breed("skeleton", 15, ash, 70, frequency: 6.0)
+  breed("bone demon", 15, ash, 70, frequency: 6.0)
     ..openDoors()
     ..attack("claw[s]", 7)
     ..attack("bite[s]", 9)
-    ..amputate("decapitated skeleton", "severed skull", "{1}'s head pops off!")
-    ..amputate("one-armed skeleton", "bony arm", "{1}'s arm falls off!")
-    ..amputate("one-armed skeleton", "bony hand", "{1}'s hand falls off!")
+    ..amputate("headless bone demon", "demon skull", "{1}'s head pops off!")
+    ..amputate("one-armed bone demon", "demon bone arm", "{1}'s arm falls off!")
+    ..amputate("one-armed bone demon", "demon bone hand", "{1}'s hand falls off!")
     ..drop("treasure", percent: 40)
     ..drop("weapon", percent: 10)
     ..drop("armor", percent: 10);
 
-  breed("skeleton warrior", 17, pink, 90, frequency: 6.0)
+  breed("bone demon warrior", 17, pink, 90, frequency: 6.0)
     ..openDoors()
     ..attack("slash[es]", 13)
     ..attack("stab[s]", 10)
-    ..amputate("decapitated skeleton", "severed skull", "{1}'s head pops off!")
-    ..amputate("one-armed skeleton", "bony arm", "{1}'s arm falls off!")
-    ..amputate("one-armed skeleton", "bony hand", "{1}'s hand falls off!")
+    ..amputate("headless bone demon", "demon skull", "{1}'s head pops off!")
+    ..amputate("one-armed bone demon", "demon bone arm", "{1}'s arm falls off!")
+    ..amputate("one-armed bone demon", "demon bone hand", "{1}'s hand falls off!")
     ..drop("treasure", percent: 50)
     ..drop("weapon", percent: 20)
     ..drop("armor", percent: 15);
 
-  breed("robed skeleton", 19, lilac, 110, frequency: 4.0)
+  breed("robed bone demon", 19, lilac, 110, frequency: 4.0)
     ..openDoors()
     ..attack("slash[es]", 13)
     ..attack("stab[s]", 10)
     ..lightningBolt(rate: 8, damage: 15)
-    ..amputate("decapitated skeleton", "severed skull", "{1}'s head pops off!")
-    ..amputate("one-armed skeleton", "bony arm", "{1}'s arm falls off!")
-    ..amputate("one-armed skeleton", "bony hand", "{1}'s hand falls off!")
+    ..amputate("headless bone demon", "demon skull", "{1}'s head pops off!")
+    ..amputate("one-armed bone demon", "demon bone arm", "{1}'s arm falls off!")
+    ..amputate("one-armed bone demon", "demon bone hand", "{1}'s hand falls off!")
     ..drop("treasure", percent: 50)
     ..drop("magic", percent: 20)
     ..drop("armor", percent: 10);
