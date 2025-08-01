@@ -1,8 +1,10 @@
 // lib/src/engine/loop/loop_manager.dart
 
 import '../hero/hero_save.dart';
+import '../core/content.dart';
 import 'loop_reward.dart';
 import 'hero_preset.dart';
+import 'item/loop_item_manager.dart';
 
 /// Manages the roguelite meta-game loop system
 class LoopManager {
@@ -24,8 +26,20 @@ class LoopManager {
   /// Active temporary bonuses from previous loop rewards
   List<LoopReward> activeRewards = [];
   
+  /// Content reference for item generation
+  Content? _content;
+  
+  /// Item manager for loop progression
+  LoopItemManager? _itemManager;
+  
   /// Initialize the loop system
   LoopManager();
+  
+  /// Set content for item generation
+  void setContent(Content content) {
+    _content = content;
+    _itemManager = LoopItemManager(content);
+  }
   
   /// Start a new loop with the given preset
   void startLoop(HeroPreset preset) {
@@ -62,8 +76,11 @@ class LoopManager {
     isLoopActive = false;
     isRewardSelection = true;
     
-    // Generate 3 random reward options
-    currentRewardOptions = LoopReward.generateRewardOptions(3);
+    // Generate 3 random reward options (now including item rewards)
+    currentRewardOptions = LoopReward.generateRewardOptions(3, 
+      content: _content, 
+      currentLoop: currentLoop
+    );
     
     print('Loop $currentLoop complete! $moveCount moves made. Time for rewards!');
   }
@@ -100,6 +117,13 @@ class LoopManager {
   void applyActiveRewards(HeroSave hero) {
     for (var reward in activeRewards) {
       reward.apply(hero);
+    }
+  }
+  
+  /// Apply loop-based starting items to hero
+  void applyLoopItems(HeroSave hero) {
+    if (_itemManager != null) {
+      _itemManager!.applyLoopStartingItems(hero, currentLoop);
     }
   }
   

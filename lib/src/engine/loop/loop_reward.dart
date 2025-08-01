@@ -1,6 +1,10 @@
 // lib/src/engine/loop/loop_reward.dart
 
 import '../hero/hero_save.dart';
+import '../core/content.dart';
+import '../items/item.dart';
+import 'item/loop_item_config.dart';
+import 'item/loop_item_manager.dart';
 
 /// Base class for rewards that provide temporary benefits for the next loop
 abstract class LoopReward {
@@ -18,8 +22,19 @@ abstract class LoopReward {
   void apply(HeroSave hero);
   
   /// Generate a list of random reward options
-  static List<LoopReward> generateRewardOptions(int count) {
+  static List<LoopReward> generateRewardOptions(int count, {Content? content, int? currentLoop}) {
     var allRewards = _getAllRewards();
+    
+    // Add item rewards if content is provided
+    if (content != null && currentLoop != null) {
+      var itemManager = LoopItemManager(content);
+      var itemRewards = itemManager.generateItemRewards(currentLoop, 3);
+      // Convert LoopItemReward to LoopReward
+      allRewards.addAll(itemRewards.map((itemReward) => 
+        ItemLoopReward(itemReward.config, content)
+      ));
+    }
+    
     allRewards.shuffle();
     return allRewards.take(count).toList();
   }
@@ -206,5 +221,87 @@ class LuckyFindsReward extends LoopReward {
   void apply(HeroSave hero) {
     // This would need to be implemented in the loot generation system
     print("Applied lucky finds boost to ${hero.name}");
+  }
+}
+
+/// Reward that gives actual items instead of temporary bonuses
+class ItemLoopReward extends LoopReward {
+  final LoopItemConfigEntry config;
+  final Content content;
+  
+  ItemLoopReward(this.config, this.content) : super(
+    name: '${config.category.icon} ${config.category.displayName}',
+    description: config.quantity > 1 ? '${config.itemName} (×${config.quantity})' : config.itemName,
+    flavorText: _getFlavorText(config.category),
+  );
+  
+  static String _getFlavorText(dynamic category) {
+    switch (category.toString()) {
+      case 'ItemCategory.primary':
+        return 'A weapon to aid your primary attacks';
+      case 'ItemCategory.secondary':
+        return 'Tools for tactical advantages';
+      case 'ItemCategory.healing':
+        return 'Sustenance for the battles ahead';
+      case 'ItemCategory.armor':
+        return 'Protection against the growing darkness';
+      case 'ItemCategory.utility':
+        return 'Useful tools for exploration';
+      case 'ItemCategory.treasure':
+        return 'Riches to fund your expeditions';
+      default:
+        return 'A useful item for your journey';
+    }
+  }
+  
+  @override
+  void apply(HeroSave hero) {
+    final itemType = content.tryFindItem(config.itemName);
+    if (itemType == null) {
+      print('Warning: Could not find item type: ${config.itemName}');
+      return;
+    }
+    
+    final item = Item(itemType, config.quantity);
+    
+    // Handle special case for gold
+    if (config.category.toString() == 'ItemCategory.treasure' && config.itemName.toLowerCase() == 'gold') {
+      hero.gold += config.quantity;
+      print('Added ${config.quantity} gold to ${hero.name} (now has ${hero.gold})');
+      return;
+    }
+    
+    // Try to equip if appropriate
+    if (hero.equipment.canEquip(item) && _shouldAutoEquip(config.category)) {
+      final result = hero.equipment.equip(item);
+      print('Equipped ${item.nounText} on ${hero.name}');
+      
+      // Add any unequipped items to inventory
+      for (var unequippedItem in result.unequipped) {
+        hero.inventory.tryAdd(unequippedItem);
+      }
+    } else {
+      // Add to inventory
+      final result = hero.inventory.tryAdd(item);
+      if (result.added > 0) {
+        print('Added ${item.clone(result.added).nounText} to ${hero.name}\'s inventory');
+      }
+    }
+  }
+  
+  /// Check if items of this category should be auto-equipped
+  bool _shouldAutoEquip(dynamic category) {
+    switch (category.toString()) {
+      case 'ItemCategory.primary':
+      case 'ItemCategory.secondary':
+      case 'ItemCategory.armor':
+        return true;
+      case 'ItemCategory.healing':
+      case 'ItemCategory.utility':
+      case 'ItemCategory.treasure':
+        return false;
+      default:
+        return false;
+    }
   }
 }

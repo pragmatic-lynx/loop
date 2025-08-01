@@ -1,0 +1,222 @@
+{
+  "startingItems": [
+    {
+      "itemName": "Dagger",
+      "category": "primary",
+      "minLoop": 1,
+      "maxLoop": 3,
+      "weight": 15,
+      "quantity": 1
+    },
+    {
+      "itemName": "Club",
+      "category": "primary",
+      "minLoop": 1,
+      "maxLoop": 5,
+      "weight": 12,
+      "quantity": 1
+    },
+    {
+      "itemName": "Sword",
+      "category": "primary",
+      "minLoop": 4,
+      "maxLoop": 10,
+      "weight": 15,
+      "quantity": 1
+    },
+    {
+      "itemName": "Falchion",
+      "category": "primary",
+      "minLoop": 8,
+      "maxLoop": 999,
+      "weight": 12,
+      "quantity": 1
+    },
+    {
+      "itemName": "Bow",
+      "category": "secondary",
+      "minLoop": 3,
+      "maxLoop": 15,
+      "weight": 12,
+      "quantity": 1
+    },
+    {
+      "itemName": "Dart",
+      "category": "secondary",
+      "minLoop": 1,
+      "maxLoop": 8,
+      "weight": 10,
+      "quantity": 20
+    },
+    {
+      "itemName": "Healing Potion",
+      "category": "healing",
+      "minLoop": 1,
+      "maxLoop": 999,
+      "weight": 20,
+      "quantity": 3
+    },
+    {
+      "itemName": "Loaf of Bread",
+      "category": "healing",
+      "minLoop": 1,
+      "maxLoop": 999,
+      "weight": 15,
+      "quantity": 2
+    },
+    {
+      "itemName": "Leather Armor",
+      "category": "armor",
+      "minLoop": 2,
+      "maxLoop": 8,
+      "weight": 10,
+      "quantity": 1
+    },
+    {
+      "itemName": "Scale Mail",
+      "category": "armor",
+      "minLoop": 6,
+      "maxLoop": 999,
+      "weight": 8,
+      "quantity": 1
+    },
+    {
+      "itemName": "Leather Cap",
+      "category": "armor",
+      "minLoop": 1,
+      "maxLoop": 999,
+      "weight": 8,
+      "quantity": 1
+    }
+  ],
+  "rewardItems": [
+    {
+      "itemName": "Sword",
+      "category": "primary",
+      "minLoop": 1,
+      "maxLoop": 5,
+      "weight": 15,
+      "quantity": 1
+    },
+    {
+      "itemName": "Falchion",
+      "category": "primary",
+      "minLoop": 3,
+      "maxLoop": 8,
+      "weight": 12,
+      "quantity": 1
+    },
+    {
+      "itemName": "Scimitar",
+      "category": "primary",
+      "minLoop": 5,
+      "maxLoop": 12,
+      "weight": 10,
+      "quantity": 1
+    },
+    {
+      "itemName": "Rapier",
+      "category": "primary",
+      "minLoop": 6,
+      "maxLoop": 999,
+      "weight": 8,
+      "quantity": 1
+    },
+    {
+      "itemName": "Bow",
+      "category": "secondary",
+      "minLoop": 1,
+      "maxLoop": 999,
+      "weight": 12,
+      "quantity": 1
+    },
+    {
+      "itemName": "Scroll of Lightning Bolt",
+      "category": "secondary",
+      "minLoop": 2,
+      "maxLoop": 999,
+      "weight": 10,
+      "quantity": 3
+    },
+    {
+      "itemName": "Scroll of Teleportation",
+      "category": "secondary",
+      "minLoop": 3,
+      "maxLoop": 999,
+      "weight": 8,
+      "quantity": 2
+    },
+    {
+      "itemName": "Dart",
+      "category": "secondary",
+      "minLoop": 1,
+      "maxLoop": 999,
+      "weight": 12,
+      "quantity": 30
+    },
+    {
+      "itemName": "Healing Potion",
+      "category": "healing",
+      "minLoop": 1,
+      "maxLoop": 999,
+      "weight": 20,
+      "quantity": 5
+    },
+    {
+      "itemName": "Scroll of Heal",
+      "category": "healing",
+      "minLoop": 2,
+      "maxLoop": 999,
+      "weight": 12,
+      "quantity": 3
+    },
+    {
+      "itemName": "Loaf of Bread",
+      "category": "healing",
+      "minLoop": 1,
+      "maxLoop": 999,
+      "weight": 10,
+      "quantity": 5
+    },
+    {
+      "itemName": "Leather Armor",
+      "category": "armor",
+      "minLoop": 1,
+      "maxLoop": 5,
+      "weight": 12,
+      "quantity": 1
+    },
+    {
+      "itemName": "Scale Mail",
+      "category": "armor",
+      "minLoop": 3,
+      "maxLoop": 8,
+      "weight": 10,
+      "quantity": 1
+    },
+    {
+      "itemName": "Chain Mail",
+      "category": "armor",
+      "minLoop": 5,
+      "maxLoop": 12,
+      "weight": 8,
+      "quantity": 1
+    },
+    {
+      "itemName": "Leather Cap",
+      "category": "armor",
+      "minLoop": 1,
+      "maxLoop": 999,
+      "weight": 8,
+      "quantity": 1
+    },
+    {
+      "itemName": "Gold",
+      "category": "treasure",
+      "minLoop": 1,
+      "maxLoop": 999,
+      "weight": 15,
+      "quantity": 500
+    }
+  ]
+}

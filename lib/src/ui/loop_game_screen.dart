@@ -104,6 +104,13 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     var depth = loopManager.getCurrentDepth();
     print("LoopGameScreen.create: Creating game at depth $depth");
 
+    // Set up content for item management
+    loopManager.setContent(content);
+    
+    // Apply loop-based items to hero before creating game
+    loopManager.applyLoopItems(save);
+    loopManager.applyActiveRewards(save);
+
     var game = Game(content, depth, save, width: 60, height: 34);
 
     // Generate the dungeon

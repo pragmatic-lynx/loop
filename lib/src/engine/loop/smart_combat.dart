@@ -12,6 +12,7 @@ import '../hero/hero.dart';
 import '../stage/tile.dart';
 import '../items/item.dart';
 import '../items/inventory.dart';
+import 'item/item_category.dart';
 
 /// Smart action info containing both the action to perform and UI display info
 class SmartActionInfo {
@@ -457,10 +458,9 @@ class SmartCombat {
     // Check for adjacent enemies
     var target = _findAdjacentEnemy();
     if (target != null) {
-      var weapon = hero.equipment.weapons.isNotEmpty ? 
-          hero.equipment.weapons.first : null;
+      var weapon = _getBestPrimaryWeapon();
       if (weapon != null) {
-        return 'Attack';
+        return _getWeaponActionName(weapon);
       }
       return 'Punch';
     }
@@ -491,17 +491,16 @@ class SmartCombat {
   
   /// Get dynamic label for secondary action button
   String _getSecondaryActionLabel() {
-    var target = _findBestSpellTarget();
-    if (target != null) {
-      var spell = _getBestOffensiveSpell();
-      if (spell != null) {
-        return 'Cast'; // TODO: Use actual spell name when implemented
-      }
+    // Check for magic scrolls first
+    var magicItem = _getBestMagicItem();
+    if (magicItem != null) {
+      return _getMagicActionName(magicItem);
     }
     
     // Check for ranged weapons
-    if (_hasRangedWeapon()) {
-      return 'Shoot';
+    var rangedWeapon = _getBestRangedWeapon();
+    if (rangedWeapon != null) {
+      return _getRangedActionName(rangedWeapon);
     }
     
     return 'Magic';
@@ -546,5 +545,96 @@ class SmartCombat {
            name.contains('elixir') ||
            name.contains('balm') ||
            name.contains('salve');
+  }
+  
+  /// Get the best primary weapon equipped
+  Item? _getBestPrimaryWeapon() {
+    var weapons = hero.equipment.weapons;
+    if (weapons.isEmpty) return null;
+    
+    // Prefer weapons categorized as primary
+    for (var weapon in weapons) {
+      var category = ItemCategorizer.categorizeByName(weapon.type.name);
+      if (category == ItemCategory.primary) {
+        return weapon;
+      }
+    }
+    
+    // Fallback to first weapon
+    return weapons.first;
+  }
+  
+  /// Get the best ranged weapon from equipment or inventory
+  Item? _getBestRangedWeapon() {
+    // Check equipped weapons first
+    for (var weapon in hero.equipment.weapons) {
+      var category = ItemCategorizer.categorizeByName(weapon.type.name);
+      if (category == ItemCategory.secondary) {
+        var name = weapon.type.name.toLowerCase();
+        if (name.contains('bow') || name.contains('dart') || name.contains('sling')) {
+          return weapon;
+        }
+      }
+    }
+    
+    // Check inventory for ranged weapons
+    for (var item in hero.inventory) {
+      var category = ItemCategorizer.categorizeByName(item.type.name);
+      if (category == ItemCategory.secondary) {
+        var name = item.type.name.toLowerCase();
+        if (name.contains('bow') || name.contains('dart') || name.contains('sling')) {
+          return item;
+        }
+      }
+    }
+    
+    return null;
+  }
+  
+  /// Get the best magic item from inventory
+  Item? _getBestMagicItem() {
+    for (var item in hero.inventory) {
+      var category = ItemCategorizer.categorizeByName(item.type.name);
+      if (category == ItemCategory.secondary) {
+        var name = item.type.name.toLowerCase();
+        if (name.contains('scroll') || name.contains('wand')) {
+          return item;
+        }
+      }
+    }
+    return null;
+  }
+  
+  /// Get action name for weapon
+  String _getWeaponActionName(Item weapon) {
+    var name = weapon.type.name.toLowerCase();
+    if (name.contains('sword') || name.contains('blade')) return 'Slash';
+    if (name.contains('axe')) return 'Chop';
+    if (name.contains('mace') || name.contains('hammer')) return 'Smash';
+    if (name.contains('spear')) return 'Thrust';
+    if (name.contains('staff')) return 'Strike';
+    if (name.contains('dagger')) return 'Stab';
+    return 'Attack';
+  }
+  
+  /// Get action name for ranged weapon
+  String _getRangedActionName(Item weapon) {
+    var name = weapon.type.name.toLowerCase();
+    if (name.contains('bow')) return 'Shoot';
+    if (name.contains('dart')) return 'Throw';
+    if (name.contains('sling')) return 'Sling';
+    return 'Shoot';
+  }
+  
+  /// Get action name for magic item
+  String _getMagicActionName(Item magicItem) {
+    var name = magicItem.type.name.toLowerCase();
+    if (name.contains('lightning')) return 'Zap';
+    if (name.contains('fireball') || name.contains('fire')) return 'Burn';
+    if (name.contains('ice') || name.contains('frost')) return 'Freeze';
+    if (name.contains('teleport')) return 'Teleport';
+    if (name.contains('heal')) return 'Heal';
+    if (name.contains('scroll')) return 'Cast';
+    return 'Magic';
   }
 }

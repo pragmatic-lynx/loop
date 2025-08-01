@@ -23,7 +23,12 @@ class LoopRewardScreen extends Screen<Input> {
   int selectedReward = 0;
   
   LoopRewardScreen(this.content, this.storage, this.loopManager, this.hero)
-      : rewardOptions = loopManager.currentRewardOptions;
+      : rewardOptions = loopManager.currentRewardOptions {
+    // Ensure loop manager has content for generating item rewards
+    if (!loopManager.currentRewardOptions.isNotEmpty) {
+      loopManager.setContent(content);
+    }
+  }
   
   @override
   bool handleInput(Input input) {
