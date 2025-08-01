@@ -12,7 +12,8 @@ import '../hero/hero.dart';
 import '../stage/tile.dart';
 import '../items/item.dart';
 import '../items/inventory.dart';
-import 'item/item_category.dart';
+// TODO: Re-enable when build issues are resolved
+// import 'item/item_category.dart';
 
 /// Smart action info containing both the action to perform and UI display info
 class SmartActionInfo {
@@ -554,8 +555,8 @@ class SmartCombat {
     
     // Prefer weapons categorized as primary
     for (var weapon in weapons) {
-      var category = ItemCategorizer.categorizeByName(weapon.type.name);
-      if (category == ItemCategory.primary) {
+      var name = weapon.type.name.toLowerCase();
+      if (_isPrimaryWeapon(name)) {
         return weapon;
       }
     }
@@ -568,9 +569,8 @@ class SmartCombat {
   Item? _getBestRangedWeapon() {
     // Check equipped weapons first
     for (var weapon in hero.equipment.weapons) {
-      var category = ItemCategorizer.categorizeByName(weapon.type.name);
-      if (category == ItemCategory.secondary) {
-        var name = weapon.type.name.toLowerCase();
+      var name = weapon.type.name.toLowerCase();
+      if (_isSecondaryWeapon(name)) {
         if (name.contains('bow') || name.contains('dart') || name.contains('sling')) {
           return weapon;
         }
@@ -579,9 +579,8 @@ class SmartCombat {
     
     // Check inventory for ranged weapons
     for (var item in hero.inventory) {
-      var category = ItemCategorizer.categorizeByName(item.type.name);
-      if (category == ItemCategory.secondary) {
-        var name = item.type.name.toLowerCase();
+      var name = item.type.name.toLowerCase();
+      if (_isSecondaryWeapon(name)) {
         if (name.contains('bow') || name.contains('dart') || name.contains('sling')) {
           return item;
         }
@@ -594,9 +593,8 @@ class SmartCombat {
   /// Get the best magic item from inventory
   Item? _getBestMagicItem() {
     for (var item in hero.inventory) {
-      var category = ItemCategorizer.categorizeByName(item.type.name);
-      if (category == ItemCategory.secondary) {
-        var name = item.type.name.toLowerCase();
+      var name = item.type.name.toLowerCase();
+      if (_isMagicItem(name)) {
         if (name.contains('scroll') || name.contains('wand')) {
           return item;
         }
@@ -636,5 +634,41 @@ class SmartCombat {
     if (name.contains('heal')) return 'Heal';
     if (name.contains('scroll')) return 'Cast';
     return 'Magic';
+  }
+  
+  /// Check if weapon name indicates a primary weapon
+  bool _isPrimaryWeapon(String name) {
+    return name.contains('sword') ||
+           name.contains('axe') ||
+           name.contains('mace') ||
+           name.contains('hammer') ||
+           name.contains('spear') ||
+           name.contains('staff') ||
+           name.contains('club') ||
+           name.contains('blade') ||
+           name.contains('rapier') ||
+           name.contains('scimitar') ||
+           name.contains('katana');
+  }
+  
+  /// Check if weapon name indicates a secondary weapon
+  bool _isSecondaryWeapon(String name) {
+    return name.contains('bow') ||
+           name.contains('crossbow') ||
+           name.contains('dart') ||
+           name.contains('sling') ||
+           name.contains('javelin') ||
+           name.contains('throwing') ||
+           name.contains('dagger');
+  }
+  
+  /// Check if item name indicates a magic item
+  bool _isMagicItem(String name) {
+    return name.contains('scroll') ||
+           name.contains('wand') ||
+           name.contains('spell') ||
+           name.contains('tome') ||
+           name.contains('book') ||
+           name.contains('orb');
   }
 }

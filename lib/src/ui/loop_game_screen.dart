@@ -91,6 +91,9 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     
     // Initialize dynamic action mapping
     _updateActionMapping();
+    
+    // Ensure screen is marked for initial rendering
+    dirty();
   }
   
   /// Update action mapping with current game state
@@ -104,11 +107,9 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     var depth = loopManager.getCurrentDepth();
     print("LoopGameScreen.create: Creating game at depth $depth");
 
-    // Set up content for item management
-    loopManager.setContent(content);
-    
-    // Apply loop-based items to hero before creating game
-    loopManager.applyLoopItems(save);
+    // TODO: Re-enable loop item system once build issues are resolved
+    // loopManager.setContent(content);
+    // loopManager.applyLoopItems(save);
     loopManager.applyActiveRewards(save);
 
     var game = Game(content, depth, save, width: 60, height: 34);
@@ -218,6 +219,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   void update() {
     if (_pause > 0) {
       _pause--;
+      dirty(); // Ensure screen refreshes during pause countdown
       return;
     }
 
@@ -225,6 +227,9 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
 
     // Track moves for loop system
     if (result.madeProgress) {
+      // Mark screen as dirty when game makes progress
+      dirty();
+      
       // Check if hero took a turn
       if (game.hero.energy.canTakeTurn == false) {
         _loopManager.recordMove();

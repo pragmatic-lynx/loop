@@ -21,3 +21,4 @@ CODE.md
 .stignore
 *_old
 /lib-working
+*.diff

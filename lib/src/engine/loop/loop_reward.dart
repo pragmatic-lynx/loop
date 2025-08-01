@@ -3,9 +3,10 @@
 import '../hero/hero_save.dart';
 import '../core/content.dart';
 import '../items/item.dart';
-import 'item/loop_item_config.dart';
-import 'item/loop_item_manager.dart';
-import 'item/item_category.dart';
+// TODO: Re-enable when build issues are resolved
+// import 'item/loop_item_config.dart';
+// import 'item/loop_item_manager.dart';
+// import 'item/item_category.dart';
 
 /// Base class for rewards that provide temporary benefits for the next loop
 abstract class LoopReward {
@@ -23,18 +24,17 @@ abstract class LoopReward {
   void apply(HeroSave hero);
   
   /// Generate a list of random reward options
-  static List<LoopReward> generateRewardOptions(int count, {Content? content, int? currentLoop}) {
+  static List<LoopReward> generateRewardOptions(int count) {
     var allRewards = _getAllRewards();
     
-    // Add item rewards if content is provided
-    if (content != null && currentLoop != null) {
-      var itemManager = LoopItemManager(content);
-      var itemRewards = itemManager.generateItemRewards(currentLoop, 3);
-      // Convert LoopItemReward to LoopReward
-      allRewards.addAll(itemRewards.map((itemReward) => 
-        ItemLoopReward(itemReward.config, content)
-      ));
-    }
+    // TODO: Re-enable item rewards when build issues are resolved
+    // if (content != null && currentLoop != null) {
+    //   var itemManager = LoopItemManager(content);
+    //   var itemRewards = itemManager.generateItemRewards(currentLoop, 3);
+    //   allRewards.addAll(itemRewards.map((itemReward) => 
+    //     ItemLoopReward(itemReward.config, content)
+    //   ));
+    // }
     
     allRewards.shuffle();
     return allRewards.take(count).toList();
@@ -225,6 +225,8 @@ class LuckyFindsReward extends LoopReward {
   }
 }
 
+// TODO: Re-enable when build issues are resolved
+/*
 /// Reward that gives actual items instead of temporary bonuses
 class ItemLoopReward extends LoopReward {
   final LoopItemConfigEntry config;
@@ -306,3 +308,4 @@ class ItemLoopReward extends LoopReward {
     }
   }
 }
+*/
