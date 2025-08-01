@@ -10,6 +10,7 @@ enum LoopInput {
   action1,  // 🗡️ Primary Attack/Interact
   action2,  // ⚡ Magic/Secondary Ability
   action3,  // ❤️ Heal/Consumable
+  action4,  // 🛡️ Resistance/Defense
 
   // Queue management
   cycleQueue, // Q - cycle current queue

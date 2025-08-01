@@ -162,7 +162,7 @@ void main() {
   _ui.keyPress.bind(Input.selectSkill, KeyCode.one);   // Primary action (1)
   _ui.keyPress.bind(Input.use, KeyCode.two);           // Secondary action (2)
   _ui.keyPress.bind(Input.drop, KeyCode.three);        // Heal/Consumable (3)
-  _ui.keyPress.bind(Input.equip, KeyCode.four);        // Escape/Move (4)
+  _ui.keyPress.bind(Input.toss, KeyCode.four);         // Resistance/Defense (4)
 
   _ui.push(MainMenuScreen(content));
 

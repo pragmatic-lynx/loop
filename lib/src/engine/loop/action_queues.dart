@@ -4,6 +4,7 @@ import '../core/game.dart';
 import '../hero/hero.dart';
 import '../items/item.dart';
 import '../items/inventory.dart';
+import 'debug_helper.dart';
 
 /// Queue item representing a single action option
 class QueueItem {
@@ -37,6 +38,7 @@ class QueueItem {
 class ActionQueues {
   final Game game;
   final Hero hero;
+  late final DebugHelper _debugHelper;
   
   // Current queue being cycled (1=ranged, 2=magic, 3=heal)
   int _currentQueue = 1;
@@ -45,8 +47,11 @@ class ActionQueues {
   int _rangedQueueIndex = 0;
   int _magicQueueIndex = 0;
   int _healQueueIndex = 0;
+  int _resistanceQueueIndex = 0;
   
-  ActionQueues(this.game) : hero = game.hero;
+  ActionQueues(this.game) : hero = game.hero {
+    _debugHelper = DebugHelper(game);
+  }
   
   /// Get the current ranged weapon option
   QueueItem getRangedQueueItem() {
@@ -57,7 +62,7 @@ class ActionQueues {
     
     var index = _rangedQueueIndex % rangedWeapons.length;
     var weapon = rangedWeapons[index];
-    var damage = weapon.attack?.createHit().averageDamage.round() ?? 0;
+    var damage = weapon.attack?.createHit()?.averageDamage?.round() ?? 0;
     return QueueItem(
       name: weapon.type.name,
       count: "($damage dmg)",
@@ -104,6 +109,22 @@ class ActionQueues {
       name: item.type.name,
       count: "($currentHP/$maxHP HP)",
       healAmount: healAmount,
+      item: item,
+    );
+  }
+  
+  /// Get the current resistance queue item
+  QueueItem getResistanceQueueItem() {
+    var resistanceItems = _getResistanceItems();
+    if (resistanceItems.isEmpty) {
+      return QueueItem(name: "No Resistance", isAvailable: false);
+    }
+    
+    var index = _resistanceQueueIndex % resistanceItems.length;
+    var item = resistanceItems[index];
+    return QueueItem(
+      name: item.type.name,
+      count: item.count > 1 ? "(${item.count})" : null,
       item: item,
     );
   }
@@ -166,6 +187,12 @@ class ActionQueues {
           _healQueueIndex = (_healQueueIndex + 1) % healItems.length;
         }
         break;
+      case 4: // Resistance
+        var resistanceItems = _getResistanceItems();
+        if (resistanceItems.isNotEmpty) {
+          _resistanceQueueIndex = (_resistanceQueueIndex + 1) % resistanceItems.length;
+        }
+        break;
     }
   }
   
@@ -177,11 +204,39 @@ class ActionQueues {
   /// Get current queue number
   int get currentQueue => _currentQueue;
   
+  /// Replace used item with a new random one
+  void replaceUsedItem(Item usedItem) {
+    // Find and add a replacement item
+    if (_isMagicItem(usedItem)) {
+      _addRandomMagicItem();
+    } else if (_isHealItem(usedItem)) {
+      _addRandomHealItem();
+    } else if (_isResistanceItem(usedItem)) {
+      _addRandomResistanceItem();
+    }
+  }
+  
+  /// Add a random magic item as replacement
+  void _addRandomMagicItem() {
+    _debugHelper.addRandomMagicItems(1);
+  }
+  
+  /// Add a random heal item as replacement
+  void _addRandomHealItem() {
+    _debugHelper.addRandomHealItems(1);
+  }
+  
+  /// Add a random resistance item as replacement
+  void _addRandomResistanceItem() {
+    _debugHelper.addRandomResistanceItems(1);
+  }
+  
   /// Auto-equip ranged weapon if needed
   bool autoEquipRangedWeapon() {
     // Check if we already have a ranged weapon equipped
     for (var weapon in hero.equipment.weapons) {
       if (_isRangedWeapon(weapon)) {
+        game.log.message('Debug: Already have ranged weapon equipped: ${weapon.type.name}');
         return true; // Already equipped
       }
     }
@@ -189,6 +244,7 @@ class ActionQueues {
     // Find ranged weapon in inventory
     for (var item in hero.inventory) {
       if (_isRangedWeapon(item)) {
+        game.log.message('Debug: Found ranged weapon in inventory: ${item.type.name}, trying to equip...');
         // Try to equip it (equip returns list of unequipped items)
         var unequipped = hero.equipment.equip(item);
         hero.inventory.remove(item);
@@ -201,6 +257,7 @@ class ActionQueues {
       }
     }
     
+    game.log.message('Debug: No ranged weapon found in inventory or equipment');
     return false; // No ranged weapon available
   }
   
@@ -208,7 +265,7 @@ class ActionQueues {
   List<Item> _getRangedWeapons() {
     var weapons = <Item>[];
     
-    // Add equipped ranged weapons
+    // Add equipped ranged weapons first (prioritize equipped)
     for (var weapon in hero.equipment.weapons) {
       if (_isRangedWeapon(weapon)) {
         weapons.add(weapon);
@@ -247,9 +304,24 @@ class ActionQueues {
     return items;
   }
   
+  /// Get all resistance items from inventory
+  List<Item> _getResistanceItems() {
+    var items = <Item>[];
+    for (var item in hero.inventory) {
+      if (_isResistanceItem(item)) {
+        items.add(item);
+      }
+    }
+    return items;
+  }
+  
   /// Check if item is a ranged weapon
   bool _isRangedWeapon(Item item) {
     var name = item.type.name.toLowerCase();
+    // Check weapon type first (most reliable)
+    if (item.type.weaponType == "bow") return true;
+    
+    // Fallback to name checking
     return name.contains('bow') ||
            name.contains('crossbow') ||
            name.contains('dart') ||
@@ -286,7 +358,7 @@ class ActionQueues {
            ));
   }
   
-  /// Check if item is a healing item
+  /// Check if item is a healing item (including resistance items for easy access)
   bool _isHealItem(Item item) {
     var name = item.type.name.toLowerCase();
     return name.contains('healing') ||
@@ -298,7 +370,29 @@ class ActionQueues {
            name.contains('soothing') ||
            name.contains('amelioration') ||
            name.contains('rejuvenation') ||
-           name.contains('antidote');
+           name.contains('antidote') ||
+           // Include resistance salves in healing for easy access
+           (name.contains('salve') && name.contains('resistance'));
+  }
+  
+  /// Check if item is a resistance item
+  bool _isResistanceItem(Item item) {
+    var name = item.type.name.toLowerCase();
+    return name.contains('resistance') ||
+           name.contains('resist') ||
+           (name.contains('salve') && (
+             name.contains('heat') ||
+             name.contains('cold') ||
+             name.contains('light') ||
+             name.contains('wind') ||
+             name.contains('lightning') ||
+             name.contains('darkness') ||
+             name.contains('earth') ||
+             name.contains('water') ||
+             name.contains('acid') ||
+             name.contains('poison') ||
+             name.contains('death')
+           ));
   }
   
   /// Get approximate heal amount for item

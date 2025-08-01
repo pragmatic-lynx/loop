@@ -10,11 +10,13 @@ class ActionMapping {
   final String action1Label;
   final String action2Label;
   final String action3Label;
+  final String action4Label;
 
   ActionMapping({
     required this.action1Label,
     required this.action2Label,
     required this.action3Label,
+    required this.action4Label,
   });
 
   /// Creates dynamic action mapping using ActionQueues
@@ -22,11 +24,13 @@ class ActionMapping {
     var rangedItem = queues.getRangedQueueItem();
     var magicItem = queues.getMagicQueueItem();
     var healItem = queues.getHealQueueItem();
+    var resistanceItem = queues.getResistanceQueueItem();
 
     return ActionMapping(
       action1Label: rangedItem.displayText,
       action2Label: magicItem.displayText,
       action3Label: healItem.displayText,
+      action4Label: resistanceItem.displayText,
     );
   }
 
