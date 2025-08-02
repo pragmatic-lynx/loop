@@ -1,0 +1,51 @@
+{
+  "starting": {
+    "warrior": "Stick",
+    "ranger": "Short Bow",
+    "mage": "Walking Stick"
+  },
+  "tiers": [
+    {
+      "id": 1,
+      "warrior": ["Stick", "Cudgel", "Hatchet"],
+      "ranger": ["Short Bow", "Knife", "Dirk"],
+      "mage": []
+    },
+    {
+      "id": 2,
+      "warrior": ["Shortsword", "Morningstar", "Spear"],
+      "ranger": ["Longbow", "Dagger", "Stiletto"],
+      "mage": []
+    },
+    {
+      "id": 3,
+      "warrior": ["Mattock", "Battleaxe", "War Hammer"],
+      "ranger": ["Crossbow", "Rondel", "Baselard"],
+      "mage": []
+    }
+  ],
+  "armorTiers": [
+    {
+      "id": 1,
+      "warrior": ["Leather Cap", "Leather Shirt"],
+      "ranger": ["Cloth Shirt", "Cloak"],
+      "mage": ["Robe", "Pair of Sandals"]
+    },
+    {
+      "id": 2,
+      "warrior": ["Chainmail Coif", "Leather Armor"],
+      "ranger": ["Jerkin", "Fur Cloak", "Pair of Boots"],
+      "mage": ["Fur-lined Robe", "Pair of Shoes", "Pair of Gloves"]
+    },
+    {
+      "id": 3,
+      "warrior": ["Steel Cap", "Mail Hauberk"],
+      "ranger": ["Studded Armor", "Set of Bracers", "Pair of Plated Boots"],
+      "mage": ["Spidersilk Cloak", "Pair of Greaves"]
+    }
+  ],
+  "legendary": {
+    "warrior": ["Phoenix Edge"],
+    "ranger": ["Void Repeater"]
+  }
+}

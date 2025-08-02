@@ -28,6 +28,7 @@ import '../engine/loop/loop_manager.dart';
 import '../engine/loop/action_queues.dart';
 import '../engine/loop/debug_helper.dart';
 import '../engine/loop/loop_reward.dart';
+import '../engine/loop/loop_meter.dart';
 import '../engine/loop/smart_combat.dart';
 import '../engine/stage/tile.dart';
 import '../content/tiles.dart';
@@ -44,6 +45,8 @@ import 'input_converter.dart';
 import 'level_up_screen.dart';
 import 'loop_input.dart';
 import 'loop_reward_screen.dart';
+import 'supply_case_screen.dart';
+import '../engine/hero/stat.dart';
 import 'panel/log_panel.dart';
 import 'panel/sidebar_panel.dart';
 import 'panel/stage_panel.dart';
@@ -136,6 +139,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   bool _showTuningOverlay = false;
   int _pause = 0;
   HeroSave _previousSave;
+  int _previousEnemyCount = 0;
   final DiagonalInputHandler _diagonalInput = DiagonalInputHandler();
   
   @override
@@ -186,6 +190,9 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     
     // Initialize dynamic action mapping
     _updateActionMapping();
+    
+    // Initialize enemy count for kill tracking
+    _previousEnemyCount = game.stage.actors.where((actor) => actor != game.hero && actor.isAlive).length;
     
     // Ensure screen is marked for initial rendering
     dirty();
@@ -539,8 +546,19 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
         return true;
         
       case LoopInput.debug:
-        // Debug functionality - add random items
+        // Debug functionality - add random items and test loop meter
         _debugHelper.addRandomTestItems();
+        
+        // Add some loop meter progress for testing
+        _loopManager.loopMeter.addProgress(15.0);
+        game.log.message("Debug: Added 15% loop meter progress (${_loopManager.loopMeter.progress.toStringAsFixed(1)}%)");
+        
+        // Check if this debug addition triggered completion
+        if (_loopManager.loopMeter.progress >= 100.0 && _loopManager.isLoopActive && !_loopManager.isRewardSelection) {
+          game.log.message("Debug triggered ring completion!");
+          _loopManager.triggerRewardSelection();
+        }
+        
         _updateActionMapping();
         return true;
 
@@ -576,6 +594,9 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
             
             game.hero.pickUp(game, item);
             game.log.message('Equipped ${item.type.name}.');
+            _loopManager.recordLootPickup(); // Track loot pickup for loop meter
+            var meterProgress = _loopManager.loopMeter.progress.toStringAsFixed(1);
+            game.log.message("Loot collected! Loop meter: ${meterProgress}%");
             _updateActionMapping();
             return true;
           } else {
@@ -589,6 +610,9 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
               }
               
               game.hero.pickUp(game, item);
+              _loopManager.recordLootPickup(); // Track loot pickup for loop meter
+              var meterProgress = _loopManager.loopMeter.progress.toStringAsFixed(1);
+              game.log.message("Loot collected! Loop meter: ${meterProgress}%");
               _updateActionMapping();
               return true;
             } else {
@@ -605,6 +629,9 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     }
 
     if (action != null) {
+      // Store current enemy count before action
+      _previousEnemyCount = game.stage.actors.where((actor) => actor != game.hero && actor.isAlive).length;
+      
       game.hero.setNextAction(action);
       
       // Mark screen as dirty to trigger redraw
@@ -619,6 +646,13 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
 
   @override
   void activate(Screen popped, Object? result) {
+    // Check if we're returning from SupplyCaseScreen
+    if (popped is SupplyCaseScreen) {
+      // Continue to the next loop after rewards
+      _continueToNextLoop();
+      return;
+    }
+    
     if (!game.hero.needsInput(game)) {
       _pause = 5; // Brief pause for visual feedback
     }
@@ -658,9 +692,9 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
 
         // Check if time for reward selection
         if (_loopManager.isRewardSelection) {
-          print("Loop complete! Going to reward selection.");
+          print("Loop complete! Going to loop meter rewards.");
           _storage.save();
-          ui.goTo(LoopRewardScreen(game.content, _storage, _loopManager, game.hero.save));
+          _handleLoopComplete(); // Use new loop meter based rewards
           return;
         }
       }
@@ -675,9 +709,17 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
       return;
     }
 
+    // Track game events for loop meter progress
+    _trackGameEvents(result);
+    
     // Update panels - exactly like the regular GameScreen
     if (_stagePanel.update(result.events)) dirty();
     if (result.needsRefresh) dirty();
+    
+    // Force animation updates when loop meter is full (for pulsing effect)
+    if (_loopManager.loopMeter.isFull) {
+      dirty();
+    }
   }
 
   @override
@@ -725,6 +767,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     _controlsPanel?.render(terminal);
     _renderMoveCounter(terminal);
     _renderLoopProgress(terminal);
+    _renderLoopMeter(terminal);
     
     // Render tuning overlay on top if active
     if (_showTuningOverlay && _tuningOverlay != null) {
@@ -824,6 +867,130 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
       // terminal.writeAt(leftWidth + 1, 5, enemyText, lightWarmGray, darkerCoolGray);
       // terminal.writeAt(leftWidth + 8, 5, itemText, lightWarmGray, darkerCoolGray);
     }
+  }
+  
+  void _renderLoopMeter(Terminal terminal) {
+    var loopMeter = _loopManager.loopMeter;
+    var progress = loopMeter.progressRatio;
+    
+    var leftWidth = 21;
+    var rightWidth = 25;
+    if (terminal.width > 160) {
+      leftWidth = 29;
+      rightWidth = 30;
+    } else if (terminal.width > 150) {
+      leftWidth = 25;
+      rightWidth = 28;
+    }
+    var centerWidth = terminal.width - leftWidth - rightWidth;
+    
+    // Position above the move-limit bar
+    var centerX = leftWidth + centerWidth ~/ 2;
+    var y = terminal.height - 6; // Move up to accommodate 5x5 grid
+    
+    // Draw circular progress using ASCII characters
+    // Create a 5x5 circle representation
+    var chars = _getCircularProgressChars(progress);
+    var colors = _getCircularProgressColors(loopMeter);
+    
+    // Draw the 5x5 circular meter
+    for (var row = 0; row < 5; row++) {
+      for (var col = 0; col < 5; col++) {
+        var index = row * 5 + col;
+        terminal.writeAt(centerX - 2 + col, y + row, chars[index], colors[index], darkerCoolGray);
+      }
+    }
+    
+    // Add tier name and percentage text below
+    var tierName = _loopManager.loopMeter.getRewardTier().displayName.split(' ').last; // Just the tier word
+    if (loopMeter.progress >= 10.0) {
+      var percentText = "${loopMeter.progress.toInt()}%";
+      var tierText = "$percentText $tierName";
+      terminal.writeAt(centerX - tierText.length ~/ 2, y + 5, tierText, 
+          loopMeter.progress >= 100.0 ? gold : 
+          loopMeter.progress >= 75.0 ? gold :
+          loopMeter.progress >= 50.0 ? yellow :
+          loopMeter.progress >= 25.0 ? lightBlue : ash, darkerCoolGray);
+    } else if (loopMeter.progress >= 1.0) {
+      terminal.writeAt(centerX - tierName.length ~/ 2, y + 5, tierName, ash, darkerCoolGray);
+    }
+    
+    // Add "RING COMPLETE!" label above when full
+    if (loopMeter.progress >= 100.0) {
+      terminal.writeAt(centerX - 6, y - 1, "RING COMPLETE!", gold, darkerCoolGray);
+    }
+  }
+  
+  List<String> _getCircularProgressChars(double progress) {
+    // Create a much more obvious circular meter using dots
+    // Layout as a more even 5x5 circle
+    var emptyChar = '○';
+    var filledChar = '●';
+    var centerChar = progress >= 1.0 ? '!' : ' '; // Exclamation when full!
+    
+    var positions = [
+      ' ', emptyChar, emptyChar, emptyChar, ' ',     // top row
+      emptyChar, ' ', ' ', ' ', emptyChar,          // second row
+      emptyChar, ' ', centerChar, ' ', emptyChar,   // middle row
+      emptyChar, ' ', ' ', ' ', emptyChar,          // fourth row
+      ' ', emptyChar, emptyChar, emptyChar, ' ',    // bottom row
+    ];
+    
+    // 12 positions around the circle like a clock
+    var fillPositions = (progress * 12).round();
+    
+    // Clock positions: 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+    // Map to indices in the 5x5 grid (25 total positions)
+    var clockOrder = [2, 3, 4, 9, 14, 19, 18, 17, 16, 15, 10, 5];
+    
+    for (var i = 0; i < fillPositions && i < clockOrder.length; i++) {
+      if (clockOrder[i] < positions.length) {
+        positions[clockOrder[i]] = filledChar;
+      }
+    }
+    
+    return positions;
+  }
+  
+  List<Color> _getCircularProgressColors(loopMeter) {
+    var baseColor = darkWarmGray;
+    var fillColor = lightBlue;
+    var fullColor = gold;
+    
+    if (loopMeter.isEmpty) {
+      fillColor = darkWarmGray;
+    } else if (loopMeter.progress >= 75.0) {
+      fillColor = fullColor; // Gold for 75%+
+    } else if (loopMeter.progress >= 50.0) {
+      fillColor = yellow; // Yellow for 50%+
+    } else if (loopMeter.progress >= 25.0) {
+      fillColor = lightBlue; // Blue for 25%+
+    }
+    
+    // Pulsing effect when full
+    if (loopMeter.isFull) {
+      if ((DateTime.now().millisecondsSinceEpoch ~/ 300) % 2 == 0) {
+        fillColor = lightWarmGray;
+      }
+    }
+    
+    var result = List<Color>.filled(25, baseColor); // 5x5 = 25 positions
+    var progress = loopMeter.progressRatio;
+    var fillPositions = (progress * 12).round();
+    var clockOrder = [2, 3, 4, 9, 14, 19, 18, 17, 16, 15, 10, 5];
+    
+    for (var i = 0; i < fillPositions && i < clockOrder.length; i++) {
+      if (clockOrder[i] < result.length) {
+        result[clockOrder[i]] = fillColor;
+      }
+    }
+    
+    // Special color for center when full
+    if (loopMeter.isFull) {
+      result[12] = gold; // Center position in 5x5 grid
+    }
+    
+    return result;
   }
   
   Color _getArchetypeColor(LevelArchetype archetype) {
@@ -1049,5 +1216,55 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
       //game.log.message("Debug: Level up! You are now level ${game.hero.level}.");
     }
     dirty();
+  }
+  
+  /// Track game events for loop meter progress
+  void _trackGameEvents(GameResult result) {
+    // Track enemy kills by checking if any actors died
+    var currentEnemyCount = game.stage.actors.where((actor) => actor != game.hero && actor.isAlive).length;
+    
+    if (currentEnemyCount < _previousEnemyCount) {
+      var killCount = _previousEnemyCount - currentEnemyCount;
+      for (var i = 0; i < killCount; i++) {
+        _loopManager.recordEnemyKill();
+        // Force immediate UI update
+        dirty();
+      }
+      
+      // Show immediate feedback
+      if (killCount > 0) {
+        var meterProgress = _loopManager.loopMeter.progress.toStringAsFixed(1);
+        game.log.message("Enemy defeated! Loop meter: ${meterProgress}%");
+      }
+    }
+    
+    _previousEnemyCount = currentEnemyCount;
+    
+    // Loot pickups are tracked in the handleLoopInput method when items are picked up
+  }
+  
+  /// Handle loop completion based on loop meter state
+  void _handleLoopComplete() {
+    var loopMeter = _loopManager.loopMeter;
+    var rewardTier = loopMeter.getRewardTier();
+    var progress = loopMeter.progress;
+    
+    // Show the new supply case screen for all tiers
+    ui.push(SupplyCaseScreen(game, rewardTier, progress, () {
+      // Pop the supply case screen and return to this screen
+      ui.pop();
+    }));
+  }
+  
+  /// Continue to the next loop after rewards
+  void _continueToNextLoop() {
+    // Reset the loop meter for the new loop (this will be done in LoopManager.selectReward)
+    
+    // Use the existing reward selection logic to continue
+    _loopManager.selectReward(LoopReward.generateRewardOptions(1).first);
+    
+    // Create a new game for the next level
+    var depth = _loopManager.getCurrentDepth();
+    ui.goTo(LoopGameScreen.create(_storage, game.content, game.hero.save, _loopManager));
   }
 }
