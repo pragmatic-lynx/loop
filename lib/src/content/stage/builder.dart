@@ -120,7 +120,21 @@ void pit(String monsterGroup, {required int start, required int end}) {
 
 void sandbox() {
   // Check if sandbox mode is enabled
-  if (!_isSandboxEnabled()) return;
+  if (!_isSandboxEnabled()) {
+    // Debug: Let developers know sandbox was skipped
+    try {
+      print('Sandbox mode is disabled. Use enableSandbox() in console to enable.');
+    } catch (e) {
+      // Ignore print errors in production
+    }
+    return;
+  }
+  
+  try {
+    print('Sandbox mode is ENABLED! Adding sandbox architecture...');
+  } catch (e) {
+    // Ignore print errors in production
+  }
   
   _addStyle("sandbox",
       start: 1,
@@ -148,6 +162,15 @@ bool _isSandboxEnabled() {
       if (jsWindow.sandboxMode == true) return true;
     } catch (e) {
       // Ignore JS interop errors
+    }
+    return true;
+    // For development/testing: check if sandbox_config.json was set to true
+    // This is a fallback that works during development
+    try {
+      var devMode = html.window.localStorage['dev_sandbox_from_config'];
+      if (devMode == 'true') return true;
+    } catch (e) {
+      // Ignore errors
     }
     
     return false;

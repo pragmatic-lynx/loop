@@ -354,4 +354,11 @@ void _exposeSandboxToggle() {
       print('Use enableSandbox() to enable sandbox mode.');
     }
   };
+  
+  // Helper function to enable sandbox based on your config file setting
+  context['enableSandboxFromConfig'] = () {
+    html.window.localStorage['dev_sandbox_from_config'] = 'true';
+    html.window.localStorage['sandbox_enabled'] = 'true';
+    print('Sandbox mode enabled from config! Start a new game to use sandbox levels.');
+  };
 }
