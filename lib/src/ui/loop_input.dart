@@ -21,10 +21,10 @@ enum LoopInput {
   // Equipment and staircase interaction
   equip,    // E - equip items or interact with staircases
 
-  // Debug functionality
-  debug,    // Z - debug hotkey
-
   // Minimal essential controls
   cancel,   // ESC - pause/menu
   info,     // TAB - show info
+  
+  // Debug/cheat controls
+  giveConsumables,  // G - give one-time set of consumables
 }
