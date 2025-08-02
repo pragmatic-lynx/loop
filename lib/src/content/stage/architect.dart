@@ -8,6 +8,7 @@ import 'decorator.dart';
 import 'painter.dart';
 import 'reachability.dart';
 
+
 // TODO: Consider regions that are randomly placed blobs in the middle too.
 enum Region {
   /// Cover the whole stage.

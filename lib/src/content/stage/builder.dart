@@ -8,6 +8,7 @@ import 'lake.dart';
 import 'pit.dart';
 import 'river.dart';
 import 'room.dart';
+import 'sandbox.dart';
 
 void _addStyle(String name,
     {int start = 1,
@@ -113,4 +114,17 @@ void pit(String monsterGroup, {required int start, required int end}) {
       decorDensity: 0.05,
       canFill: false,
       create: () => Pit(monsterGroup));
+}
+
+void sandbox() {
+  _addStyle("sandbox",
+      start: 1,
+      end: 1, // Only available at depth 1 for testing
+      startFrequency: 100.0, // Very high frequency to ensure it gets picked
+      decor: "dungeon",
+      decorDensity: 0.0, // No random decorations
+      monsters: "monster", // All monster types
+      monsterDensity: 0.0, // We handle monsters ourselves
+      itemDensity: 10.0, // Very high item density for lots of items
+      create: () => SandboxArchitecture());
 }

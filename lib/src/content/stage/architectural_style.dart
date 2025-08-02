@@ -56,6 +56,9 @@ class ArchitecturalStyle {
     keep("saurian", start: 10, end: 30);
     keep("orc", start: 28, end: 40);
     // TODO: More.
+    
+    // Sandbox for testing
+    sandbox();
   }
 
   static List<ArchitecturalStyle> pick(int depth, {DensityScalars? scalars}) {
