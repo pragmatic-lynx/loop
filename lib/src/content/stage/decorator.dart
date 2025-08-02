@@ -218,22 +218,23 @@ class Decorator {
 
       var distance = flow.costAt(pos);
       if (distance == null) continue;
-      if (distance < 10) continue;
+      if (distance < 6) continue;
 
-      var density = 4 + math.sqrt(distance - 10);
+      var density = 8 + math.sqrt(distance - 6);
       densityMap[pos] = (density * architecture.style.monsterDensity).toInt();
     }
 
     // Try spawn as many monsters as needed to reach a total experience value
     // based on the number of open tiles. (In other words, each tile the player
     // explores nets some average expected amount of experience.)
-    var experiencePerTile = 2.0 + math.pow(_architect.depth - 1, 2.0) * 0.2;
+    var experiencePerTile = 4.0 + math.pow(_architect.depth - 1, 2.0) * 0.2;
     var goalExperience = densityMap.possibleTiles * experiencePerTile;
 
     // Add some randomness so some stages are worth more than others.
     goalExperience += rng.float(goalExperience * 0.2);
 
     var totalExperience = 0;
+    var monstersSpawned = 0;
 
     while (totalExperience < goalExperience) {
       var pos = densityMap.choose();
@@ -258,6 +259,38 @@ class Decorator {
       yield "Spawned monster";
 
       totalExperience += experience;
+      monstersSpawned++;
+    }
+
+    // Ensure at least one monster is spawned per level
+    if (monstersSpawned == 0) {
+      // Try to spawn at least one monster anywhere we can
+      for (var attempt = 0; attempt < 50; attempt++) {
+        var pos = densityMap.choose();
+        if (pos == null) {
+          // If density map is empty, try any open tile
+          pos = _stage.findOpenTile();
+          if (pos == null) break;
+        }
+
+        var architecture = _architect.ownerAt(pos);
+        if (architecture == null) continue;
+
+        var group = rng.item(architecture.style.monsterGroups);
+        var breed = Monsters.breeds.tryChoose(_architect.depth, tag: group);
+        if (breed == null) continue;
+
+        // Don't place a breed whose motility doesn't match the tile.
+        if (!_stage[pos].canEnter(breed.motility)) continue;
+
+        // Don't place dead or redundant uniques.
+        if (!_canSpawn(breed)) continue;
+
+        _spawnMonster(densityMap, pos, breed);
+        yield "Spawned guaranteed monster";
+        monstersSpawned++;
+        break;
+      }
     }
 
     Debug.densityMap = null;

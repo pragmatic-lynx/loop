@@ -1,10 +1,12 @@
 // lib/src/ui/loop_game_screen.dart
 
+import 'dart:developer' as developer;
 import 'dart:math' as math;
 
 import 'package:malison/malison.dart';
 import 'package:malison/malison_web.dart';
 import 'package:piecemeal/piecemeal.dart';
+import 'diagonal_input_handler.dart';
 
 import '../engine/action/action.dart';
 import '../engine/action/action_mapping.dart';
@@ -72,20 +74,19 @@ class ControlsPanel extends Panel {
     Draw.frame(terminal, 0, 0, terminal.width, terminal.height, label: "CONTROLS");
     terminal.writeAt(1, 1, "Movement:", ash);
     terminal.writeAt(1, 2, "Arrow Keys", lightWarmGray);
-    // add a space 
-    terminal.writeAt(1, 3, " ", ash);
-    terminal.writeAt(1, 4, "Actions:", ash);
-    terminal.writeAt(1, 5, "1: ${actionMapping.action1Label}", lightBlue);
-    terminal.writeAt(1, 6, "2: ${actionMapping.action2Label}", lima);
-    terminal.writeAt(1, 7, "3: ${actionMapping.action3Label}", pink);
-    terminal.writeAt(1, 8, "4: ${actionMapping.action4Label}", aqua);
+    
+    terminal.writeAt(1, 3, "Actions:", ash);
+    terminal.writeAt(1, 4, "1: ${actionMapping.action1Label}", lightBlue);
+    terminal.writeAt(1, 5, "2: ${actionMapping.action2Label}", lima);
+    terminal.writeAt(1, 6, "3: ${actionMapping.action3Label}", pink);
+    terminal.writeAt(1, 7, "4: ${actionMapping.action4Label}", aqua);
     
     // Context-aware E action
     var eAction = _getEActionDescription();
-    terminal.writeAt(1, 9, "E: ${eAction.icon} ${eAction.description}", eAction.color);
+    terminal.writeAt(1, 11, "E: ${eAction.icon} ${eAction.description}", eAction.color);
     
     // Extra keys
-    terminal.writeAt(1, 11, "I: Inventory", ash);
+    terminal.writeAt(1, 13, "I: Inventory", ash);
   }
   
   ({String icon, String description, Color color}) _getEActionDescription() {
@@ -113,7 +114,7 @@ class ControlsPanel extends Panel {
     }
     
     // Default action when nothing special is available
-    return (icon: "❌", description: "", color: ash);
+    return (icon: "", description: "", color: ash);
   }
 }
 
@@ -139,6 +140,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   int _pause = 0;
   HeroSave _previousSave;
   int _previousEnemyCount = 0;
+  final DiagonalInputHandler _diagonalInput = DiagonalInputHandler();
   
   @override
   LoopManager? get loopManager => _loopManager;
@@ -226,6 +228,90 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
 
   @override
   bool handleInput(Input input) {
+    // First handle direction inputs that might be combined with Shift
+    Vec? direction;
+    bool isShiftInput = false;
+    
+    switch (input) {
+      case Input.n: 
+        direction = Vec(0, -1); 
+        _diagonalInput.updateShift(false); // Reset shift for normal keys
+        break;
+      case Input.ne: 
+        direction = Vec(1, -1); 
+        _diagonalInput.updateShift(false);
+        break;
+      case Input.e: 
+        direction = Vec(1, 0); 
+        _diagonalInput.updateShift(false);
+        break;
+      case Input.se: 
+        direction = Vec(1, 1); 
+        _diagonalInput.updateShift(false);
+        break;
+      case Input.s: 
+        direction = Vec(0, 1); 
+        _diagonalInput.updateShift(false);
+        break;
+      case Input.sw: 
+        direction = Vec(-1, 1); 
+        _diagonalInput.updateShift(false);
+        break;
+      case Input.w: 
+        direction = Vec(-1, 0); 
+        _diagonalInput.updateShift(false);
+        break;
+      case Input.nw: 
+        direction = Vec(-1, -1); 
+        _diagonalInput.updateShift(false);
+        break;
+      case Input.runN: 
+        _diagonalInput.updateShift(true);
+        direction = Vec(0, -1);
+        isShiftInput = true;
+        break;
+      case Input.runS: 
+        _diagonalInput.updateShift(true);
+        direction = Vec(0, 1);
+        isShiftInput = true;
+        break;
+      case Input.runE: 
+        _diagonalInput.updateShift(true);
+        direction = Vec(1, 0);
+        isShiftInput = true;
+        break;
+      case Input.runW: 
+        _diagonalInput.updateShift(true);
+        direction = Vec(-1, 0);
+        isShiftInput = true;
+        break;
+      case Input.runNE:
+        _diagonalInput.updateShift(true);
+        direction = Vec(1, -1);
+        isShiftInput = true;
+        break;
+      case Input.runNW:
+        _diagonalInput.updateShift(true);
+        direction = Vec(-1, -1);
+        isShiftInput = true;
+        break;
+      case Input.runSE:
+        _diagonalInput.updateShift(true);
+        direction = Vec(1, 1);
+        isShiftInput = true;
+        break;
+      case Input.runSW:
+        _diagonalInput.updateShift(true);
+        direction = Vec(-1, 1);
+        isShiftInput = true;
+        break;
+      case Input.cancel:
+        _diagonalInput.updateShift(false);
+        break;
+      default:
+        break;
+    }
+
     // Handle inventory dialog
     if (input == Input.inventory) {
       ui.push(InventoryDialog(game));
@@ -291,6 +377,52 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
       game.log.message("Depth increased to $newDepth (Threat Level: ${_loopManager.threatLevel}).");
       dirty();
       return true;
+    }
+
+    if (direction != null) {
+      developer.log('Processing direction input: $input -> $direction (isShiftInput: $isShiftInput)', 
+          name: 'LoopGameScreen');
+      
+      // Use diagonal input handler only for Shift+direction inputs
+      if (isShiftInput) {
+        // Use diagonal input handler
+        final moveDirection = _diagonalInput.handleDirection(direction);
+        if (moveDirection != null) {
+          // Convert direction back to input
+          if (moveDirection.x > 0 && moveDirection.y < 0) {
+            input = Input.ne;
+            developer.log('Diagonal movement: Northeast', name: 'LoopGameScreen');
+          } else if (moveDirection.x > 0 && moveDirection.y > 0) {
+            input = Input.se;
+            developer.log('Diagonal movement: Southeast', name: 'LoopGameScreen');
+          } else if (moveDirection.x < 0 && moveDirection.y > 0) {
+            input = Input.sw;
+            developer.log('Diagonal movement: Southwest', name: 'LoopGameScreen');
+          } else if (moveDirection.x < 0 && moveDirection.y < 0) {
+            input = Input.nw;
+            developer.log('Diagonal movement: Northwest', name: 'LoopGameScreen');
+          } else if (moveDirection.x > 0) {
+            input = Input.e;
+            developer.log('Cardinal movement: East', name: 'LoopGameScreen');
+          } else if (moveDirection.x < 0) {
+            input = Input.w;
+            developer.log('Cardinal movement: West', name: 'LoopGameScreen');
+          } else if (moveDirection.y > 0) {
+            input = Input.s;
+            developer.log('Cardinal movement: South', name: 'LoopGameScreen');
+          } else if (moveDirection.y < 0) {
+            input = Input.n;
+            developer.log('Cardinal movement: North', name: 'LoopGameScreen');
+          }
+        } else {
+          // Wait for second direction
+          developer.log('Waiting for second direction', name: 'LoopGameScreen');
+          return true;
+        }
+      } else {
+        // Normal movement - just proceed with the original input
+        developer.log('Normal movement: $input', name: 'LoopGameScreen');
+      }
     }
 
     // Convert standard input to loop input for simplified controls

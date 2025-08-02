@@ -55,7 +55,7 @@ class InventoryDialog extends Screen<Input> {
     
     // Show help
     Draw.helpKeys(terminal, {
-      'J/Esc': 'Close',
+      'Esc or I': 'Close',
     });
     
     var y = top + 1;

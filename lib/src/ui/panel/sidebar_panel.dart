@@ -92,11 +92,24 @@ class SidebarPanel extends Panel {
     y += 2; // Extra space before monsters
 
     // Draw the nearby monsters.
+    // Draw player info with visual distinction
     terminal.writeAt(1, y, "@", _gameScreen.heroColor);
-    terminal.writeAt(3, y, hero.save.name, UIHue.text);
+    terminal.writeAt(3, y, hero.save.name, gold);
     y += 1;
+    
+    // Draw decorative top border for HP bar
+    terminal.writeAt(9, y, "╔" + "═" * (terminal.width - 11) + "╗", gold);
+    y += 1;
+    
+    // Draw health bar with side borders
+    terminal.writeAt(9, y, "║", gold);
     _drawHealthBar(terminal, y, hero);
+    terminal.writeAt(terminal.width - 2, y, "║", gold);
     y += 1;
+    
+    // Draw decorative bottom border for HP bar
+    terminal.writeAt(9, y, "╚" + "═" * (terminal.width - 11) + "╝", gold);
+    y += 2; // Extra space after player HP
 
     var visibleMonsters = _gameScreen.stagePanel.visibleMonsters;
     visibleMonsters.sort((a, b) {
@@ -269,11 +282,11 @@ class SidebarPanel extends Panel {
   /// Draws a health bar for [actor].
   void _drawHealthBar(Terminal terminal, int y, Actor actor) {
     // Show conditions.
-    var x = 3;
+    var x = 11; // Increased from 3 to account for border
 
     void drawCondition(String char, Color fore, [Color? back]) {
       // Don't overlap other stuff.
-      if (x > 8) return;
+      if (x > 16) return; // Adjusted for new starting position
 
       terminal.writeAt(x, y, char, fore, back);
       x++;
@@ -324,7 +337,7 @@ class SidebarPanel extends Panel {
       terminal.writeAt(2, y, alertness, ash);
     }
 
-    Draw.meter(terminal, 10, y, terminal.width - 11, actor.health,
+Draw.meter(terminal, 11, y, terminal.width - 13, actor.health,
         actor.maxHealth, red, maroon);
   }
 }

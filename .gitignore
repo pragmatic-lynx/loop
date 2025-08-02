@@ -26,3 +26,4 @@ code_documentation.md
 /test_backup
 build_web.bat
 build.zip
+build_release.bat
