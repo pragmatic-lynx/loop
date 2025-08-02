@@ -4,7 +4,9 @@ import 'package:piecemeal/piecemeal.dart';
 
 import '../../debug.dart';
 import '../../engine.dart';
+import '../chest.dart';
 import '../decor/decor.dart';
+import '../rarity.dart';
 import '../item/floor_drops.dart';
 import '../monster/monsters.dart';
 import '../tiles.dart';
@@ -72,6 +74,9 @@ class Decorator {
     // in a Keep, Pit or other special area. Since those spawn their own
     // monsters, the hero can end up surrounded by monsters.
     _heroPos = _stage.findOpenTile();
+
+    // Place rarity-based chests (after hero position is set)
+    _placeChests();
 
     yield* _spawnMonsters();
     yield* _dropItems();
@@ -422,6 +427,49 @@ class Decorator {
     }
 
     Debug.densityMap = null;
+  }
+
+  /// Place rarity-based chests throughout the level
+  void _placeChests() {
+    // 5% chance to place a chest instead of normal floor
+    final totalTiles = _stage.bounds.area;
+    final chestCount = (totalTiles * 0.05).round();
+    
+    var placedChests = 0;
+    var attempts = 0;
+    final maxAttempts = chestCount * 10; // Prevent infinite loops
+    
+    while (placedChests < chestCount && attempts < maxAttempts) {
+      attempts++;
+      
+      final pos = _stage.findOpenTile();
+      if (pos == null) break;
+      
+      // Don't place chests too close to stairs or hero spawn
+      if ((_heroPos - pos).kingLength < 5) continue;
+      
+      // Check if there are already stairs at this position
+      if (_stage[pos].type == Tiles.stairs) continue;
+      
+      // Determine chest type based on depth
+      final chestType = ChestType.forDepth(_architect.depth);
+      final TileType chestTile;
+      
+      switch (chestType.rarity) {
+        case Rarity.common:
+          chestTile = Tiles.closedChest;
+          break;
+        case Rarity.rare:
+          chestTile = Tiles.closedOrnateChest;
+          break;
+        case Rarity.legendary:
+          chestTile = Tiles.closedMythicChest;
+          break;
+      }
+      
+      _stage[pos].type = chestTile;
+      placedChests++;
+    }
   }
 }
 

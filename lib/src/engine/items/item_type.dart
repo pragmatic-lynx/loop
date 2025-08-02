@@ -1,6 +1,7 @@
 import 'package:piecemeal/piecemeal.dart';
 
 import '../action/action.dart';
+import '../../content/rarity.dart';
 import '../core/combat.dart';
 import '../core/element.dart';
 import '../core/log.dart';
@@ -140,6 +141,9 @@ class ItemType {
   /// If `true`, then the hero will only ever see one item of this type.
   final bool isArtifact;
 
+  /// The rarity tier of this item.
+  final Rarity rarity;
+
   ItemType(
       this.quantifiableName,
       this.appearance,
@@ -161,7 +165,8 @@ class ItemType {
       int? fuel,
       bool? treasure,
       required this.isArtifact,
-      bool? twoHanded})
+      bool? twoHanded,
+      this.rarity = Rarity.common})
       : emanationLevel = emanation ?? 0,
         fuel = fuel ?? 0,
         isTreasure = treasure ?? false,

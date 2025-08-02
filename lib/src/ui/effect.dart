@@ -5,6 +5,7 @@ import 'package:piecemeal/piecemeal.dart';
 
 // TODO: Directly importing this is a little hacky. Put "appearance" on Element?
 import '../content/elements.dart';
+import '../content/chest.dart';
 import '../engine.dart';
 import '../hues.dart';
 
@@ -80,14 +81,19 @@ void addEffects(List<Effect> effects, Event event) {
       effects.add(MapEffect(event.pos!));
 
     case EventType.teleport:
-      var numParticles = (event.actor!.pos - event.pos!).kingLength * 2;
-      for (var i = 0; i < numParticles; i++) {
-        effects.add(TeleportEffect(event.pos!, event.actor!.pos));
+      if (event.actor != null && event.pos != null) {
+        var numParticles = (event.actor!.pos - event.pos!).kingLength * 2;
+        for (var i = 0; i < numParticles; i++) {
+          effects.add(TeleportEffect(event.pos!, event.actor!.pos));
+        }
       }
 
     case EventType.spawn:
       // TODO: Something more interesting.
-      effects.add(FrameEffect(event.actor!.pos, '*', ash));
+      var pos = event.actor?.pos ?? event.pos;
+      if (pos != null) {
+        effects.add(FrameEffect(pos, '*', ash));
+      }
 
     case EventType.polymorph:
       // TODO: Something more interesting.
@@ -127,7 +133,40 @@ void addEffects(List<Effect> effects, Event event) {
       effects.add(TreasureEffect(event.pos!, event.other as Item));
 
     case EventType.openBarrel:
-      effects.add(FrameEffect(event.pos!, '*', sandal));
+      // Check if position is available
+      if (event.pos == null) break;
+      
+      // Check if this is a chest opening (has ChestLoot data)
+      if (event.other is ChestLoot) {
+        var loot = event.other as ChestLoot;
+        // Create spectacular loot explosion based on loot quality
+        var baseParticles = 12;
+        var bonusParticles = loot.items.length * 4 + (loot.gold ~/ 15);
+        var totalParticles = baseParticles + bonusParticles;
+        
+        // Multi-colored explosion with rarity-based colors
+        var colors = [gold, moltenOrange, lightAqua, boneWhite, crimson];
+        
+        for (var i = 0; i < totalParticles; i++) {
+          var color = rng.item(colors);
+          effects.add(ParticleEffect(event.pos!.x, event.pos!.y, color));
+        }
+        
+        // Add multiple center burst effects for drama
+        effects.add(FrameEffect(event.pos!, '★', moltenOrange, life: 10));
+        effects.add(FrameEffect(event.pos!, '☆', gold, life: 8));
+        
+        // Add radiating beam effects
+        for (var dir in Direction.all) {
+          if (dir != Direction.none) {
+            var beamPos = event.pos! + dir;
+            effects.add(FrameEffect(beamPos, '+', lightAqua, life: 6));
+          }
+        }
+      } else {
+        // Regular barrel opening
+        effects.add(FrameEffect(event.pos!, '*', sandal));
+      }
   }
 }
 

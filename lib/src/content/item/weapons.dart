@@ -2,6 +2,7 @@ import 'package:malison/malison.dart';
 
 import '../../hues.dart';
 import '../elements.dart';
+import '../rarity.dart';
 import 'builder.dart';
 
 void weapons() {
@@ -16,17 +17,17 @@ void weapons() {
   item("Stick", tan)
     ..depth(1, to: 20)
     ..weapon(4, heft: 6)
-    ..toss(damage: 3)
+    ..toss(damage: 3, range: 4)
     ..destroy(Elements.fire, chance: 10, fuel: 10);
   item("Cudgel", lightCoolGray, price: 20)
     ..depth(6, to: 60)
     ..weapon(9, heft: 8)
-    ..toss(damage: 4)
+    ..toss(damage: 4, range: 4)
     ..destroy(Elements.fire, chance: 5, fuel: 10);
   item("Club", brown, price: 40)
     ..depth(14)
     ..weapon(12, heft: 11)
-    ..toss(damage: 5)
+    ..toss(damage: 5, range: 4)
     ..destroy(Elements.fire, chance: 2, fuel: 10);
 
   // Staves.
@@ -39,17 +40,17 @@ void weapons() {
   item("Walking Stick", tan, price: 10)
     ..depth(2, to: 40)
     ..weapon(9, heft: 10)
-    ..toss(damage: 3)
+    ..toss(damage: 3, range: 4)
     ..destroy(Elements.fire, chance: 5, fuel: 15);
   item("Sta[ff|aves]", brown, price: 50)
     ..depth(7)
     ..weapon(13, heft: 14)
-    ..toss(damage: 5)
+    ..toss(damage: 5, range: 4)
     ..destroy(Elements.fire, chance: 2, fuel: 15);
   item("Quartersta[ff|aves]", lightCoolGray, price: 80)
     ..depth(24)
     ..weapon(20, heft: 22)
-    ..toss(damage: 8)
+    ..toss(damage: 8, range: 5)
     ..destroy(Elements.fire, chance: 2, fuel: 15);
 
   // Hammers.
@@ -60,15 +61,16 @@ void weapons() {
   item("Hammer", tan, price: 120)
     ..depth(40)
     ..weapon(28, heft: 22)
-    ..toss(damage: 12);
+    ..toss(damage: 12, range: 5);
   item("Mattock", brown, price: 240)
     ..depth(46)
     ..weapon(36, heft: 29)
-    ..toss(damage: 16);
+    ..toss(damage: 16, range: 5);
   item("War Hammer", lightCoolGray, price: 400)
     ..depth(52)
     ..weapon(44, heft: 38)
-    ..toss(damage: 20);
+    ..toss(damage: 20, range: 6)
+    ..rarity(Rarity.rare);
 
   // Maces.
   category(CharCode.latinSmallLetterUWithAcute, verb: "bash[es]")
@@ -78,11 +80,11 @@ void weapons() {
   item("Morningstar", lightCoolGray, price: 130)
     ..depth(24)
     ..weapon(25, heft: 21)
-    ..toss(damage: 11);
+    ..toss(damage: 11, range: 5);
   item("Mace", coolGray, price: 310)
     ..depth(33)
     ..weapon(36, heft: 32)
-    ..toss(damage: 16);
+    ..toss(damage: 16, range: 5);
 
   // Whips.
   category(CharCode.latinSmallLetterNWithTilde, verb: "whip[s]")
@@ -93,16 +95,16 @@ void weapons() {
   item("Whip", tan, price: 40)
     ..depth(4)
     ..weapon(9, heft: 7)
-    ..toss(damage: 1)
+    ..toss(damage: 1, range: 3)
     ..destroy(Elements.fire, chance: 10, fuel: 5);
   item("Chain Whip", lightCoolGray, price: 230)
     ..depth(15)
     ..weapon(18, heft: 17)
-    ..toss(damage: 2);
+    ..toss(damage: 2, range: 3);
   item("Flail", coolGray, price: 350)
     ..depth(27)
     ..weapon(28, heft: 24)
-    ..toss(damage: 4);
+    ..toss(damage: 4, range: 4);
 
   // Knives.
   // TODO: Dagger skill.
@@ -113,27 +115,27 @@ void weapons() {
   item("Kni[fe|ves]", lightWarmGray, price: 20)
     ..depth(3, to: 20)
     ..weapon(6, heft: 5)
-    ..toss(damage: 6);
+    ..toss(damage: 6, range: 4);
   item("Dirk", lightCoolGray, price: 30)
     ..depth(4, to: 40)
     ..weapon(8, heft: 6)
-    ..toss(damage: 8);
+    ..toss(damage: 8, range: 5);
   item("Dagger", lightBlue, price: 50)
     ..depth(6, to: 70)
     ..weapon(9, heft: 7)
-    ..toss(damage: 9);
+    ..toss(damage: 9, range: 5);
   item("Stiletto[es]", coolGray, price: 80)
     ..depth(10)
     ..weapon(11, heft: 8)
-    ..toss(damage: 11);
+    ..toss(damage: 11, range: 5);
   item("Rondel", lightAqua, price: 130)
     ..depth(20)
     ..weapon(13, heft: 9)
-    ..toss(damage: 13);
+    ..toss(damage: 13, range: 6);
   item("Baselard", gold, price: 200)
     ..depth(30)
     ..weapon(15, heft: 11)
-    ..toss(damage: 15);
+    ..toss(damage: 15, range: 6);
   // TODO: Main-guache
 
   // Artifact daggers.
@@ -156,23 +158,23 @@ void weapons() {
   item("Rapier", warmGray, price: 140)
     ..depth(13)
     ..weapon(13, heft: 13)
-    ..toss(damage: 4);
+    ..toss(damage: 4, range: 4);
   item("Shortsword", coolGray, price: 230)
     ..depth(17)
     ..weapon(15, heft: 15)
-    ..toss(damage: 6);
+    ..toss(damage: 6, range: 4);
   item("Scimitar", lightCoolGray, price: 370)
     ..depth(18)
     ..weapon(24, heft: 18)
-    ..toss(damage: 9);
+    ..toss(damage: 9, range: 5);
   item("Cutlass[es]", buttermilk, price: 520)
     ..depth(20)
     ..weapon(26, heft: 22)
-    ..toss(damage: 11);
+    ..toss(damage: 11, range: 5);
   item("Falchion", lightAqua, price: 750)
     ..depth(34)
     ..weapon(28, heft: 25)
-    ..toss(damage: 15);
+    ..toss(damage: 15, range: 6);
 
   /*
 
@@ -199,11 +201,11 @@ void weapons() {
   item("Spear", tan, price: 160)
     ..depth(13, to: 60)
     ..weapon(16, heft: 13)
-    ..toss(damage: 15);
+    ..toss(damage: 15, range: 6);
   item("Angon", lightCoolGray, price: 340)
     ..depth(21)
     ..weapon(20, heft: 19)
-    ..toss(damage: 20);
+    ..toss(damage: 20, range: 6);
 
   category(CharCode.masculineOrdinalIndicator, verb: "stab[s]")
     ..tag("equipment/weapon/polearm")
@@ -214,11 +216,11 @@ void weapons() {
   item("Lance", lightBlue, price: 550)
     ..depth(28)
     ..weapon(22, heft: 23)
-    ..toss(damage: 20);
+    ..toss(damage: 20, range: 6);
   item("Partisan", coolGray, price: 850)
     ..depth(35)
     ..weapon(26, heft: 25)
-    ..toss(damage: 26);
+    ..toss(damage: 26, range: 7);
 
   // glaive, voulge, halberd, pole-axe, lucerne hammer,
 
@@ -260,12 +262,45 @@ void weapons() {
   item("Longbow", brown, price: 250)
     ..depth(13)
     ..ranged("the arrow", heft: 18, damage: 9, range: 12)
-    ..toss(damage: 3)
+    ..toss(damage: 3, range: 4)
     ..destroy(Elements.fire, chance: 7, fuel: 13);
   // TODO: Warbow.
   item("Crossbow", lightCoolGray, price: 600)
     ..depth(28)
     ..ranged("the bolt", heft: 24, damage: 14, range: 16)
-    ..toss(damage: 4)
-    ..destroy(Elements.fire, chance: 4, fuel: 14);
+    ..toss(damage: 4, range: 4)
+    ..destroy(Elements.fire, chance: 4, fuel: 14)
+    ..rarity(Rarity.rare);
+
+  // Legendary weapons - placeholder items with over-tuned stats
+  
+  // Legendary sword
+  category(CharCode.feminineOrdinalIndicator, verb: "cleave[s]")
+    ..tag("equipment/weapon/sword")
+    ..frequency(0.1);
+  item("Phoenix Edge", moltenOrange, price: 5000)
+    ..depth(40)
+    ..weapon(50, heft: 35)
+    ..rarity(Rarity.legendary);
+
+  // Legendary bow
+  category(CharCode.reversedNotSign, verb: "hit[s]")
+    ..tag("equipment/weapon/bow")
+    ..frequency(0.1)
+    ..twoHanded();
+  item("Void Repeater", purple, price: 4500)
+    ..depth(38)
+    ..ranged("the void bolt", heft: 28, damage: 35, range: 20)
+    ..rarity(Rarity.legendary);
+
+  // Legendary staff
+  category(CharCode.latinSmallLetterIWithAcute, verb: "hit[s]")
+    ..tag("equipment/weapon/staff")
+    ..frequency(0.1)
+    ..twoHanded();
+  item("Celestial Tome", gold, price: 4000)
+    ..depth(35)
+    ..weapon(40, heft: 20)
+    ..toss(damage: 25, range: 6)
+    ..rarity(Rarity.legendary);
 }
