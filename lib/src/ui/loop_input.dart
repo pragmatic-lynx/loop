@@ -6,14 +6,17 @@ enum LoopInput {
   // Movement (keep these intuitive)
   n, e, s, w, ne, nw, se, sw, wait,
 
-  // Smart action buttons (1,2,3)
+  // Smart action buttons (1,2,3,4)
   action1,  // 🗡️ Primary Attack/Interact
   action2,  // ⚡ Magic/Secondary Ability
   action3,  // ❤️ Heal/Consumable
-  action4,  // TODO
+  action4,  // 🔮 Cast Spell
 
+  // Spell management
+  cycleSpell, // Q - cycle active spell
+  
   // Queue management
-  cycleQueue, // Q - cycle current queue
+  cycleQueue, // Tab - cycle current queue
 
   // Equipment and staircase interaction
   equip,    // E - equip items or interact with staircases
