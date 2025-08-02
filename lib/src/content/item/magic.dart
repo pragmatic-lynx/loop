@@ -236,7 +236,7 @@ void spellBooks() {
     ..destroy(Elements.fire, chance: 5, fuel: 10);
   item("Spellbook[s] \"Elemental Primer\"", maroon, price: 100)
     ..depth(1)
-    ..frequency(1)
+    ..frequency(0.05)
     ..skills([
       "Sense Items",
       "Flee",
