@@ -1,5 +1,6 @@
 // lib/src/engine/loop/action_queues.dart
 
+import '../core/actor.dart';
 import '../core/game.dart';
 import '../hero/hero.dart';
 import '../items/item.dart';
@@ -251,7 +252,7 @@ class ActionQueues {
         if (target != null) {
           var action = skill.onGetTargetAction(game, 1, target.pos);
           hero.setNextAction(action);
-          game.log.message('Cast $spellName at ${target.name}!');
+          game.log.message('Cast $spellName at ${target.nounText}!');
           return true;
         } else {
           game.log.message('$spellName needs a target.');
