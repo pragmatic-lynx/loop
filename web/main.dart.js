@@ -39875,8 +39875,6 @@
     B.EventType_wind = new A.EventType("wind");
     B.FoodSupplyReward_O61 = new A.FoodSupplyReward("Provisions Cache", "Start next run with extra food supplies", "A well-stocked pantry awaits");
     B.Glyph_F97 = new A.Glyph(32, B.Color_255_255_255, B.Color_0_0_0);
-    B.GoldReward_VUY = new A.GoldReward(1000, "Treasure Hoard", "Gain 1000 gold", "A chest of gold awaits");
-    B.GoldReward_jSt = new A.GoldReward(500, "Modest Fortune", "Gain 500 gold", "A purse of coins appears");
     B.HealingSupplyReward_ngq = new A.HealingSupplyReward("Healing Cache", "Start next run with extra healing potions", "A hidden stash of restorative elixirs");
     B.HealthBoostReward_479 = new A.HealthBoostReward(40, "Constitution Surge", "+40 health for next run", "Vitality courses through your veins");
     B.HealthBoostReward_jwh = new A.HealthBoostReward(20, "Vitality Boost", "+20 health for next run", "You feel more vigorous");
