@@ -61,6 +61,7 @@ class InventoryDialog extends Screen<Input> {
     var y = top + 1;
     var x = left + 1;
     var contentWidth = width - 2;
+    var maxY = top + height - 3; // Reserve space for bottom border
     
     // Group items by category
     var itemsByCategory = <ItemCategory, List<Item>>{};
@@ -78,7 +79,7 @@ class InventoryDialog extends Screen<Input> {
     }
     
     // Show equipped gear first
-    y = _drawEquippedGear(terminal, x, y, contentWidth, hero);
+    y = _drawEquippedGear(terminal, x, y, contentWidth, hero, maxY);
     
     // Show categories in logical order
     var categoryOrder = [
@@ -94,14 +95,17 @@ class InventoryDialog extends Screen<Input> {
       var items = itemsByCategory[category] ?? [];
       if (items.isEmpty) continue;
       
-      y = _drawCategory(terminal, x, y, contentWidth, category, items, hero);
+      // Check if we have space for at least the category header
+      if (y >= maxY - 2) {
+        terminal.writeAt(x, y, "... (more items)", darkCoolGray);
+        break;
+      }
       
-      // Stop if we're running out of space
-      if (y >= top + height - 3) break;
+      y = _drawCategory(terminal, x, y, contentWidth, category, items, hero, maxY);
     }
   }
   
-  int _drawEquippedGear(Terminal terminal, int x, int y, int width, Hero hero) {
+  int _drawEquippedGear(Terminal terminal, int x, int y, int width, Hero hero, int maxY) {
     terminal.writeAt(x, y, "═══ EQUIPPED GEAR ═══", gold);
     y += 1;
     
@@ -149,7 +153,7 @@ class InventoryDialog extends Screen<Input> {
   }
   
   int _drawCategory(Terminal terminal, int x, int y, int width, 
-                   ItemCategory category, List<Item> items, Hero hero) {
+                   ItemCategory category, List<Item> items, Hero hero, int maxY) {
     // Category header
     terminal.writeAt(x, y, "${category.icon} ${category.displayName.toUpperCase()}", 
                     _getCategoryColor(category));
@@ -165,6 +169,13 @@ class InventoryDialog extends Screen<Input> {
     }
     
     for (var entry in itemGroups.entries) {
+      // Check if we have space for this item
+      if (y >= maxY) {
+        terminal.writeAt(x + 2, y, "... (more items in ${category.displayName})", darkCoolGray);
+        y += 1;
+        break;
+      }
+      
       var itemName = entry.key;
       var itemList = entry.value;
       var totalCount = itemList.fold(0, (sum, item) => sum + item.count);

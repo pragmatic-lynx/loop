@@ -74,8 +74,8 @@ class ItemCategorizer {
       return ItemCategory.primary;
     }
     
-    // Secondary weapons and magic items
-    if (_isSecondaryWeapon(name) || _isMagicItem(name)) {
+    // Secondary weapons, magic items, and light sources
+    if (_isSecondaryWeapon(name) || _isMagicItem(name) || _isLightSource(name)) {
       return ItemCategory.secondary;
     }
     
@@ -129,6 +129,13 @@ class ItemCategorizer {
            name.contains('tome') ||
            name.contains('book') ||
            name.contains('orb');
+  }
+  
+  static bool _isLightSource(String name) {
+    return name.contains('candle') ||
+           name.contains('torch') ||
+           name.contains('lamp') ||
+           name.contains('lantern');
   }
   
   static bool _isHealingItem(String name) {

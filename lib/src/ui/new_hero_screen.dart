@@ -5,7 +5,7 @@ import 'package:piecemeal/piecemeal.dart';
 import '../engine.dart';
 import '../hues.dart';
 import 'draw.dart';
-import 'game_screen.dart';
+import 'loop_game_screen.dart';
 import 'input.dart';
 import 'storage.dart';
 
@@ -229,15 +229,8 @@ class NewHeroScreen extends Screen<Input> {
     loopManager.moveCount = 0;
     loopManager.threatLevel = 2; // Start at threat level 2 so depth = 1 + 2 = 3
     
-    var depth = loopManager.getCurrentDepth();
-    print("Creating game at depth $depth...");
-    var game = Game(_content, depth, hero, width: 60, height: 34);
-    
-    print("Generating dungeon...");
-    for (var _ in game.generate()) {}
-    
-    print("Going to game screen with loop manager...");
-    ui.goTo(GameScreen(_storage, game, loopManager: loopManager));
+    print("Going to loop game screen...");
+    ui.goTo(LoopGameScreen.create(_storage, _content, hero, loopManager));
   }
 
   @override

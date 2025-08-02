@@ -52,57 +52,85 @@ class EquipmentStatusPanel extends Panel {
   }
   
   int _drawAllEquipmentSlots(Terminal terminal, int y, Hero hero) {
-    // Show active weapon first
-    terminal.writeAt(1, y, "Active:", ash);
-    var weapons = hero.equipment.weapons;
-    if (weapons.isNotEmpty) {
-      var weapon = weapons.first;
-      var weaponText = weapon.type.name;
-      if (weaponText.length > terminal.width - 5) {
-        weaponText = weaponText.substring(0, terminal.width - 5);
-      }
-      terminal.writeAt(1, y + 1, "🗡️ $weaponText", lightBlue);
-      if (weapon.attack != null) {
-        var damage = "${weapon.attack!.damage} dmg";
-        terminal.writeAt(1, y + 2, "  $damage", coolGray);
-      }
-      y += 4;
-    } else {
-      terminal.writeAt(1, y + 1, "🗡️ Fists", lightBlue);
-      terminal.writeAt(1, y + 2, "  1 dmg", coolGray);
-      y += 4;
-    }
+    // Show all equipment slots in a consistent order
+    var slotOrder = [
+      'hand',    // Primary weapon
+      'hand',    // Secondary weapon  
+      'body',    // Body armor
+      'cloak',   // Cloak
+      'helm',    // Helmet
+      'gloves',  // Gloves
+      'boots',   // Boots
+      'ring',    // Ring
+      'necklace' // Necklace
+    ];
     
-    y += 1; // Extra space before armor section
-    terminal.writeAt(1, y, "Armor:", ash);
-    y += 1;
+    var slotNames = [
+      'Weapon',
+      'Offhand',
+      'Body',
+      'Cloak', 
+      'Helm',
+      'Gloves',
+      'Boots',
+      'Ring',
+      'Necklace'
+    ];
     
-    // Show all equipment slots with more space
-    for (var i = 0; i < hero.equipment.slots.length; i++) {
-      var item = hero.equipment.slots[i];
-      var slotName = hero.equipment.slotTypes[i];
+    var slotIcons = [
+      '🗡️',
+      '🛡️', 
+      '👕',
+      '🧥',
+      '🪖',
+      '🧤',
+      '🥾',
+      '💍',
+      '📿'
+    ];
+    
+    // Track which slots we've used
+    var usedSlots = <int>{};
+    
+    for (var orderIndex = 0; orderIndex < slotOrder.length; orderIndex++) {
+      var targetSlot = slotOrder[orderIndex];
+      var displayName = slotNames[orderIndex];
+      var icon = slotIcons[orderIndex];
       
-      // Skip weapons since we already showed active weapon above
-      if (weapons.contains(item)) continue;
+      // Find the first unused slot of this type
+      Item? foundItem;
+      int? foundSlotIndex;
       
-      if (item != null) {
-        var itemText = item.type.name;
+      for (var i = 0; i < hero.equipment.slots.length; i++) {
+        if (usedSlots.contains(i)) continue;
+        if (hero.equipment.slotTypes[i] == targetSlot && hero.equipment.slots[i] != null) {
+          foundItem = hero.equipment.slots[i];
+          foundSlotIndex = i;
+          break;
+        }
+      }
+      
+      if (foundItem != null && foundSlotIndex != null) {
+        usedSlots.add(foundSlotIndex);
+        
+        var itemText = foundItem.type.name;
         if (itemText.length > terminal.width - 5) {
           itemText = itemText.substring(0, terminal.width - 5);
         }
         
-        var icon = _getSlotIcon(slotName);
-        terminal.writeAt(1, y, "$icon $itemText", _getSlotColor(item));
+        terminal.writeAt(1, y, "$icon $itemText", _getSlotColor(foundItem));
         
-        // Show relevant stats on next line
-        if (item.baseArmor > 0) {
-          terminal.writeAt(1, y + 1, "  ${item.baseArmor} armor", coolGray);
+        // Show relevant stats on next line for weapons and armor
+        if (foundItem.attack != null) {
+          var damage = "${foundItem.attack!.damage} dmg";
+          terminal.writeAt(1, y + 1, "  $damage", coolGray);
+        } else if (foundItem.baseArmor > 0) {
+          terminal.writeAt(1, y + 1, "  ${foundItem.baseArmor} armor", coolGray);
         }
         y += 2;
       } else {
-        // Show slot name for empty slots
-        var displaySlot = slotName[0].toUpperCase() + slotName.substring(1);
-        terminal.writeAt(1, y, "($displaySlot)", darkCoolGray);
+        // Show empty slot
+        terminal.writeAt(1, y, "$icon ($displayName)", darkCoolGray);
         y += 1;
       }
     }
