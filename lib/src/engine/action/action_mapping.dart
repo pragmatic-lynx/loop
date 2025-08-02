@@ -22,9 +22,10 @@ class ActionMapping {
     var rangedItem = queues.getRangedQueueItem();
     var magicItem = queues.getMagicQueueItem();
     var healItem = queues.getHealQueueItem();
+    var enhancedAction1Label = queues.getEnhancedAction1Label();
 
     return ActionMapping(
-      action1Label: rangedItem.displayText,
+      action1Label: enhancedAction1Label,
       action2Label: magicItem.displayText,
       action3Label: healItem.displayText,
     );
