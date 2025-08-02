@@ -170,6 +170,9 @@ void main() {
   _ui.handlingInput = true;
   _ui.running = true;
 
+  // Expose sandbox toggle function to JavaScript console
+  _exposeSandboxToggle();
+
   if (Debug.enabled) {
     html.document.body!.onKeyDown.listen((_) {
       _refreshDebugBoxes();
@@ -328,4 +331,27 @@ Future<void> _refreshDebugBoxes() async {
       html.document.body!.children.add(debugBox);
     }
   }
+}
+/// Expose sandbox toggle functions to JavaScript console
+void _exposeSandboxToggle() {
+  // Allow toggling sandbox mode from browser console
+  context['enableSandbox'] = () {
+    html.window.localStorage['sandbox_enabled'] = 'true';
+    print('Sandbox mode enabled! Start a new game to use sandbox levels.');
+  };
+  
+  context['disableSandbox'] = () {
+    html.window.localStorage['sandbox_enabled'] = 'false';
+    print('Sandbox mode disabled.');
+  };
+  
+  context['checkSandbox'] = () {
+    var enabled = html.window.localStorage['sandbox_enabled'] == 'true';
+    print('Sandbox mode is currently: ${enabled ? "ENABLED" : "DISABLED"}');
+    if (enabled) {
+      print('Start a new game at depth 1 to access sandbox levels.');
+    } else {
+      print('Use enableSandbox() to enable sandbox mode.');
+    }
+  };
 }

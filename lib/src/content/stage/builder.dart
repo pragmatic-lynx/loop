@@ -1,3 +1,5 @@
+import 'dart:html' as html;
+
 import 'architect.dart';
 import 'architectural_style.dart';
 import 'catacomb.dart';
@@ -117,6 +119,9 @@ void pit(String monsterGroup, {required int start, required int end}) {
 }
 
 void sandbox() {
+  // Check if sandbox mode is enabled
+  if (!_isSandboxEnabled()) return;
+  
   _addStyle("sandbox",
       start: 1,
       end: 1, // Only available at depth 1 for testing
@@ -127,4 +132,27 @@ void sandbox() {
       monsterDensity: 0.0, // We handle monsters ourselves
       itemDensity: 10.0, // Very high item density for lots of items
       create: () => SandboxArchitecture());
+}
+
+/// Check if sandbox mode is enabled via localStorage or config
+bool _isSandboxEnabled() {
+  try {
+    // First check localStorage for a quick toggle
+    var localStorageValue = html.window.localStorage['sandbox_enabled'];
+    if (localStorageValue == 'true') return true;
+    
+    // If not in localStorage, check if there's a global JS variable
+    // This allows setting it via browser console: window.sandboxMode = true;
+    try {
+      var jsWindow = html.window as dynamic;
+      if (jsWindow.sandboxMode == true) return true;
+    } catch (e) {
+      // Ignore JS interop errors
+    }
+    
+    return false;
+  } catch (e) {
+    // If we can't access localStorage/window, default to false
+    return false;
+  }
 }

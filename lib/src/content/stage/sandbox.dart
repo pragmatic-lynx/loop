@@ -1,28 +1,21 @@
 // lib/src/content/stage/sandbox.dart
 import 'package:piecemeal/piecemeal.dart';
 
-import '../../engine.dart';
-import '../item/items.dart';
-import '../item/drops.dart';
 import '../monster/monsters.dart';
-import '../tiles.dart';
 import 'architect.dart';
-import 'decorator.dart';
 import 'painter.dart';
 
 /// Creates a sandbox map with all items and monsters for testing/experimentation.
 class SandboxArchitecture extends Architecture {
   late List<Vec> _centralTiles;
   
-  /// Stores reference to this architecture for custom decorator access
-  static SandboxArchitecture? _instance;
+
   
   @override
   PaintStyle get paintStyle => PaintStyle.flagstone;
 
   @override
   Iterable<String> build() sync* {
-    _instance = this; // Store reference for decorator access
     yield "Creating sandbox layout...";
     
     // Create a large central area for items (60% of map)
