@@ -113,7 +113,7 @@ class ControlsPanel extends Panel {
     }
     
     // Default action when nothing special is available
-    return (icon: "❌", description: "", color: ash);
+    return (icon: "", description: "", color: ash);
   }
 }
 
