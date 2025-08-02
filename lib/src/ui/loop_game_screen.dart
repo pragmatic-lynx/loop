@@ -747,73 +747,67 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     
     // Position above the move-limit bar
     var centerX = leftWidth + centerWidth ~/ 2;
-    var y = terminal.height - 4;
+    var y = terminal.height - 6; // Move up to accommodate 5x5 grid
     
     // Draw circular progress using ASCII characters
-    // Create a simple 5x3 "circle" representation
+    // Create a 5x5 circle representation
     var chars = _getCircularProgressChars(progress);
     var colors = _getCircularProgressColors(loopMeter);
     
-    // Draw the circular meter
-    terminal.writeAt(centerX - 2, y - 1, chars[0], colors[0], darkerCoolGray);
-    terminal.writeAt(centerX - 1, y - 1, chars[1], colors[1], darkerCoolGray);
-    terminal.writeAt(centerX, y - 1, chars[2], colors[2], darkerCoolGray);
-    terminal.writeAt(centerX + 1, y - 1, chars[3], colors[3], darkerCoolGray);
-    terminal.writeAt(centerX + 2, y - 1, chars[4], colors[4], darkerCoolGray);
-    
-    terminal.writeAt(centerX - 2, y, chars[5], colors[5], darkerCoolGray);
-    terminal.writeAt(centerX - 1, y, chars[6], colors[6], darkerCoolGray);
-    terminal.writeAt(centerX, y, chars[7], colors[7], darkerCoolGray);
-    terminal.writeAt(centerX + 1, y, chars[8], colors[8], darkerCoolGray);
-    terminal.writeAt(centerX + 2, y, chars[9], colors[9], darkerCoolGray);
-    
-    terminal.writeAt(centerX - 2, y + 1, chars[10], colors[10], darkerCoolGray);
-    terminal.writeAt(centerX - 1, y + 1, chars[11], colors[11], darkerCoolGray);
-    terminal.writeAt(centerX, y + 1, chars[12], colors[12], darkerCoolGray);
-    terminal.writeAt(centerX + 1, y + 1, chars[13], colors[13], darkerCoolGray);
-    terminal.writeAt(centerX + 2, y + 1, chars[14], colors[14], darkerCoolGray);
+    // Draw the 5x5 circular meter
+    for (var row = 0; row < 5; row++) {
+      for (var col = 0; col < 5; col++) {
+        var index = row * 5 + col;
+        terminal.writeAt(centerX - 2 + col, y + row, chars[index], colors[index], darkerCoolGray);
+      }
+    }
     
     // Add tier name and percentage text below
     var tierName = _loopManager.loopMeter.getRewardTier().displayName.split(' ').last; // Just the tier word
     if (loopMeter.progress >= 10.0) {
       var percentText = "${loopMeter.progress.toInt()}%";
       var tierText = "$percentText $tierName";
-      terminal.writeAt(centerX - tierText.length ~/ 2, y + 2, tierText, 
+      terminal.writeAt(centerX - tierText.length ~/ 2, y + 5, tierText, 
           loopMeter.progress >= 100.0 ? gold : 
           loopMeter.progress >= 75.0 ? gold :
           loopMeter.progress >= 50.0 ? yellow :
           loopMeter.progress >= 25.0 ? lightBlue : ash, darkerCoolGray);
     } else if (loopMeter.progress >= 1.0) {
-      terminal.writeAt(centerX - tierName.length ~/ 2, y + 2, tierName, ash, darkerCoolGray);
+      terminal.writeAt(centerX - tierName.length ~/ 2, y + 5, tierName, ash, darkerCoolGray);
     }
     
     // Add "RING COMPLETE!" label above when full
     if (loopMeter.progress >= 100.0) {
-      terminal.writeAt(centerX - 6, y - 2, "RING COMPLETE!", gold, darkerCoolGray);
+      terminal.writeAt(centerX - 6, y - 1, "RING COMPLETE!", gold, darkerCoolGray);
     }
   }
   
   List<String> _getCircularProgressChars(double progress) {
     // Create a much more obvious circular meter using dots
-    // Layout like a clock face with 12 positions
+    // Layout as a more even 5x5 circle
     var emptyChar = '○';
     var filledChar = '●';
     var centerChar = progress >= 1.0 ? '!' : ' '; // Exclamation when full!
     
     var positions = [
-      emptyChar, emptyChar, emptyChar, emptyChar, emptyChar, // top row
-      emptyChar, ' ', centerChar, ' ', emptyChar, // middle row
-      emptyChar, emptyChar, emptyChar, emptyChar, emptyChar, // bottom row
+      ' ', emptyChar, emptyChar, emptyChar, ' ',     // top row
+      emptyChar, ' ', ' ', ' ', emptyChar,          // second row
+      emptyChar, ' ', centerChar, ' ', emptyChar,   // middle row
+      emptyChar, ' ', ' ', ' ', emptyChar,          // fourth row
+      ' ', emptyChar, emptyChar, emptyChar, ' ',    // bottom row
     ];
     
     // 12 positions around the circle like a clock
     var fillPositions = (progress * 12).round();
     
     // Clock positions: 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
-    var clockOrder = [2, 3, 4, 9, 14, 13, 12, 11, 10, 5, 0, 1];
+    // Map to indices in the 5x5 grid (25 total positions)
+    var clockOrder = [2, 3, 4, 9, 14, 19, 18, 17, 16, 15, 10, 5];
     
     for (var i = 0; i < fillPositions && i < clockOrder.length; i++) {
-      positions[clockOrder[i]] = filledChar;
+      if (clockOrder[i] < positions.length) {
+        positions[clockOrder[i]] = filledChar;
+      }
     }
     
     return positions;
