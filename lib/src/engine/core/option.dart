@@ -15,7 +15,7 @@ class Option {
   static const heroMaxStomach = 400;
 
   /// The maximum number of items the hero's inventory can contain.
-  static const inventoryCapacity = 24;
+  static const inventoryCapacity = 200;
 
   /// The maximum number of items the hero's home inventory can contain.
   /// Note: To make this is more than 26, the home screen UI will need to be
