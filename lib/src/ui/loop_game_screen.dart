@@ -341,8 +341,8 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
       // New control scheme
       case LoopInput.attack:
         action = _handleAttackAction();
+        // Action handles its own messaging now
         if (action == null) {
-          game.log.message("Cannot attack.");
           dirty();
         }
 
@@ -689,7 +689,16 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     if (hero.save.heroClass.name.toLowerCase() == 'mage') {
       var spellItem = _getMageAttackSpell();
       if (spellItem != null) {
+        game.log.message("Casting ${spellItem.type.name}...");
         return UseAction(ItemLocation.inventory, spellItem);
+      } else {
+        // No spells available
+        if (_hasRangedTarget()) {
+          game.log.message("No spells available.");
+        } else {
+          game.log.message("Nothing in range.");
+        }
+        return null;
       }
     }
     
@@ -698,32 +707,66 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
       if (SlamAction.canUseSlam()) {
         return SlamAction();
       } else {
-        // Slam on cooldown, show message but still allow other attacks
-        var remaining = SlamAction.remainingSlamCooldown();
-        game.log.message("Slam ready in $remaining moves. Using regular attack.");
+        // Slam on cooldown, try melee attack if enemy adjacent
+        var adjacentEnemy = _getAdjacentEnemy();
+        if (adjacentEnemy != null) {
+          var remaining = SlamAction.remainingSlamCooldown();
+          game.log.message("Slam ready in $remaining moves. Using regular attack.");
+          return AttackAction(adjacentEnemy);
+        } else {
+          var remaining = SlamAction.remainingSlamCooldown();
+          game.log.message("Slam ready in $remaining moves. Nothing in range.");
+          return null;
+        }
       }
     }
     
-    // 3. If adjacent enemy -> MeleeAction
+    // 3. If ranger class -> prioritize bow attacks
+    if (hero.save.heroClass.name.toLowerCase() == 'ranger') {
+      // Check for bow equipped and line of sight first
+      if (_hasBowEquipped() && _hasRangedTarget()) {
+        var target = _findRangedTarget();
+        if (target != null) {
+          return _createBowAttack(target);
+        }
+      }
+      
+      // Check for adjacent enemies
+      var adjacentEnemy = _getAdjacentEnemy();
+      if (adjacentEnemy != null) {
+        return AttackAction(adjacentEnemy);
+      }
+      
+      // Nothing in range
+      game.log.message("Nothing in range.");
+      return null;
+    }
+    
+    // 4. For other classes - check adjacent enemy first
     var adjacentEnemy = _getAdjacentEnemy();
     if (adjacentEnemy != null) {
       return AttackAction(adjacentEnemy);
     }
     
-    // 4. If bow equipped and line of sight -> BoltAction
-    if (_hasBowEquipped() && _hasRangedTarget()) {
+    // 5. Try bow if equipped (for non-warrior classes)
+    if (hero.save.heroClass.name.toLowerCase() != 'warrior' && _hasBowEquipped() && _hasRangedTarget()) {
       var target = _findRangedTarget();
       if (target != null) {
         return _createBowAttack(target);
       }
     }
     
-    // 5. If any spell equipped -> CastSpell (but not movement spells)
-    var spellItem = _getFirstNonMovementSpell();
-    if (spellItem != null) {
-      return UseAction(ItemLocation.inventory, spellItem);
+    // 6. Try spells as last resort (for non-mages)
+    if (hero.save.heroClass.name.toLowerCase() != 'mage') {
+      var spellItem = _getFirstNonMovementSpell();
+      if (spellItem != null) {
+        game.log.message("Casting ${spellItem.type.name}...");
+        return UseAction(ItemLocation.inventory, spellItem);
+      }
     }
     
+    // Nothing available
+    game.log.message("Nothing in range.");
     return null;
   }
   

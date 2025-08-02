@@ -53,6 +53,17 @@ class ActionMapping {
       return "Cast Spell";
     }
     
+    // Check if ranger class -> show bow priority
+    if (hero.save.heroClass.name.toLowerCase() == 'ranger') {
+      if (_hasBowEquipped(hero) && _hasRangedTarget(game, hero)) {
+        return "Bow Attack";
+      } else if (_hasAdjacentEnemies(game, hero)) {
+        return "Melee Attack";
+      } else {
+        return "Nothing in range";
+      }
+    }
+    
     // Check for adjacent enemies -> melee
     if (_hasAdjacentEnemies(game, hero)) {
       return "Melee Attack";

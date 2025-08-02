@@ -98,31 +98,42 @@ class ActionQueues {
     }
   }
   
-  /// Get item for button 3 (always healing)
+  /// Get item for button 3 (healing and resistance/buff items)
   QueueItem getHealQueueItem() {
-    var healItems = _getHealItems();
-    if (healItems.isEmpty) {
+    var healAndBuffItems = _getHealAndBuffItems();
+    if (healAndBuffItems.isEmpty) {
       var currentHP = hero.health;
       var maxHP = hero.maxHealth;
       return QueueItem(
-        name: "Max HP",
+        name: "No Consumables",
         count: "",
         isAvailable: false,
       );
     }
     
-    var index = _healQueueIndex % healItems.length;
-    var item = healItems[index];
-    var healAmount = _getHealAmount(item);
-    var currentHP = hero.health;
-    var maxHP = hero.maxHealth;
+    var index = _healQueueIndex % healAndBuffItems.length;
+    var item = healAndBuffItems[index];
     
-    return QueueItem(
-      name: item.type.name,
-      count: "($currentHP/$maxHP HP)",
-      healAmount: healAmount,
-      item: item,
-    );
+    // Check if it's a healing item or buff item
+    if (_isHealingItem(item)) {
+      var healAmount = _getHealAmount(item);
+      var currentHP = hero.health;
+      var maxHP = hero.maxHealth;
+      
+      return QueueItem(
+        name: item.type.name,
+        count: "($currentHP/$maxHP HP)",
+        healAmount: healAmount,
+        item: item,
+      );
+    } else {
+      // It's a buff/resistance item
+      return QueueItem(
+        name: item.type.name,
+        count: item.count > 1 ? "(${item.count})" : "(Buff)",
+        item: item,
+      );
+    }
   }
   
   /// Get spell item when spell category is active
@@ -217,9 +228,9 @@ class ActionQueues {
         }
         break;
       case 3: // Healing
-        var healItems = _getHealItems();
-        if (healItems.isNotEmpty) {
-          _healQueueIndex = (_healQueueIndex + 1) % healItems.length;
+        var healAndBuffItems = _getHealAndBuffItems();
+        if (healAndBuffItems.isNotEmpty) {
+          _healQueueIndex = (_healQueueIndex + 1) % healAndBuffItems.length;
         }
         break;
     }
@@ -307,6 +318,48 @@ class ActionQueues {
     }
     
     return healingItems;
+  }
+  
+  /// Get combined healing and buff/resistance items for button 3
+  List<Item> _getHealAndBuffItems() {
+    var consumableItems = <Item>[];
+    
+    for (var item in hero.inventory) {
+      if (_isHealingItem(item) || _isBuffOrResistanceItem(item)) {
+        consumableItems.add(item);
+      }
+    }
+    
+    return consumableItems;
+  }
+  
+  /// Check if item is a buff or resistance item
+  bool _isBuffOrResistanceItem(Item item) {
+    var name = item.type.name.toLowerCase();
+    
+    // Include resistance potions and scrolls
+    if (name.contains('resistance') || name.contains('protection') || 
+        name.contains('resist') || name.contains('ward') ||
+        name.contains('shield') || name.contains('barrier')) {
+      return true;
+    }
+    
+    // Include buff potions
+    if (name.contains('potion')) {
+      return name.contains('speed') || name.contains('strength') || 
+             name.contains('agility') || name.contains('intellect') ||
+             name.contains('invisibility') || name.contains('levitation') ||
+             name.contains('haste') || name.contains('vigor');
+    }
+    
+    // Include buff scrolls
+    if (name.contains('scroll')) {
+      return name.contains('bless') || name.contains('enchant') ||
+             name.contains('haste') || name.contains('vigor') ||
+             name.contains('protection') || name.contains('resist');
+    }
+    
+    return false;
   }
   
   /// Check if item is healing
