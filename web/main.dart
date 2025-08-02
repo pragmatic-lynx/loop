@@ -75,37 +75,11 @@ void main() {
   _ui.keyPress.bind(Input.pickUp, KeyCode.g);
   _ui.keyPress.bind(Input.swap, KeyCode.x);
   _ui.keyPress.bind(Input.equip, KeyCode.e);
-  _ui.keyPress.bind(Input.inventory, KeyCode.j);
+  _ui.keyPress.bind(Input.inventory, KeyCode.i);
   _ui.keyPress.bind(Input.toss, KeyCode.t);
   _ui.keyPress.bind(Input.selectSkill, KeyCode.s);
   _ui.keyPress.bind(Input.heroInfo, KeyCode.a);
   _ui.keyPress.bind(Input.editSkills, KeyCode.s, shift: true);
-
-  // Laptop directions.
-  _ui.keyPress.bind(Input.nw, KeyCode.i);
-  _ui.keyPress.bind(Input.n, KeyCode.o);
-  _ui.keyPress.bind(Input.ne, KeyCode.p);
-  _ui.keyPress.bind(Input.w, KeyCode.k);
-  _ui.keyPress.bind(Input.e, KeyCode.semicolon);
-  _ui.keyPress.bind(Input.sw, KeyCode.comma);
-  _ui.keyPress.bind(Input.s, KeyCode.period);
-  _ui.keyPress.bind(Input.se, KeyCode.slash);
-  _ui.keyPress.bind(Input.runNW, KeyCode.i, shift: true);
-  _ui.keyPress.bind(Input.runN, KeyCode.o, shift: true);
-  _ui.keyPress.bind(Input.runNE, KeyCode.p, shift: true);
-  _ui.keyPress.bind(Input.runW, KeyCode.k, shift: true);
-  _ui.keyPress.bind(Input.runE, KeyCode.semicolon, shift: true);
-  _ui.keyPress.bind(Input.runSW, KeyCode.comma, shift: true);
-  _ui.keyPress.bind(Input.runS, KeyCode.period, shift: true);
-  _ui.keyPress.bind(Input.runSE, KeyCode.slash, shift: true);
-  _ui.keyPress.bind(Input.fireNW, KeyCode.i, alt: true);
-  _ui.keyPress.bind(Input.fireN, KeyCode.o, alt: true);
-  _ui.keyPress.bind(Input.fireNE, KeyCode.p, alt: true);
-  _ui.keyPress.bind(Input.fireW, KeyCode.k, alt: true);
-  _ui.keyPress.bind(Input.fireE, KeyCode.semicolon, alt: true);
-  _ui.keyPress.bind(Input.fireSW, KeyCode.comma, alt: true);
-  _ui.keyPress.bind(Input.fireS, KeyCode.period, alt: true);
-  _ui.keyPress.bind(Input.fireSE, KeyCode.slash, alt: true);
 
   _ui.keyPress.bind(Input.ok, KeyCode.l);
   _ui.keyPress.bind(Input.rest, KeyCode.l, shift: true);
