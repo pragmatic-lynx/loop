@@ -110,12 +110,14 @@ class LoopManager {
     isLoopActive = false;
     isRewardSelection = true;
     
-    // Generate 3 random reward options
-    currentRewardOptions = LoopReward.generateRewardOptions(3);
+    // Don't generate the old style reward options anymore
+    // The new system will handle rewards based on loop meter fill level
+    currentRewardOptions = []; // Clear old options
     
     var archetypeInfo = currentArchetypeMetadata != null ? 
         '${currentArchetypeMetadata!.archetype.name}' : 'unknown';
-    print('LOOP_COMPLETE: Loop $currentLoop ($archetypeInfo archetype) - $moveCount moves made. Time for rewards!');
+    var meterProgress = _loopMeter.progress.toStringAsFixed(1);
+    print('LOOP_COMPLETE: Loop $currentLoop ($archetypeInfo archetype) - $moveCount moves made, ${meterProgress}% loop meter. Using loop meter rewards!');
   }
   
   /// Apply a selected reward and prepare for next loop

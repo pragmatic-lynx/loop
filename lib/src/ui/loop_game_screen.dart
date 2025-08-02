@@ -457,6 +457,8 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
             game.hero.pickUp(game, item);
             game.log.message('Equipped ${item.type.name}.');
             _loopManager.recordLootPickup(); // Track loot pickup for loop meter
+            var meterProgress = _loopManager.loopMeter.progress.toStringAsFixed(1);
+            game.log.message("Loot collected! Loop meter: ${meterProgress}%");
             _updateActionMapping();
             return true;
           } else {
@@ -471,6 +473,8 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
               
               game.hero.pickUp(game, item);
               _loopManager.recordLootPickup(); // Track loot pickup for loop meter
+              var meterProgress = _loopManager.loopMeter.progress.toStringAsFixed(1);
+              game.log.message("Loot collected! Loop meter: ${meterProgress}%");
               _updateActionMapping();
               return true;
             } else {
@@ -487,6 +491,9 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     }
 
     if (action != null) {
+      // Store current enemy count before action
+      _previousEnemyCount = game.stage.actors.where((actor) => actor != game.hero && actor.isAlive).length;
+      
       game.hero.setNextAction(action);
       
       // Mark screen as dirty to trigger redraw
@@ -540,9 +547,9 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
 
         // Check if time for reward selection
         if (_loopManager.isRewardSelection) {
-          print("Loop complete! Going to reward selection.");
+          print("Loop complete! Going to loop meter rewards.");
           _storage.save();
-          _handleLoopComplete();
+          _handleLoopComplete(); // Use new loop meter based rewards
           return;
         }
       }
@@ -563,6 +570,11 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     // Update panels - exactly like the regular GameScreen
     if (_stagePanel.update(result.events)) dirty();
     if (result.needsRefresh) dirty();
+    
+    // Force animation updates when loop meter is full (for pulsing effect)
+    if (_loopManager.loopMeter.isFull) {
+      dirty();
+    }
   }
 
   @override
@@ -755,59 +767,73 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     terminal.writeAt(centerX + 1, y + 1, chars[13], colors[13], darkerCoolGray);
     terminal.writeAt(centerX + 2, y + 1, chars[14], colors[14], darkerCoolGray);
     
-    // Add percentage text below if full
-    if (loopMeter.isFull) {
+    // Add percentage text below if significant progress
+    if (loopMeter.progress >= 10.0) {
       var percentText = "${loopMeter.progress.toInt()}%";
-      terminal.writeAt(centerX - percentText.length ~/ 2, y + 2, percentText, gold, darkerCoolGray);
+      terminal.writeAt(centerX - percentText.length ~/ 2, y + 2, percentText, 
+          loopMeter.isFull ? gold : lightBlue, darkerCoolGray);
+    }
+    
+    // Add "RING" label above when full for extra clarity
+    if (loopMeter.isFull) {
+      terminal.writeAt(centerX - 2, y - 2, "RING", gold, darkerCoolGray);
     }
   }
   
   List<String> _getCircularProgressChars(double progress) {
-    // Ring pattern - starts at top and goes clockwise
-    var positions = [
-      '▄', '█', '▄', // top row
-      '█', ' ', '█', // middle row
-      '▀', '█', '▀', // bottom row
+    // Create a better ring pattern using Unicode box drawing characters
+    // 5x3 grid to make a more circular appearance
+    var emptyRing = [
+      '╭', '─', '─', '─', '╮', // top row
+      '│', ' ', ' ', ' ', '│', // middle row  
+      '╰', '─', '─', '─', '╯', // bottom row
     ];
     
-    // Add more positions for a fuller circle effect
-    positions = [
-      '▄', '▄', '▄', '▄', '▄', // top row
-      '█', '▒', '▒', '▒', '█', // middle row
-      '▀', '▀', '▀', '▀', '▀', // bottom row
-    ];
+    var filledPositions = (progress * 12).round(); // 12 segments around the ring
+    var result = List<String>.from(emptyRing);
     
-    var filledPositions = (progress * 10).round(); // 10 segments around the ring
-    var result = List<String>.filled(15, '▒');
-    
-    // Ring fill order: start at top (index 2) and go clockwise
-    var fillOrder = [2, 3, 4, 9, 14, 13, 12, 11, 10, 5, 0, 1]; // Clockwise from top
+    // Ring fill order: clockwise from top
+    var fillOrder = [1, 2, 3, 4, 9, 14, 13, 12, 11, 10, 5, 0]; // Clockwise from top
     
     for (var i = 0; i < filledPositions && i < fillOrder.length; i++) {
-      result[fillOrder[i]] = '█';
+      if (fillOrder[i] == 0) result[fillOrder[i]] = '┏';
+      else if (fillOrder[i] == 1) result[fillOrder[i]] = '━';
+      else if (fillOrder[i] == 2) result[fillOrder[i]] = '━';
+      else if (fillOrder[i] == 3) result[fillOrder[i]] = '━';
+      else if (fillOrder[i] == 4) result[fillOrder[i]] = '┓';
+      else if (fillOrder[i] == 5) result[fillOrder[i]] = '┃';
+      else if (fillOrder[i] == 9) result[fillOrder[i]] = '┃';
+      else if (fillOrder[i] == 10) result[fillOrder[i]] = '┗';
+      else if (fillOrder[i] == 11) result[fillOrder[i]] = '━';
+      else if (fillOrder[i] == 12) result[fillOrder[i]] = '━';
+      else if (fillOrder[i] == 13) result[fillOrder[i]] = '━';
+      else if (fillOrder[i] == 14) result[fillOrder[i]] = '┛';
     }
     
     return result;
   }
   
   List<Color> _getCircularProgressColors(loopMeter) {
-    var baseColor = ash;
+    var baseColor = darkWarmGray;
     var fillColor = lightBlue;
     var fullColor = gold;
     
     if (loopMeter.isEmpty) {
-      baseColor = darkWarmGray;
       fillColor = darkWarmGray;
     } else if (loopMeter.isHalfFull && !loopMeter.isFull) {
       fillColor = yellow;
     } else if (loopMeter.isFull) {
       fillColor = fullColor;
+      // Add pulsing effect when full
+      if ((DateTime.now().millisecondsSinceEpoch ~/ 500) % 2 == 0) {
+        fillColor = lightWarmGray;
+      }
     }
     
     var result = List<Color>.filled(15, baseColor);
     var progress = loopMeter.progressRatio;
-    var filledPositions = (progress * 10).round();
-    var fillOrder = [2, 3, 4, 9, 14, 13, 12, 11, 10, 5, 0, 1];
+    var filledPositions = (progress * 12).round();
+    var fillOrder = [1, 2, 3, 4, 9, 14, 13, 12, 11, 10, 5, 0];
     
     for (var i = 0; i < filledPositions && i < fillOrder.length; i++) {
       result[fillOrder[i]] = fillColor;
@@ -1050,6 +1076,14 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
       var killCount = _previousEnemyCount - currentEnemyCount;
       for (var i = 0; i < killCount; i++) {
         _loopManager.recordEnemyKill();
+        // Force immediate UI update
+        dirty();
+      }
+      
+      // Show immediate feedback
+      if (killCount > 0) {
+        var meterProgress = _loopManager.loopMeter.progress.toStringAsFixed(1);
+        game.log.message("Enemy defeated! Loop meter: ${meterProgress}%");
       }
     }
     
