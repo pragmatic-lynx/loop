@@ -261,8 +261,8 @@ class LoopManager {
     var newProgress = _loopMeter.addKillProgress();
     print('ENEMY_KILL: Loop meter now at ${newProgress.toStringAsFixed(1)}%');
     
-    // Check for instant Ring Loop completion
-    if (_loopMeter.isFull && !isRewardSelection) {
+    // Check for instant Ring Loop completion at 100%
+    if (_loopMeter.progress >= 100.0 && !isRewardSelection) {
       print('RING_LOOP_TRIGGERED: Enemy kill completed the ring!');
       triggerRewardSelection();
     }
@@ -275,8 +275,8 @@ class LoopManager {
     var newProgress = _loopMeter.addLootProgress();
     print('LOOT_PICKUP: Loop meter now at ${newProgress.toStringAsFixed(1)}%');
     
-    // Check for instant Ring Loop completion
-    if (_loopMeter.isFull && !isRewardSelection) {
+    // Check for instant Ring Loop completion at 100%
+    if (_loopMeter.progress >= 100.0 && !isRewardSelection) {
       print('RING_LOOP_TRIGGERED: Loot pickup completed the ring!');
       triggerRewardSelection();
     }
@@ -290,8 +290,8 @@ class LoopManager {
     var progressAdded = (hpLost / maxHp) * 100.0;
     print('SHRINE_SACRIFICE: Added ${progressAdded.toStringAsFixed(1)}% progress, meter now at ${newProgress.toStringAsFixed(1)}%');
     
-    // Check for instant Ring Loop completion
-    if (_loopMeter.isFull && !isRewardSelection) {
+    // Check for instant Ring Loop completion at 100%
+    if (_loopMeter.progress >= 100.0 && !isRewardSelection) {
       print('RING_LOOP_TRIGGERED: Shrine sacrifice completed the ring!');
       triggerRewardSelection();
     }

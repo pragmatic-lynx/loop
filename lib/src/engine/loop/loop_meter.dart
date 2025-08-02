@@ -64,9 +64,11 @@ class LoopMeter {
   
   /// Get the reward tier based on current progress
   LoopMeterRewardTier getRewardTier() {
-    if (isFull) return LoopMeterRewardTier.full;
-    if (isHalfFull) return LoopMeterRewardTier.halfFull;
-    return LoopMeterRewardTier.empty;
+    if (progress >= 100.0) return LoopMeterRewardTier.legendary;
+    if (progress >= 75.0) return LoopMeterRewardTier.master;
+    if (progress >= 50.0) return LoopMeterRewardTier.apprentice;
+    if (progress >= 25.0) return LoopMeterRewardTier.novice;
+    return LoopMeterRewardTier.survival;
   }
   
   /// Reset the loop meter for a new loop
@@ -89,31 +91,72 @@ class LoopMeter {
 
 /// The different reward tiers based on loop meter fill level
 enum LoopMeterRewardTier {
-  full,     // ≥ 100% - Choice of permanent trait, large heal, or rare item
-  halfFull, // ≥ 50% - Medium healing consumables  
-  empty,    // < 50% - No reward
+  legendary,   // ≥100% - Legendary Case
+  master,      // ≥75% - Master Case  
+  apprentice,  // ≥50% - Apprentice Case
+  novice,      // ≥25% - Novice Case
+  survival,    // <25% - Survival Package
 }
 
 extension LoopMeterRewardTierExtension on LoopMeterRewardTier {
   String get displayName {
     switch (this) {
-      case LoopMeterRewardTier.full:
-        return "Ring Loop Complete";
-      case LoopMeterRewardTier.halfFull:
-        return "Partial Loop";
-      case LoopMeterRewardTier.empty:
-        return "Dormant Loop";
+      case LoopMeterRewardTier.legendary:
+        return "🏆 Legendary Case";
+      case LoopMeterRewardTier.master:
+        return "⭐ Master Case";
+      case LoopMeterRewardTier.apprentice:
+        return "🎖️ Apprentice Case";
+      case LoopMeterRewardTier.novice:
+        return "🥉 Novice Case";
+      case LoopMeterRewardTier.survival:
+        return "📦 Survival Package";
     }
   }
   
   String get description {
     switch (this) {
-      case LoopMeterRewardTier.full:
-        return "The ring pulses with power! Choose your reward.";
-      case LoopMeterRewardTier.halfFull:
-        return "The ring glows softly. Take these healing supplies.";
-      case LoopMeterRewardTier.empty:
-        return "The loop lies dormant...";
+      case LoopMeterRewardTier.legendary:
+        return "The ring blazes with ultimate power! Choose your destiny.";
+      case LoopMeterRewardTier.master:
+        return "The ring shines brilliantly! Excellence rewarded.";
+      case LoopMeterRewardTier.apprentice:
+        return "The ring glows steadily. Good work, adventurer.";
+      case LoopMeterRewardTier.novice:
+        return "The ring flickers weakly. You survived.";
+      case LoopMeterRewardTier.survival:
+        return "The ring barely glimmers. Take what you can get.";
+    }
+  }
+  
+  double get threshold {
+    switch (this) {
+      case LoopMeterRewardTier.legendary:
+        return 100.0;
+      case LoopMeterRewardTier.master:
+        return 75.0;
+      case LoopMeterRewardTier.apprentice:
+        return 50.0;
+      case LoopMeterRewardTier.novice:
+        return 25.0;
+      case LoopMeterRewardTier.survival:
+        return 0.0;
+    }
+  }
+  
+  /// Get all tiers at or below this one (for "what you could have gotten")
+  List<LoopMeterRewardTier> get availableTiers {
+    switch (this) {
+      case LoopMeterRewardTier.legendary:
+        return [LoopMeterRewardTier.legendary, LoopMeterRewardTier.master, LoopMeterRewardTier.apprentice, LoopMeterRewardTier.novice, LoopMeterRewardTier.survival];
+      case LoopMeterRewardTier.master:
+        return [LoopMeterRewardTier.master, LoopMeterRewardTier.apprentice, LoopMeterRewardTier.novice, LoopMeterRewardTier.survival];
+      case LoopMeterRewardTier.apprentice:
+        return [LoopMeterRewardTier.apprentice, LoopMeterRewardTier.novice, LoopMeterRewardTier.survival];
+      case LoopMeterRewardTier.novice:
+        return [LoopMeterRewardTier.novice, LoopMeterRewardTier.survival];
+      case LoopMeterRewardTier.survival:
+        return [LoopMeterRewardTier.survival];
     }
   }
 }

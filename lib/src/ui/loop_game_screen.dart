@@ -43,7 +43,7 @@ import 'input_converter.dart';
 import 'level_up_screen.dart';
 import 'loop_input.dart';
 import 'loop_reward_screen.dart';
-import 'choose_reward_dialog.dart';
+import 'supply_case_screen.dart';
 import '../engine/hero/stat.dart';
 import 'panel/log_panel.dart';
 import 'panel/sidebar_panel.dart';
@@ -421,6 +421,12 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
         _loopManager.loopMeter.addProgress(15.0);
         game.log.message("Debug: Added 15% loop meter progress (${_loopManager.loopMeter.progress.toStringAsFixed(1)}%)");
         
+        // Check if this debug addition triggered completion
+        if (_loopManager.loopMeter.progress >= 100.0 && _loopManager.isLoopActive && !_loopManager.isRewardSelection) {
+          game.log.message("Debug triggered ring completion!");
+          _loopManager.triggerRewardSelection();
+        }
+        
         _updateActionMapping();
         return true;
 
@@ -767,50 +773,50 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     terminal.writeAt(centerX + 1, y + 1, chars[13], colors[13], darkerCoolGray);
     terminal.writeAt(centerX + 2, y + 1, chars[14], colors[14], darkerCoolGray);
     
-    // Add percentage text below if significant progress
+    // Add tier name and percentage text below
+    var tierName = _loopManager.loopMeter.getRewardTier().displayName.split(' ').last; // Just the tier word
     if (loopMeter.progress >= 10.0) {
       var percentText = "${loopMeter.progress.toInt()}%";
-      terminal.writeAt(centerX - percentText.length ~/ 2, y + 2, percentText, 
-          loopMeter.isFull ? gold : lightBlue, darkerCoolGray);
+      var tierText = "$percentText $tierName";
+      terminal.writeAt(centerX - tierText.length ~/ 2, y + 2, tierText, 
+          loopMeter.progress >= 100.0 ? gold : 
+          loopMeter.progress >= 75.0 ? gold :
+          loopMeter.progress >= 50.0 ? yellow :
+          loopMeter.progress >= 25.0 ? lightBlue : ash, darkerCoolGray);
+    } else if (loopMeter.progress >= 1.0) {
+      terminal.writeAt(centerX - tierName.length ~/ 2, y + 2, tierName, ash, darkerCoolGray);
     }
     
-    // Add "RING" label above when full for extra clarity
-    if (loopMeter.isFull) {
-      terminal.writeAt(centerX - 2, y - 2, "RING", gold, darkerCoolGray);
+    // Add "RING COMPLETE!" label above when full
+    if (loopMeter.progress >= 100.0) {
+      terminal.writeAt(centerX - 6, y - 2, "RING COMPLETE!", gold, darkerCoolGray);
     }
   }
   
   List<String> _getCircularProgressChars(double progress) {
-    // Create a better ring pattern using Unicode box drawing characters
-    // 5x3 grid to make a more circular appearance
-    var emptyRing = [
-      '╭', '─', '─', '─', '╮', // top row
-      '│', ' ', ' ', ' ', '│', // middle row  
-      '╰', '─', '─', '─', '╯', // bottom row
+    // Create a much more obvious circular meter using dots
+    // Layout like a clock face with 12 positions
+    var emptyChar = '○';
+    var filledChar = '●';
+    var centerChar = progress >= 1.0 ? '!' : ' '; // Exclamation when full!
+    
+    var positions = [
+      emptyChar, emptyChar, emptyChar, emptyChar, emptyChar, // top row
+      emptyChar, ' ', centerChar, ' ', emptyChar, // middle row
+      emptyChar, emptyChar, emptyChar, emptyChar, emptyChar, // bottom row
     ];
     
-    var filledPositions = (progress * 12).round(); // 12 segments around the ring
-    var result = List<String>.from(emptyRing);
+    // 12 positions around the circle like a clock
+    var fillPositions = (progress * 12).round();
     
-    // Ring fill order: clockwise from top
-    var fillOrder = [1, 2, 3, 4, 9, 14, 13, 12, 11, 10, 5, 0]; // Clockwise from top
+    // Clock positions: 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+    var clockOrder = [2, 3, 4, 9, 14, 13, 12, 11, 10, 5, 0, 1];
     
-    for (var i = 0; i < filledPositions && i < fillOrder.length; i++) {
-      if (fillOrder[i] == 0) result[fillOrder[i]] = '┏';
-      else if (fillOrder[i] == 1) result[fillOrder[i]] = '━';
-      else if (fillOrder[i] == 2) result[fillOrder[i]] = '━';
-      else if (fillOrder[i] == 3) result[fillOrder[i]] = '━';
-      else if (fillOrder[i] == 4) result[fillOrder[i]] = '┓';
-      else if (fillOrder[i] == 5) result[fillOrder[i]] = '┃';
-      else if (fillOrder[i] == 9) result[fillOrder[i]] = '┃';
-      else if (fillOrder[i] == 10) result[fillOrder[i]] = '┗';
-      else if (fillOrder[i] == 11) result[fillOrder[i]] = '━';
-      else if (fillOrder[i] == 12) result[fillOrder[i]] = '━';
-      else if (fillOrder[i] == 13) result[fillOrder[i]] = '━';
-      else if (fillOrder[i] == 14) result[fillOrder[i]] = '┛';
+    for (var i = 0; i < fillPositions && i < clockOrder.length; i++) {
+      positions[clockOrder[i]] = filledChar;
     }
     
-    return result;
+    return positions;
   }
   
   List<Color> _getCircularProgressColors(loopMeter) {
@@ -820,23 +826,33 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     
     if (loopMeter.isEmpty) {
       fillColor = darkWarmGray;
-    } else if (loopMeter.isHalfFull && !loopMeter.isFull) {
-      fillColor = yellow;
-    } else if (loopMeter.isFull) {
-      fillColor = fullColor;
-      // Add pulsing effect when full
-      if ((DateTime.now().millisecondsSinceEpoch ~/ 500) % 2 == 0) {
+    } else if (loopMeter.progress >= 75.0) {
+      fillColor = fullColor; // Gold for 75%+
+    } else if (loopMeter.progress >= 50.0) {
+      fillColor = yellow; // Yellow for 50%+
+    } else if (loopMeter.progress >= 25.0) {
+      fillColor = lightBlue; // Blue for 25%+
+    }
+    
+    // Pulsing effect when full
+    if (loopMeter.isFull) {
+      if ((DateTime.now().millisecondsSinceEpoch ~/ 300) % 2 == 0) {
         fillColor = lightWarmGray;
       }
     }
     
     var result = List<Color>.filled(15, baseColor);
     var progress = loopMeter.progressRatio;
-    var filledPositions = (progress * 12).round();
-    var fillOrder = [1, 2, 3, 4, 9, 14, 13, 12, 11, 10, 5, 0];
+    var fillPositions = (progress * 12).round();
+    var clockOrder = [2, 3, 4, 9, 14, 13, 12, 11, 10, 5, 0, 1];
     
-    for (var i = 0; i < filledPositions && i < fillOrder.length; i++) {
-      result[fillOrder[i]] = fillColor;
+    for (var i = 0; i < fillPositions && i < clockOrder.length; i++) {
+      result[clockOrder[i]] = fillColor;
+    }
+    
+    // Special color for center when full
+    if (loopMeter.isFull) {
+      result[7] = gold; // Center position
     }
     
     return result;
@@ -1096,72 +1112,10 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   void _handleLoopComplete() {
     var loopMeter = _loopManager.loopMeter;
     var rewardTier = loopMeter.getRewardTier();
+    var progress = loopMeter.progress;
     
-    if (rewardTier == LoopMeterRewardTier.full) {
-      // Show choice dialog for full rewards
-      ui.push(ChooseRewardDialog(game, _handleRewardChoice));
-    } else if (rewardTier == LoopMeterRewardTier.halfFull) {
-      // Award medium healing consumables directly
-      _awardMediumHealConsumables();
-      _continueToNextLoop();
-    } else {
-      // No reward, just show message and continue
-      game.log.message("The loop lies dormant...");
-      _continueToNextLoop();
-    }
-  }
-  
-  /// Handle reward choice from the dialog
-  void _handleRewardChoice(RewardChoice choice) {
-    switch (choice.type) {
-      case RewardType.permanentTrait:
-        _awardPermanentTrait(choice.statToBoost!);
-        break;
-        
-      case RewardType.largeHeal:
-        _awardLargeHeal();
-        break;
-        
-      case RewardType.rareItem:
-        _awardRareItem();
-        break;
-    }
-    
-    _continueToNextLoop();
-  }
-  
-  /// Award permanent stat boost
-  void _awardPermanentTrait(dynamic stat) {
-    // TODO: Implement permanent stat bonus system
-    // For now, just show a message
-    game.log.gain("The ring's power flows into you! Your ${stat.name} increases permanently!");
-  }
-  
-  /// Award large healing consumable
-  void _awardLargeHeal() {
-    // Restore to full HP and remove status effects
-    var hero = game.hero;
-    hero.health = hero.maxHealth;
-    
-    // Remove negative conditions (simplified for now)
-    hero.poison.cancel();
-    hero.cold.cancel();
-    
-    game.log.gain("Ancient healing energy washes over you! You are fully restored!");
-  }
-  
-  /// Award rare item
-  void _awardRareItem() {
-    // TODO: Implement rare item generation from loot tables
-    // For now, just show a message
-    game.log.gain("The ring reveals a legendary artifact! (Item generation not yet implemented)");
-  }
-  
-  /// Award medium healing consumables for half-full reward
-  void _awardMediumHealConsumables() {
-    // TODO: Add healing potions to inventory
-    // For now, just show a message
-    game.log.gain("The ring glows softly. You feel a healing warmth. (Healing items not yet implemented)");
+    // Show the new supply case screen for all tiers
+    ui.goTo(SupplyCaseScreen(game, rewardTier, progress, _continueToNextLoop));
   }
   
   /// Continue to the next loop after rewards
