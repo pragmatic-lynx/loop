@@ -144,7 +144,7 @@ void sandbox() {
       decorDensity: 0.0, // No random decorations
       monsters: "monster", // All monster types
       monsterDensity: 0.0, // We handle monsters ourselves
-      itemDensity: 10.0, // Very high item density for lots of items
+      itemDensity: 50.0, // Extremely high item density to get all items
       create: () => SandboxArchitecture());
 }
 
@@ -163,7 +163,7 @@ bool _isSandboxEnabled() {
     } catch (e) {
       // Ignore JS interop errors
     }
-    return true;
+    
     // For development/testing: check if sandbox_config.json was set to true
     // This is a fallback that works during development
     try {
@@ -173,7 +173,7 @@ bool _isSandboxEnabled() {
       // Ignore errors
     }
     
-    return false;
+    return false; // Default to disabled
   } catch (e) {
     // If we can't access localStorage/window, default to false
     return false;
