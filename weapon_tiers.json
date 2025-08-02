@@ -1,0 +1,26 @@
+{
+  "tiers": [
+    {
+      "id": 1,
+      "warrior": ["Stick", "Cudgel", "Hatchet"],
+      "ranger": ["Short Bow", "Knife", "Dirk"],
+      "mage": []
+    },
+    {
+      "id": 2,
+      "warrior": ["Shortsword", "Morningstar", "Spear"],
+      "ranger": ["Longbow", "Dagger", "Stiletto"],
+      "mage": []
+    },
+    {
+      "id": 3,
+      "warrior": ["Mattock", "Battleaxe", "War Hammer"],
+      "ranger": ["Crossbow", "Rondel", "Baselard"],
+      "mage": []
+    }
+  ],
+  "legendary": {
+    "warrior": ["Phoenix Edge"],
+    "ranger": ["Void Repeater"]
+  }
+}
