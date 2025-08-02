@@ -561,7 +561,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
         // Check if this debug addition triggered completion
         if (_loopManager.loopMeter.progress >= 100.0 && _loopManager.isLoopActive && !_loopManager.isRewardSelection) {
           game.log.message("Debug triggered ring completion!");
-          _loopManager.triggerRewardSelection();
+          _loopManager.triggerRewardSelection(heroClass: game.hero.save.heroClass.name);
         }
         
         _updateActionMapping();
@@ -1048,7 +1048,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   /// Start the next level after stairs or level completion
   void _startNextLevel() {
     // Increment the loop and continue
-    _loopManager.selectReward(LoopReward.generateRewardOptions(1).first);
+    _loopManager.selectReward(LoopReward.generateRewardOptions(1, _loopManager.currentLoop, game.content, game.hero.save.heroClass.name).first);
     
     // Create a new game for the next level
     var depth = _loopManager.getCurrentDepth();
@@ -1266,7 +1266,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     // Reset the loop meter for the new loop (this will be done in LoopManager.selectReward)
     
     // Use the existing reward selection logic to continue
-    _loopManager.selectReward(LoopReward.generateRewardOptions(1).first);
+    _loopManager.selectReward(LoopReward.generateRewardOptions(1, _loopManager.currentLoop, game.content, game.hero.save.heroClass.name).first);
     
     // Create a new game for the next level
     var depth = _loopManager.getCurrentDepth();

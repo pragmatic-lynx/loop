@@ -588,17 +588,30 @@ class GameScreen extends Screen<Input> implements GameScreenInterface {
   }
 
   void _pickUp() {
-    var items = game.stage.itemsAt(game.hero.pos);
-    if (items.length > 1) {
+    var allItems = game.stage.itemsAt(game.hero.pos);
+    
+    // Filter out weapons - they can't be picked up anymore
+    var pickupableItems = allItems.where((item) => !_isWeapon(item)).toList();
+    
+    if (pickupableItems.length > 1) {
       // Show item dialog if there are multiple things to pick up.
       ui.push(PickUpDialog(this));
-    } else if (items.length == 1) {
+    } else if (pickupableItems.length == 1) {
       // Otherwise attempt to pick the one item.
-      game.hero.setNextAction(PickUpAction(items.first));
+      game.hero.setNextAction(PickUpAction(pickupableItems.first));
+    } else if (allItems.length > 0) {
+      // There are items here but they're all weapons
+      game.log.error('Weapons can no longer be picked up - they are only available as rewards.');
+      dirty();
     } else {
       game.log.error('There is nothing here.');
       dirty();
     }
+  }
+  
+  /// Checks if an item is a weapon (equips to hand slot)
+  bool _isWeapon(Item item) {
+    return item.equipSlot == "hand";
   }
 
   void _openTargetDialog(TargetSkill skill) {
