@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:malison/malison.dart';
 import 'package:malison/malison_web.dart';
 import 'package:piecemeal/piecemeal.dart';
@@ -82,6 +83,22 @@ const _defaultNames = [
 ];
 
 // TODO: Update to handle resizable UI.
+
+/// Gets the starting weapon for a given class name
+String _getStartingWeapon(String className) {
+  // From weapon_tiers.json starting weapons
+  switch (className.toLowerCase()) {
+    case 'warrior':
+      return 'Stick';
+    case 'ranger':
+      return 'Short Bow';
+    case 'mage':
+      return 'Walking Stick';
+    default:
+      return 'Stick'; // Default fallback
+  }
+}
+
 class NewHeroScreen extends Screen<Input> {
   static const _deaths = ["Stairs", "Permanent"];
 
@@ -199,12 +216,23 @@ class NewHeroScreen extends Screen<Input> {
     // Give the hero some starting gold and basic equipment for loop mode
     hero.gold = 1500;
     
-    // Add some basic starting equipment
+    // Add class-specific starting equipment based on weapon_tiers.json
     try {
-      var club = _content.tryFindItem("Club");
-      if (club != null) {
-        var clubItem = Item(club, 1);
-        hero.equipment.equip(clubItem);
+      // Get the appropriate starting weapon for this class
+      var startingWeaponName = _getStartingWeapon(hero.heroClass.name);
+      var startingWeapon = _content.tryFindItem(startingWeaponName);
+      if (startingWeapon != null) {
+        var weaponItem = Item(startingWeapon, 1);
+        hero.equipment.equip(weaponItem);
+        print("Equipped ${hero.heroClass.name} with starting weapon: $startingWeaponName");
+      } else {
+        print("Warning: Could not find starting weapon '$startingWeaponName' for ${hero.heroClass.name}");
+        // Fallback to Club
+        var club = _content.tryFindItem("Club");
+        if (club != null) {
+          var clubItem = Item(club, 1);
+          hero.equipment.equip(clubItem);
+        }
       }
       
       var robe = _content.tryFindItem("Robe");

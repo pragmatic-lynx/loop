@@ -36,8 +36,8 @@ class LoopRewardScreen extends Screen<Input> {
     
     // Ensure we have at least one reward option to prevent crashes
     if (rewardOptions.isEmpty) {
-      print('Warning: No reward options available, using fallback rewards');
-      rewardOptions.addAll(LoopReward.generateRewardOptions(3));
+      print('Warning: No reward options available, generating cycle-based rewards');
+      rewardOptions.addAll(LoopReward.generateRewardOptions(3, loopManager.currentLoop, content, hero.heroClass.name));
     }
   }
   
