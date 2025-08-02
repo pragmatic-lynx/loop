@@ -132,8 +132,19 @@ class Tiles {
 
   // Decor.
 
-  static final openChest = tile("open chest", "⌠", moltenOrange).obstacle();
+  static final openChest = tile("open chest", "⌠", moltenOrange).open();
   static final closedChest = tile("closed chest", "⌡", moltenOrange)
+      .onOperate((pos) => OpenChestAction(pos))
+      .obstacle();
+      
+  // Rarity-based chests
+  static final openOrnateChest = tile("open ornate chest", "⌠", lightAqua).open();
+  static final closedOrnateChest = tile("closed ornate chest", "⌡", lightAqua)
+      .onOperate((pos) => OpenChestAction(pos))
+      .obstacle();
+      
+  static final openMythicChest = tile("open mythic chest", "⌠", gold).open();
+  static final closedMythicChest = tile("closed mythic chest", "⌡", gold)
       .onOperate((pos) => OpenChestAction(pos))
       .obstacle();
   static final closedBarrel = tile("closed barrel", "°", moltenOrange)
@@ -270,6 +281,10 @@ class Tiles {
     tableLegRight: 20,
     openChest: 40,
     closedChest: 80,
+    openOrnateChest: 50,
+    closedOrnateChest: 90,
+    openMythicChest: 60,
+    closedMythicChest: 100,
     openBarrel: 15,
     closedBarrel: 40,
     candle: 1,
@@ -303,6 +318,10 @@ class Tiles {
     tableLegRight: 60,
     openChest: 70,
     closedChest: 80,
+    openOrnateChest: 80,
+    closedOrnateChest: 90,
+    openMythicChest: 90,
+    closedMythicChest: 100,
     openBarrel: 30,
     closedBarrel: 40,
     candle: 60,
