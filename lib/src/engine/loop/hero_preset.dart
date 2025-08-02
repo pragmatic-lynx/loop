@@ -102,7 +102,7 @@ class HeroPreset {
     name: "Rogue", 
     description: "A nimble fighter focusing on agility and stealth",
     raceName: "Human",
-    className: "Adventurer",
+    className: "Ranger",
     startingEquipment: {
       "Rapier": 1,           // Better weapon
       "Leather Armor": 1,   // Light armor for protection
@@ -140,7 +140,7 @@ class HeroPreset {
     name: "Ranger",
     description: "A balanced fighter with ranged capabilities",
     raceName: "Human",
-    className: "Adventurer",
+    className: "Ranger",
     startingEquipment: {
       "Bow": 1,
       "Leather Armor": 1,   // Armor for survivability

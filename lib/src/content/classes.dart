@@ -7,15 +7,16 @@ import 'skill/spell/spell.dart';
 class Classes {
   // TODO: Tune battle-hardening.
   // TODO: Better starting items?
-  static final adventurer = _class("Adventurer", parseDrop("item"),
+  static final ranger = _class("Ranger", parseDrop("item"),
       masteries: 0.5,
       spells: 0.2,
       description:
-          "No special birthright, training, or inclination is needed to become "
-          "an adventurer, simply the courage (or foolhardiness) to brave the "
-          "wilds and live on one's wits. Adventurers are flexible and "
-          "resourceful. They are masters of nothing, but able to learn a "
-          "little of everything.");
+          "Rangers are skilled wilderness survivors who have learned to thrive "
+          "in the untamed lands beyond civilization. Through years of "
+          "experience in the wild, they have developed keen instincts, "
+          "adaptability, and a deep understanding of nature's ways. Rangers "
+          "are versatile fighters who can track prey, navigate treacherous "
+          "terrain, and survive where others would perish.");
 
   static final warrior = _class("Warrior", parseDrop("weapon"),
       masteries: 1.0,
@@ -50,7 +51,7 @@ class Classes {
   // TODO: Specialist subclasses.
 
   /// All of the known classes.
-  static final List<HeroClass> all = [adventurer, warrior, mage];
+  static final List<HeroClass> all = [ranger, warrior, mage];
 }
 
 HeroClass _class(String name, Drop startingItems,

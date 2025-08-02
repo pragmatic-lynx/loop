@@ -86,7 +86,7 @@ class GameContent implements Content {
   HeroSave createHero(String name,
       {Race? race, HeroClass? heroClass, bool permadeath = false}) {
     race ??= Races.human;
-    heroClass ??= Classes.adventurer;
+    heroClass ??= Classes.ranger;
 
     var hero = HeroSave.create(name, race, heroClass, permadeath: permadeath);
 

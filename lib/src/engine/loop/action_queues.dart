@@ -290,7 +290,7 @@ class ActionQueues {
     // Check if we already have a ranged weapon equipped
     for (var weapon in hero.equipment.weapons) {
       if (_isRangedWeapon(weapon)) {
-        game.log.message('Debug: Already have ranged weapon equipped: ${weapon.type.name}');
+        // game.log.message('Debug: Already have ranged weapon equipped: ${weapon.type.name}');
         return true; // Already equipped
       }
     }
@@ -298,7 +298,7 @@ class ActionQueues {
     // Find ranged weapon in inventory
     for (var item in hero.inventory) {
       if (_isRangedWeapon(item)) {
-        game.log.message('Debug: Found ranged weapon in inventory: ${item.type.name}, trying to equip...');
+        //game.log.message('Debug: Found ranged weapon in inventory: ${item.type.name}, trying to equip...');
         // Try to equip it (equip returns list of unequipped items)
         var unequipped = hero.equipment.equip(item);
         hero.inventory.remove(item);
@@ -311,7 +311,7 @@ class ActionQueues {
       }
     }
     
-    game.log.message('Debug: No ranged weapon found in inventory or equipment');
+    //game.log.message('Debug: No ranged weapon found in inventory or equipment');
     return false; // No ranged weapon available
   }
   
