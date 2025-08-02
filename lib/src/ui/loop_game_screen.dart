@@ -126,6 +126,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   late final StagePanel _stagePanel;
   late final EquipmentStatusPanel _equipmentPanel;
   final ActionQueues _actionQueues;
+  late final SmartCombat _smartCombat;
   final DebugHelper _debugHelper;
   late ActionMapping _actionMapping;
   final LoopManager _loopManager;
@@ -168,6 +169,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
 
   LoopGameScreen(this._storage, this.game, this._loopManager)
       : _actionQueues = ActionQueues(game),
+        _smartCombat = SmartCombat(game),
         _debugHelper = DebugHelper(game),
         _previousSave = game.hero.save.clone(),
         _logPanel = LogPanel(game.log),
