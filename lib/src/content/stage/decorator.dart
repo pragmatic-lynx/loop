@@ -431,9 +431,9 @@ class Decorator {
 
   /// Place rarity-based chests throughout the level
   void _placeChests() {
-    // 5% chance to place a chest instead of normal floor
+    // 1% chance to place a chest instead of normal floor (reduced from 5%)
     final totalTiles = _stage.bounds.area;
-    final chestCount = (totalTiles * 0.05).round();
+    final chestCount = (totalTiles * 0.001).round();
     
     var placedChests = 0;
     var attempts = 0;
