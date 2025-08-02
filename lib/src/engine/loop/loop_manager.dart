@@ -6,6 +6,7 @@ import 'archetype_metadata.dart';
 import 'difficulty_scheduler.dart';
 import 'hero_preset.dart';
 import 'loop_reward.dart';
+import 'loop_meter.dart';
 import 'metrics_collector.dart';
 // TODO: Re-enable when build issues are resolved
 // import 'item/loop_item_manager.dart';
@@ -46,8 +47,14 @@ class LoopManager {
   /// Metrics collector for gameplay analysis
   final MetricsCollector _metricsCollector = MetricsCollector();
   
+  /// Loop meter for tracking progress within the current loop
+  final LoopMeter _loopMeter = LoopMeter();
+  
   /// Initialize the loop system
   LoopManager();
+  
+  /// Get the current loop meter
+  LoopMeter get loopMeter => _loopMeter;
   
   /// Set content for item generation
   void setContent(Content content) {
@@ -66,6 +73,9 @@ class LoopManager {
     
     // Clear previous temporary rewards when starting a new loop
     activeRewards.clear();
+    
+    // Reset loop meter for new loop
+    _loopMeter.reset();
     
     // Generate archetype metadata for this loop
     _generateArchetypeMetadata();
@@ -125,6 +135,7 @@ class LoopManager {
     threatLevel++; // Increase difficulty
     currentLoop++; // Increment loop counter
     isLoopActive = true; // Reactivate the loop for the next round
+    _loopMeter.reset(); // Reset loop meter for the new loop
     
     // Generate metadata for the next loop
     _generateArchetypeMetadata();
@@ -221,6 +232,7 @@ class LoopManager {
     currentPreset = null;
     currentRewardOptions.clear();
     activeRewards.clear();
+    _loopMeter.reset();
     _metricsCollector.reset();
   }
   
@@ -236,6 +248,50 @@ class LoopManager {
       'currentDepth': getCurrentDepth(),
       'archetype': currentArchetypeMetadata?.archetype.name,
       'scalars': currentArchetypeMetadata?.scalars.toString(),
+      'loopMeter': _loopMeter.getState(),
     };
+  }
+  
+  /// Record an enemy kill for loop meter progress
+  void recordEnemyKill() {
+    if (!isLoopActive) return;
+    
+    var newProgress = _loopMeter.addKillProgress();
+    print('ENEMY_KILL: Loop meter now at ${newProgress.toStringAsFixed(1)}%');
+    
+    // Check for instant Ring Loop completion
+    if (_loopMeter.isFull && !isRewardSelection) {
+      print('RING_LOOP_TRIGGERED: Enemy kill completed the ring!');
+      triggerRewardSelection();
+    }
+  }
+  
+  /// Record a loot pickup for loop meter progress
+  void recordLootPickup() {
+    if (!isLoopActive) return;
+    
+    var newProgress = _loopMeter.addLootProgress();
+    print('LOOT_PICKUP: Loop meter now at ${newProgress.toStringAsFixed(1)}%');
+    
+    // Check for instant Ring Loop completion
+    if (_loopMeter.isFull && !isRewardSelection) {
+      print('RING_LOOP_TRIGGERED: Loot pickup completed the ring!');
+      triggerRewardSelection();
+    }
+  }
+  
+  /// Record a shrine sacrifice for loop meter progress
+  void recordShrineSacrifice(double hpLost, double maxHp) {
+    if (!isLoopActive) return;
+    
+    var newProgress = _loopMeter.addSacrificeProgress(hpLost, maxHp);
+    var progressAdded = (hpLost / maxHp) * 100.0;
+    print('SHRINE_SACRIFICE: Added ${progressAdded.toStringAsFixed(1)}% progress, meter now at ${newProgress.toStringAsFixed(1)}%');
+    
+    // Check for instant Ring Loop completion
+    if (_loopMeter.isFull && !isRewardSelection) {
+      print('RING_LOOP_TRIGGERED: Shrine sacrifice completed the ring!');
+      triggerRewardSelection();
+    }
   }
 }

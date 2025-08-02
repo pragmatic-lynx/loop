@@ -1,0 +1,12 @@
+loop_meter:
+  # Percentage progress added for different actions
+  kill_fill: 8.0      # Progress per enemy kill
+  loot_fill: 4.0      # Progress per chest/loot pickup  
+  sac_fill_max: 25.0  # Maximum progress from shrine sacrifice
+  
+  # Thresholds for reward determination
+  full_threshold: 100.0    # ≥ 100% for full rewards
+  half_threshold: 50.0     # ≥ 50% for medium rewards
+  
+  # Healing consumable quantities
+  medium_heal_count: 2     # Number of medium heal potions for half-full reward
