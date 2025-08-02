@@ -359,11 +359,11 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
           dirty();
         }
       case LoopInput.action4:
-        // Resistance - set queue context and handle
+        // TODO
         _actionQueues.setCurrentQueue(4);
         action = _handleResistanceAction();
         if (action == null) {
-          game.log.message("No resistance items available.");
+          game.log.message("");
           dirty();
         }
         
