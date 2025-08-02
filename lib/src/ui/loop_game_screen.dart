@@ -373,16 +373,28 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
         }
         
       case LoopInput.cycleSpell:
-        // Cycle active spell
-        _cycleActiveSpell();
-        _updateActionMapping();
+        // If stealth queue is active, cycle stealth spells
+        if (_actionQueues.currentQueue == 4) {
+          _actionQueues.cycleCurrentQueue();
+          _updateActionMapping();
+          var currentSpell = _actionQueues.getResistanceQueueItem();
+          game.log.message("Active stealth spell: ${currentSpell.name}");
+        } else {
+          // Cycle active spell for other queues
+          _cycleActiveSpell();
+          _updateActionMapping();
+        }
         return true;
         
       case LoopInput.cycleQueue:
-        // Cycle the current queue
-        _actionQueues.cycleCurrentQueue();
+        // Cycle which queue is currently active (1-4)
+        var currentQueue = _actionQueues.currentQueue;
+        var nextQueue = (currentQueue % 4) + 1;
+        _actionQueues.setCurrentQueue(nextQueue);
         _updateActionMapping();
-        game.log.message("Cycled queue.");
+        
+        var queueNames = ["", "Ranged", "Magic", "Heal", "Stealth"];
+        game.log.message("Active queue: ${queueNames[nextQueue]}");
         return true;
         
       case LoopInput.debug:
