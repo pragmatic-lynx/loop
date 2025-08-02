@@ -81,14 +81,19 @@ void addEffects(List<Effect> effects, Event event) {
       effects.add(MapEffect(event.pos!));
 
     case EventType.teleport:
-      var numParticles = (event.actor!.pos - event.pos!).kingLength * 2;
-      for (var i = 0; i < numParticles; i++) {
-        effects.add(TeleportEffect(event.pos!, event.actor!.pos));
+      if (event.actor != null && event.pos != null) {
+        var numParticles = (event.actor!.pos - event.pos!).kingLength * 2;
+        for (var i = 0; i < numParticles; i++) {
+          effects.add(TeleportEffect(event.pos!, event.actor!.pos));
+        }
       }
 
     case EventType.spawn:
       // TODO: Something more interesting.
-      effects.add(FrameEffect(event.actor!.pos, '*', ash));
+      var pos = event.actor?.pos ?? event.pos;
+      if (pos != null) {
+        effects.add(FrameEffect(pos, '*', ash));
+      }
 
     case EventType.polymorph:
       // TODO: Something more interesting.
