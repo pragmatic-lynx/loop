@@ -5,6 +5,7 @@ import 'package:piecemeal/piecemeal.dart';
 import '../core/game.dart';
 import '../hero/hero.dart';
 import '../loop/action_queues.dart';
+import 'slam.dart';
 
 /// Maps simplified loop input controls to context-aware action labels
 /// Provides dynamic button labeling for the new control scheme
@@ -37,11 +38,19 @@ class ActionMapping {
 
   /// Get context-aware attack label
   static String _getAttackLabel(Game game, Hero hero) {
-    // Check if warrior class and has adjacent enemies -> slam
+    // Check if warrior class -> show slam status
     if (hero.save.heroClass.name.toLowerCase() == 'warrior') {
-      if (_hasAdjacentEnemies(game, hero)) {
+      if (SlamAction.canUseSlam()) {
         return "Slam Attack";
+      } else {
+        var remaining = SlamAction.remainingSlamCooldown();
+        return "Slam ($remaining moves)";
       }
+    }
+    
+    // Check if mage class -> show spell priority
+    if (hero.save.heroClass.name.toLowerCase() == 'mage') {
+      return "Cast Spell";
     }
     
     // Check for adjacent enemies -> melee

@@ -50,7 +50,9 @@ class InputConverter {
       // Essential controls
       case Input.cancel:
         return LoopInput.cancel;
-      case Input.inventory:
+      case Input.tab:            // Tab key for cycling categories
+        return LoopInput.cycleCategory;
+      case Input.inventory:      // I key for inventory
         return LoopInput.inventory;
       
       // All other inputs are ignored in loop mode

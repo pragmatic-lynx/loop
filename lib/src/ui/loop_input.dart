@@ -13,6 +13,7 @@ enum LoopInput {
   movement,     // W - Movement (Flee spell effect with cooldown)
   interact,     // E - Interact (stays the same)
   cycle,        // Q - Cycle through Spells/Utility/Healing categories
+  cycleCategory, // Tab - Cycle between categories (alternative to Q)
 
   // Debug functionality
   debug,        // Z - debug hotkey

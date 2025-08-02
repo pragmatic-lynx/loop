@@ -83,7 +83,7 @@ class ControlsPanel extends Panel {
     // Movement and cycling
     var movementStatus = MovementAction.canUseMovement() ? "Ready" : "${MovementAction.remainingCooldown()} moves";
     terminal.writeAt(1, 8, "W: Movement ($movementStatus)", aqua);
-    terminal.writeAt(1, 9, "Q: ${actionMapping.categoryLabel}", gold);
+    terminal.writeAt(1, 9, "Q: Cycle ${actionMapping.categoryLabel}", gold);
     
     // Context-aware E action
     var eAction = _getEActionDescription();
@@ -91,6 +91,7 @@ class ControlsPanel extends Panel {
     
     // Extra keys
     terminal.writeAt(1, 12, "I: Inventory", ash);
+    terminal.writeAt(1, 13, "Tab: Cycle Categories", ash);
   }
   
   ({String icon, String description, Color color}) _getEActionDescription() {
@@ -366,6 +367,14 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
         }
         
       case LoopInput.cycle:
+        // Cycle through items within the current active category
+        _actionQueues.cycleWithinCategory();
+        _updateActionMapping();
+        var categoryName = _actionQueues.getCategoryName();
+        game.log.message("Cycling ${categoryName.toLowerCase()} items");
+        return true;
+        
+      case LoopInput.cycleCategory:
         // Cycle between categories (spells/utility/healing)
         _actionQueues.cycleCategory();
         _updateActionMapping();
@@ -488,7 +497,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     _equipmentPanel.show(Rect(size.x - rightWidth, 0, rightWidth, equipmentHeight));
     
     // Controls panel at bottom right - increased height for new controls
-    var controlsHeight = 12;
+    var controlsHeight = 14;
     _controlsPanel?.show(Rect(size.x - rightWidth, size.y - controlsHeight, rightWidth, controlsHeight));
     
     // Log panel at top center
@@ -676,20 +685,32 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   Action? _handleAttackAction() {
     var hero = game.hero;
     
-    // 1. If warrior class and has adjacent enemy -> SlamAction
-    if (hero.save.heroClass.name.toLowerCase() == 'warrior') {
-      if (_hasAdjacentEnemies()) {
-        return SlamAction();
+    // 1. If mage class -> prioritize spells (especially Windstorm)
+    if (hero.save.heroClass.name.toLowerCase() == 'mage') {
+      var spellItem = _getMageAttackSpell();
+      if (spellItem != null) {
+        return UseAction(ItemLocation.inventory, spellItem);
       }
     }
     
-    // 2. If adjacent enemy -> MeleeAction
+    // 2. If warrior class -> SlamAction (always available with cooldown)
+    if (hero.save.heroClass.name.toLowerCase() == 'warrior') {
+      if (SlamAction.canUseSlam()) {
+        return SlamAction();
+      } else {
+        // Slam on cooldown, show message but still allow other attacks
+        var remaining = SlamAction.remainingSlamCooldown();
+        game.log.message("Slam ready in $remaining moves. Using regular attack.");
+      }
+    }
+    
+    // 3. If adjacent enemy -> MeleeAction
     var adjacentEnemy = _getAdjacentEnemy();
     if (adjacentEnemy != null) {
       return AttackAction(adjacentEnemy);
     }
     
-    // 3. If bow equipped and line of sight -> BoltAction
+    // 4. If bow equipped and line of sight -> BoltAction
     if (_hasBowEquipped() && _hasRangedTarget()) {
       var target = _findRangedTarget();
       if (target != null) {
@@ -697,7 +718,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
       }
     }
     
-    // 4. If spell equipped -> CastSpell (but not movement spells)
+    // 5. If any spell equipped -> CastSpell (but not movement spells)
     var spellItem = _getFirstNonMovementSpell();
     if (spellItem != null) {
       return UseAction(ItemLocation.inventory, spellItem);
@@ -752,13 +773,73 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     for (var item in game.hero.equipment) {
       var name = item.type.name.toLowerCase();
       if (name.contains('bow') || name.contains('crossbow')) {
-        if (item.canToss) {
-          var hit = item.toss!.attack.createHit();
-          return TossAction(ItemLocation.equipment, item, hit, target.pos);
+        // Don't toss the bow itself - it should fire arrows/bolts
+        // Check if we have arrows in inventory for this bow
+        var ammunition = _findAmmunition(item);
+        if (ammunition != null) {
+          // Fire ammunition from bow
+          var hit = ammunition.toss!.attack.createHit();
+          return TossAction(ItemLocation.inventory, ammunition, hit, target.pos);
+        } else {
+          // No ammunition, try using bow's own attack if it has one
+          if (item.attack != null) {
+            var hit = item.attack!.createHit();
+            // This represents the bow firing (not being thrown)
+            return TossAction(ItemLocation.equipment, item, hit, target.pos);
+          }
         }
       }
     }
     return AttackAction(target); // Fallback to melee
+  }
+  
+  /// Find ammunition for a bow in inventory
+  Item? _findAmmunition(Item bow) {
+    var bowName = bow.type.name.toLowerCase();
+    
+    for (var item in game.hero.inventory) {
+      var itemName = item.type.name.toLowerCase();
+      
+      // Match arrows to bows, bolts to crossbows
+      if (bowName.contains('bow') && !bowName.contains('cross') && itemName.contains('arrow')) {
+        return item;
+      }
+      if (bowName.contains('crossbow') && itemName.contains('bolt')) {
+        return item;
+      }
+    }
+    return null;
+  }
+  
+  /// Get priority attack spell for mages (prioritize Windstorm)
+  Item? _getMageAttackSpell() {
+    Item? windstorm;
+    Item? otherSpell;
+    
+    for (var item in game.hero.inventory) {
+      if (item.use != null) {
+        var name = item.type.name.toLowerCase();
+        
+        // Exclude movement spells
+        if (name.contains('flee') || name.contains('escape') || name.contains('disappear')) {
+          continue;
+        }
+        
+        // Exclude healing and utility spells
+        if (name.contains('heal') || name.contains('cure') || name.contains('restore')) {
+          continue;
+        }
+        
+        // Prefer Windstorm
+        if (name.contains('windstorm')) {
+          windstorm = item;
+        } else if (name.contains('scroll') || name.contains('bolt') || name.contains('fire') || name.contains('ice')) {
+          otherSpell ??= item; // First offensive spell found
+        }
+      }
+    }
+    
+    return windstorm ?? otherSpell;
   }
   
   /// Get first non-movement spell from inventory
@@ -851,9 +932,15 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     return true;
   }
   
-  /// Track movement for cooldown system
+  /// Track movement for cooldown systems
   void _trackMovement() {
     MovementAction.recordMove();
+    
+    // Also track slam cooldown for warriors
+    var hero = game.hero;
+    if (hero.save.heroClass.name.toLowerCase() == 'warrior') {
+      SlamAction.recordMove();
+    }
   }
   
   /// Handle heal item action
