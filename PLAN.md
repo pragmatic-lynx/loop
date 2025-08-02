@@ -59,5 +59,10 @@ Update starting items for ranger and mage; weapons should not spawn on the groun
 - [ ] Disable picking up weapons with the E key
 - [ ] Update the reward system to follow the new reward order
 
+
+Be aware some work has been done on this already, but the upgrade system after completing a loop currenly only rewards stats, not weapons or armor.
+
 ## Current Goal
 Update starting items for ranger and mage
+
+Work on this
