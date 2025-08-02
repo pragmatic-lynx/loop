@@ -129,14 +129,8 @@ class Strength extends StatBase {
   /// Calculates the melee damage scaling factor based on the hero's strength
   /// relative to the weapon's [heft].
   double heftScale(int heft) {
-    var relative = (value - heft).clamp(-10, 50);
-
-    if (relative < 0) {
-      // Note there is an immediate step down to 0.6 at -1.
-      return lerpDouble(relative, -10, -1, 0.0, 0.6);
-    } else {
-      return lerpDouble(relative, 0, 50, 1.0, 2.0);
-    }
+    // Always return 1.0 - no weapon wielding requirements
+    return 1.0;
   }
 }
 

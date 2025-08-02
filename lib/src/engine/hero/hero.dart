@@ -540,13 +540,8 @@ class Hero extends Actor {
 
     var heftScale = strength.heftScale((totalHeft * heftModifier).round());
     _heftDamageScale.update(heftScale, (previous) {
-      // TODO: Reword these if there is no weapon equipped?
-      var weaponList = weapons.join(' and ');
-      if (heftScale < 1.0 && previous >= 1.0) {
-        save.log.error("You are too weak to effectively wield $weaponList.");
-      } else if (heftScale >= 1.0 && previous < 1.0) {
-        save.log.message("You feel comfortable wielding $weaponList.");
-      }
+      // No longer show messages about being too weak to wield weapons
+      // All weapons are now effectively wieldable
     });
 
     // See if any skills changed. (Gaining intellect learns spells.)
