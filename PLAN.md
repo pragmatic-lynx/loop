@@ -54,15 +54,10 @@ How confident are you 0-100 in writing this code with the current information?Bu
 Update starting items for ranger and mage; weapons should not spawn on the ground (or be unpickupable).
   - Should the new reward cycle fully replace the current stat-only rewards, or be integrated alongside them?
 
-## Task List
-- [ ] Update starting items for ranger and mage from weapon_tiers.json
-- [ ] Disable picking up weapons with the E key
-- [ ] Update the reward system to follow the new reward order
-
-
 Be aware some work has been done on this already, but the upgrade system after completing a loop currenly only rewards stats, not weapons or armor.
 
-## Current Goal
-Update starting items for ranger and mage
+## Task List
+- [x] Update starting items for ranger and mage from weapon_tiers.json
+- [ ] Update the reward system to follow the new reward order
+- [ ] Disable picking up weapons with the E key
 
-Work on this
