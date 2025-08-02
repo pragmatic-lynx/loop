@@ -1087,11 +1087,14 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
         return null;
       }
       
-      // Use archery skill if we have it
+      // Use archery skill - even at level 0 for rangers with bows
       var level = game.hero.skills.level(archerySkill);
-      if (level > 0) {
-        // game.log.message("Debug: Using archery skill level $level");
-        return archerySkill.onGetTargetAction(game, level, target.pos);
+      var heroClassName = game.hero.save.heroClass.name;
+      if (level > 0 || (heroClassName == "Ranger" && rangedItem.item!.type.name.toLowerCase().contains("bow"))) {
+        // For rangers with bows, use archery skill even at level 0
+        var effectiveLevel = level > 0 ? level : 1;
+        // game.log.message("Debug: Using archery skill level $effectiveLevel");
+        return archerySkill.onGetTargetAction(game, effectiveLevel, target.pos);
       }
     }
     
