@@ -44,7 +44,6 @@ void main() {
 
   // Load the user's font preference, if any.
   var fontName = html.window.localStorage["font"];
-  _font = _fonts[1];
   for (var thisFont in _fonts) {
     if (thisFont.name == fontName) {
       _font = thisFont;
