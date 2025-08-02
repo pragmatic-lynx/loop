@@ -33,13 +33,13 @@
     },
     {
       "id": 2,
-      "warrior": ["Chainmail Coif", "Leather Armor", "Small Leather Shield"],
+      "warrior": ["Chainmail Coif", "Leather Armor"],
       "ranger": ["Jerkin", "Fur Cloak", "Pair of Boots"],
       "mage": ["Fur-lined Robe", "Pair of Shoes", "Pair of Gloves"]
     },
     {
       "id": 3,
-      "warrior": ["Steel Cap", "Mail Hauberk", "Large Leather Shield"],
+      "warrior": ["Steel Cap", "Mail Hauberk"],
       "ranger": ["Studded Armor", "Set of Bracers", "Pair of Plated Boots"],
       "mage": ["Spidersilk Cloak", "Pair of Greaves"]
     }
@@ -49,6 +49,3 @@
     "ranger": ["Void Repeater"]
   }
 }
-
-now update it to work with armor also
-And loggically group up the existing armor into tiers AND by class that makes sense.
