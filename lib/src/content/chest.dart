@@ -1,7 +1,5 @@
 // lib/src/content/chest.dart
 
-import 'dart:math';
-
 import 'package:piecemeal/piecemeal.dart';
 import '../engine.dart';
 import '../engine/loop/item/item_category.dart';

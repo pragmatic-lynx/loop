@@ -132,7 +132,7 @@ class Tiles {
 
   // Decor.
 
-  static final openChest = tile("open chest", "⌠", moltenOrange).obstacle();
+  static final openChest = tile("open chest", "⌠", moltenOrange).open();
   static final closedChest = tile("closed chest", "⌡", moltenOrange)
       .onOperate((pos) => OpenChestAction(pos))
       .obstacle();

@@ -1,10 +1,7 @@
 import 'package:piecemeal/piecemeal.dart';
-import 'package:malison/malison.dart';
 
 import '../../engine.dart';
-import '../../hues.dart';
 import '../chest.dart';
-import '../elements.dart';
 import '../item/drops.dart';
 import '../tiles.dart';
 import '../rarity.dart';
@@ -99,7 +96,6 @@ class OpenChestAction extends Action {
 
     // Change the tile to open
     game.stage[_pos].type = openTile;
-    addEvent(EventType.openBarrel, pos: _pos);
 
     // Generate loot using the new chest system
     final chest = Chest(chestType, game.depth);
@@ -160,15 +156,5 @@ class OpenChestAction extends Action {
     }
   }
   
-  /// Gets appropriate color for an item based on its type
-  Color _getItemColor(Item item) {
-    switch (item.type.rarity) {
-      case Rarity.common:
-        return Color.lightGray;
-      case Rarity.rare:
-        return Color.lightBlue;
-      case Rarity.legendary:
-        return Color.gold;
-    }
-  }
+
 }

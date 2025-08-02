@@ -128,6 +128,9 @@ void addEffects(List<Effect> effects, Event event) {
       effects.add(TreasureEffect(event.pos!, event.other as Item));
 
     case EventType.openBarrel:
+      // Check if position is available
+      if (event.pos == null) break;
+      
       // Check if this is a chest opening (has ChestLoot data)
       if (event.other is ChestLoot) {
         var loot = event.other as ChestLoot;
