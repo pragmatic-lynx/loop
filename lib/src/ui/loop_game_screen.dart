@@ -277,10 +277,11 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
       return true;
     }
 
-    // Handle loop count increment (L key)
+    // Handle depth increment (L key)
     if (input == Input.incrementLoop) {
-      _loopManager.currentLoop++;
-      game.log.message("Loop count increased to ${_loopManager.currentLoop}.");
+      _loopManager.threatLevel++;
+      var newDepth = _loopManager.getCurrentDepth();
+      game.log.message("Depth increased to $newDepth (Threat Level: ${_loopManager.threatLevel}).");
       dirty();
       return true;
     }
