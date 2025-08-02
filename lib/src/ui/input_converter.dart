@@ -51,7 +51,7 @@ class InputConverter {
       // Equipment and staircase interaction
       case Input.equip:        // Mapped to 'E' key
         return LoopInput.equip;
-      case Input.giveConsumables:  // Mapped to 'G' key
+      case Input.giveConsumables:  // Mapped to 'F' key
         return LoopInput.giveConsumables;
       
       // Essential controls
