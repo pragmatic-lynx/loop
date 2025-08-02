@@ -53,8 +53,7 @@ class SidebarPanel extends Panel {
     Draw.frame(terminal, 0, 0, terminal.width, terminal.height,
         label: hero.save.name);
 
-    terminal.writeAt(1, 2, "${hero.save.race.name} ${hero.save.heroClass.name}",
-        gold);
+    //terminal.writeAt(1, 2, "${hero.save.race.name} ${hero.save.heroClass.name}", gold);
 
     // Show loop information if in loop mode
     var y = 4;

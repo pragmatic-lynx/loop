@@ -84,6 +84,9 @@ class Input {
   /// Z key for debug functionality.
   static const debug = Input("debug");
 
+  /// L key for incrementing loop count.
+  static const incrementLoop = Input("incrementLoop");
+
   final String name;
 
   const Input(this.name);

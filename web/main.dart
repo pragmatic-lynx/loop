@@ -82,7 +82,7 @@ void main() {
   _ui.keyPress.bind(Input.heroInfo, KeyCode.a);
   _ui.keyPress.bind(Input.editSkills, KeyCode.s, shift: true);
 
-  _ui.keyPress.bind(Input.ok, KeyCode.l);
+  _ui.keyPress.bind(Input.incrementLoop, KeyCode.l);
   _ui.keyPress.bind(Input.rest, KeyCode.l, shift: true);
   _ui.keyPress.bind(Input.fire, KeyCode.l, alt: true);
 

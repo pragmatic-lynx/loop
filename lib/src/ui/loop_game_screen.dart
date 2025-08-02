@@ -277,6 +277,14 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
       return true;
     }
 
+    // Handle loop count increment (L key)
+    if (input == Input.incrementLoop) {
+      _loopManager.currentLoop++;
+      game.log.message("Loop count increased to ${_loopManager.currentLoop}.");
+      dirty();
+      return true;
+    }
+
     // Convert standard input to loop input for simplified controls
     var loopInput = InputConverter.convertToLoopInput(input);
     if (loopInput == null) {
