@@ -13,10 +13,11 @@ class SandboxArchitecture extends Architecture {
 
   @override
   Iterable<String> build() sync* {
-    yield "Creating simple sandbox room...";
+    print("🏗️ SANDBOX ARCHITECTURE IS BUILDING!");
+    yield "🎮 Creating SANDBOX room - this should be obvious!";
     
     // Create a simple rectangular room that fills most of the map
-    var margin = 3;
+    var margin = 2;
     var roomWidth = width - (margin * 2);
     var roomHeight = height - (margin * 2);
     
@@ -32,18 +33,24 @@ class SandboxArchitecture extends Architecture {
     if (roomHeight <= 0) roomHeight = height - 2;
     if (margin < 1) margin = 1;
     
+    print("🎮 Sandbox room size: ${roomWidth}x${roomHeight} with margin ${margin}");
+    
     // Carve out the room
+    var tileCount = 0;
     for (var x = margin; x < margin + roomWidth && x < width - 1; x++) {
       for (var y = margin; y < margin + roomHeight && y < height - 1; y++) {
         carve(x, y);
+        tileCount++;
       }
     }
     
-    yield "Sandbox room created";
+    print("🎮 Sandbox carved ${tileCount} tiles!");
+    yield "🎮 Sandbox room created with ${tileCount} open tiles - items should spawn here!";
   }
   
   @override
   bool spawnMonsters(Painter painter) {
+    print("🎮 Sandbox: NOT spawning any monsters (clean room mode)");
     // No monsters in the basic sandbox - just a clean room with items
     return true; // We handled monster spawning (by not spawning any)
   }

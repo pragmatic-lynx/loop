@@ -63,6 +63,16 @@ class ArchitecturalStyle {
 
   static List<ArchitecturalStyle> pick(int depth, {DensityScalars? scalars}) {
     var result = <ArchitecturalStyle>[];
+    
+    // SANDBOX OVERRIDE: If we're at depth 1 and sandbox exists, ONLY use sandbox
+    if (depth == 1) {
+      var sandboxStyle = styles.tryFind("sandbox");
+      if (sandboxStyle != null) {
+        print("🎮 FORCING SANDBOX at depth 1!");
+        result.add(sandboxStyle);
+        return result; // Return ONLY sandbox
+      }
+    }
 
     // TODO: Change count range based on depth?
     var count = math.min(rng.taper(1, 10), 5);

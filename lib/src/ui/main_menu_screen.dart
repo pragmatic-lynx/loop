@@ -114,7 +114,7 @@ class MainMenuScreen extends Screen<Input> {
     loopManager.moveCount = 0;
     loopManager.threatLevel = 2; // Start at threat level 2 so depth = 1 + 2 = 3
     
-    print("Starting Loop Game Screen with smart 3-button UI!");
+    print("Starting Loop Game Screen");
     ui.push(LoopGameScreen.create(storage, content, hero, loopManager));
   }
 

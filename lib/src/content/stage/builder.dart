@@ -38,8 +38,14 @@ void _addStyle(String name,
 }
 
 void dungeon(RoomShapes shapes, {required double frequency}) {
+  // Disable dungeon at depth 1 if sandbox is enabled
+  var startFreq = _isSandboxEnabled() ? 0.0 : frequency;
+  var start = _isSandboxEnabled() ? 2 : 1; // Start at depth 2 if sandbox enabled
+  
   _addStyle("dungeon",
-      startFrequency: frequency,
+      start: start,
+      startFrequency: startFreq,
+      endFrequency: frequency,
       decor: "dungeon",
       decorDensity: 0.09,
       create: () => Dungeon(shapes: shapes));
@@ -47,8 +53,13 @@ void dungeon(RoomShapes shapes, {required double frequency}) {
 
 void catacomb(String monsters,
     {required double startFrequency, required double endFrequency}) {
+  // Disable catacomb at depth 1 if sandbox is enabled
+  var start = _isSandboxEnabled() ? 2 : 1;
+  var actualStartFreq = _isSandboxEnabled() ? 0.0 : startFrequency;
+  
   _addStyle("catacomb",
-      startFrequency: startFrequency,
+      start: start,
+      startFrequency: actualStartFreq,
       endFrequency: endFrequency,
       decor: "catacomb",
       decorDensity: 0.02,
@@ -58,8 +69,13 @@ void catacomb(String monsters,
 
 void cavern(String monsters,
     {required double startFrequency, required double endFrequency}) {
+  // Disable cavern at depth 1 if sandbox is enabled
+  var start = _isSandboxEnabled() ? 2 : 1;
+  var actualStartFreq = _isSandboxEnabled() ? 0.0 : startFrequency;
+  
   _addStyle("cavern",
-      startFrequency: startFrequency,
+      start: start,
+      startFrequency: actualStartFreq,
       endFrequency: endFrequency,
       decor: "glowing-moss",
       decorDensity: 0.1,
@@ -139,11 +155,11 @@ void sandbox() {
   _addStyle("sandbox",
       start: 1,
       end: 1, // Only available at depth 1 for testing
-      startFrequency: 100.0, // Very high frequency to ensure it gets picked
+      startFrequency: 1000.0, // Extremely high frequency to guarantee selection
       decor: "dungeon",
       decorDensity: 0.0, // No random decorations
       monsters: "monster", // All monster types
-      monsterDensity: 0.0, // We handle monsters ourselves
+      monsterDensity: 0.0, // No monsters
       itemDensity: 50.0, // Extremely high item density to get all items
       create: () => SandboxArchitecture());
 }
