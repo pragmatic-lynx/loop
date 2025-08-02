@@ -5,6 +5,7 @@ import 'package:malison/malison_web.dart';
 
 import '../engine.dart';
 import '../engine/hero/stat.dart';
+import '../engine/loop/loop_meter.dart';
 import '../hues.dart';
 import 'draw.dart';
 import 'input.dart';
@@ -30,8 +31,6 @@ class SupplyCaseScreen extends Screen<Input> {
     
     switch (input) {
       case Input.ok:
-      case Input.confirm:
-      case Input.enter:
         if (earnedTier == LoopMeterRewardTier.legendary || earnedTier == LoopMeterRewardTier.master) {
           _showingStatChoice = true;
           dirty();
@@ -95,7 +94,6 @@ class SupplyCaseScreen extends Screen<Input> {
   bool _handleStatChoice(Input input) {
     switch (input) {
       case Input.n:
-      case Input.up:
         if (_selectedStat > 0) {
           _selectedStat--;
           dirty();
@@ -103,7 +101,6 @@ class SupplyCaseScreen extends Screen<Input> {
         return true;
         
       case Input.s:
-      case Input.down:
         if (_selectedStat < _availableStats.length - 1) {
           _selectedStat++;
           dirty();
@@ -111,8 +108,6 @@ class SupplyCaseScreen extends Screen<Input> {
         return true;
         
       case Input.ok:
-      case Input.confirm:
-      case Input.enter:
         _applyRewards();
         onComplete();
         return true;
