@@ -1,4 +1,9 @@
 {
+  "starting": {
+    "warrior": "Stick",
+    "ranger": "Short Bow",
+    "mage": "Walking Stick"
+  },
   "tiers": [
     {
       "id": 1,
