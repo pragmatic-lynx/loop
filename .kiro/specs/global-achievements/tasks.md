@@ -4,6 +4,10 @@
 
 
 
+
+
+
+
   - Implement GlobalAchievements class with item/weapon/enemy tracking sets
   - Create AchievementTracker service for managing global state
   - Add item categorization to distinguish weapons from other items

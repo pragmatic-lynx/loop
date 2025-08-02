@@ -17,6 +17,7 @@ import '../items/inventory.dart';
 import '../items/item.dart';
 import '../monster/monster.dart';
 import '../stage/tile.dart';
+import 'achievement_tracker.dart';
 import 'behavior.dart';
 import 'hero_save.dart';
 import 'lore.dart';
@@ -331,6 +332,9 @@ class Hero extends Actor {
 
     lore.slay(monster.breed);
 
+    // Track enemy kill globally for achievements
+    AchievementTracker.trackEnemySlain(monster.breed);
+
     for (var skill in skills.discovered) {
       skill.killMonster(this, action, monster);
     }
@@ -563,6 +567,9 @@ class Hero extends Actor {
     // whether they have been picked up or not.
     lore.findItem(item);
 
+    // Track item globally for achievements
+    AchievementTracker.trackItemFound(item);
+
     _gainItemSkills(game, item);
     
     // Try to auto-equip the item if it's equipment
@@ -591,11 +598,9 @@ class Hero extends Actor {
     
     // Find current item in this slot
     Item? currentItem;
-    int? slotIndex;
     for (var i = 0; i < equipment.slotTypes.length; i++) {
       if (equipment.slotTypes[i] == equipSlot && equipment.slots[i] != null) {
         currentItem = equipment.slots[i];
-        slotIndex = i;
         break;
       }
     }

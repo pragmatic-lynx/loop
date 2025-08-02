@@ -44,6 +44,12 @@ class Storage {
 
     var data = json.decode(storage) as Map<String, dynamic>;
 
+    // Load global achievements if they exist
+    if (data.containsKey('globalAchievements')) {
+      var achievementData = data['globalAchievements'] as Map<String, dynamic>;
+      AchievementTracker.loadFromStorage(achievementData);
+    }
+
     // TODO: Check version.
 
     for (var hero in data['heroes'] as List<dynamic>) {
@@ -335,7 +341,8 @@ class Storage {
             'gold': hero.gold,
             'maxDepth': hero.maxDepth
           }
-      ]
+      ],
+      'globalAchievements': AchievementTracker.saveToStorage(),
     };
 
     html.window.localStorage['heroes'] = json.encode(data);
