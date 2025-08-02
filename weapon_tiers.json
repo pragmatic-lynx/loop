@@ -46,6 +46,7 @@
   ],
   "legendary": {
     "warrior": ["Phoenix Edge"],
-    "ranger": ["Void Repeater"]
+    "ranger": ["Void Repeater"],
+    "mage": []
   }
 }
