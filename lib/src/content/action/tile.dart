@@ -1,6 +1,8 @@
 import 'package:piecemeal/piecemeal.dart';
+import 'package:malison/malison.dart';
 
 import '../../engine.dart';
+import '../../hues.dart';
 import '../chest.dart';
 import '../elements.dart';
 import '../item/drops.dart';
@@ -113,8 +115,11 @@ class OpenChestAction extends Action {
       game.stage.addItem(item, _pos);
     }
 
-    // Create treasure found event for UI feedback
-    addEvent(EventType.openBarrel, pos: _pos);
+    // Create treasure found event for UI feedback with loot data
+    addEvent(EventType.openBarrel, pos: _pos, other: loot);
+    
+    // Create dramatic loot explosion effect
+    _createLootExplosion(chestType, loot);
 
     if (loot.items.isNotEmpty || loot.gold > 0) {
       log("{1} open[s] the ${chestType.name}.", actor);
@@ -123,5 +128,47 @@ class OpenChestAction extends Action {
     }
 
     return ActionResult.success;
+  }
+  
+  /// Creates a spectacular loot explosion effect
+  void _createLootExplosion(ChestType chestType, ChestLoot loot) {
+    // Additional visual flair for rare/legendary chests
+    if (chestType.rarity == Rarity.legendary) {
+      // Extra spectacular effect for legendary chests
+      for (var i = 0; i < 8; i++) {
+        var offset = Vec(rng.range(-2, 3), rng.range(-2, 3));
+        addEvent(EventType.spawn, pos: _pos + offset);
+      }
+      // Add teleport sparkles for legendary effect
+      for (var i = 0; i < 3; i++) {
+        var offset = Vec(rng.range(-1, 2), rng.range(-1, 2));
+        addEvent(EventType.teleport, actor: actor, pos: _pos + offset);
+      }
+    } else if (chestType.rarity == Rarity.rare) {
+      // Moderate extra effect for rare chests
+      for (var i = 0; i < 4; i++) {
+        var offset = Vec(rng.range(-1, 2), rng.range(-1, 2));
+        addEvent(EventType.spawn, pos: _pos + offset);
+      }
+    }
+    
+    // Log the dramatic opening
+    if (chestType.rarity == Rarity.legendary && loot.items.isNotEmpty) {
+      log("The ${chestType.name} bursts open in a shower of golden light!", actor);
+    } else if (chestType.rarity == Rarity.rare && loot.items.isNotEmpty) {
+      log("The ${chestType.name} glows brightly as it opens!", actor);
+    }
+  }
+  
+  /// Gets appropriate color for an item based on its type
+  Color _getItemColor(Item item) {
+    switch (item.type.rarity) {
+      case Rarity.common:
+        return Color.lightGray;
+      case Rarity.rare:
+        return Color.lightBlue;
+      case Rarity.legendary:
+        return Color.gold;
+    }
   }
 }

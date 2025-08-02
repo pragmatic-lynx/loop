@@ -61,9 +61,6 @@ class Decorator {
       _stage[pos].type = Tiles.stairs;
     }
 
-    // Place rarity-based chests
-    _placeChests();
-
     // TODO: Instead of bleeding themes around, here's a simpler idea:
     // 1. Choose a random place to spawn a monster/item.
     // 2. Do a random walk from there to a result tile.
@@ -77,6 +74,9 @@ class Decorator {
     // in a Keep, Pit or other special area. Since those spawn their own
     // monsters, the hero can end up surrounded by monsters.
     _heroPos = _stage.findOpenTile();
+
+    // Place rarity-based chests (after hero position is set)
+    _placeChests();
 
     yield* _spawnMonsters();
     yield* _dropItems();

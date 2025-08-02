@@ -138,12 +138,12 @@ class Tiles {
       .obstacle();
       
   // Rarity-based chests
-  static final openOrnateChest = tile("open ornate chest", "⌠", lightAqua).obstacle();
+  static final openOrnateChest = tile("open ornate chest", "⌠", lightAqua).open();
   static final closedOrnateChest = tile("closed ornate chest", "⌡", lightAqua)
       .onOperate((pos) => OpenChestAction(pos))
       .obstacle();
       
-  static final openMythicChest = tile("open mythic chest", "⌠", gold).obstacle();
+  static final openMythicChest = tile("open mythic chest", "⌠", gold).open();
   static final closedMythicChest = tile("closed mythic chest", "⌡", gold)
       .onOperate((pos) => OpenChestAction(pos))
       .obstacle();
