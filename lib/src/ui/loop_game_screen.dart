@@ -225,46 +225,80 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   bool handleInput(Input input) {
     // First handle direction inputs that might be combined with Shift
     Vec? direction;
+    bool isShiftInput = false;
+    
     switch (input) {
-      case Input.n: direction = Vec(0, -1); break;
-      case Input.ne: direction = Vec(1, -1); break;
-      case Input.e: direction = Vec(1, 0); break;
-      case Input.se: direction = Vec(1, 1); break;
-      case Input.s: direction = Vec(0, 1); break;
-      case Input.sw: direction = Vec(-1, 1); break;
-      case Input.w: direction = Vec(-1, 0); break;
-      case Input.nw: direction = Vec(-1, -1); break;
+      case Input.n: 
+        direction = Vec(0, -1); 
+        _diagonalInput.updateShift(false); // Reset shift for normal keys
+        break;
+      case Input.ne: 
+        direction = Vec(1, -1); 
+        _diagonalInput.updateShift(false);
+        break;
+      case Input.e: 
+        direction = Vec(1, 0); 
+        _diagonalInput.updateShift(false);
+        break;
+      case Input.se: 
+        direction = Vec(1, 1); 
+        _diagonalInput.updateShift(false);
+        break;
+      case Input.s: 
+        direction = Vec(0, 1); 
+        _diagonalInput.updateShift(false);
+        break;
+      case Input.sw: 
+        direction = Vec(-1, 1); 
+        _diagonalInput.updateShift(false);
+        break;
+      case Input.w: 
+        direction = Vec(-1, 0); 
+        _diagonalInput.updateShift(false);
+        break;
+      case Input.nw: 
+        direction = Vec(-1, -1); 
+        _diagonalInput.updateShift(false);
+        break;
       case Input.runN: 
         _diagonalInput.updateShift(true);
         direction = Vec(0, -1);
+        isShiftInput = true;
         break;
       case Input.runS: 
         _diagonalInput.updateShift(true);
         direction = Vec(0, 1);
+        isShiftInput = true;
         break;
       case Input.runE: 
         _diagonalInput.updateShift(true);
         direction = Vec(1, 0);
+        isShiftInput = true;
         break;
       case Input.runW: 
         _diagonalInput.updateShift(true);
         direction = Vec(-1, 0);
+        isShiftInput = true;
         break;
       case Input.runNE:
         _diagonalInput.updateShift(true);
         direction = Vec(1, -1);
+        isShiftInput = true;
         break;
       case Input.runNW:
         _diagonalInput.updateShift(true);
         direction = Vec(-1, -1);
+        isShiftInput = true;
         break;
       case Input.runSE:
         _diagonalInput.updateShift(true);
         direction = Vec(1, 1);
+        isShiftInput = true;
         break;
       case Input.runSW:
         _diagonalInput.updateShift(true);
         direction = Vec(-1, 1);
+        isShiftInput = true;
         break;
       case Input.cancel:
         _diagonalInput.updateShift(false);
@@ -341,11 +375,11 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     }
 
     if (direction != null) {
-      developer.log('Processing direction input: $input -> $direction (Shift: ${_diagonalInput.isShiftDown})', 
+      developer.log('Processing direction input: $input -> $direction (isShiftInput: $isShiftInput)', 
           name: 'LoopGameScreen');
       
-      // Use diagonal input handler if Shift is down
-      if (_diagonalInput.isShiftDown) {
+      // Use diagonal input handler only for Shift+direction inputs
+      if (isShiftInput) {
         // Use diagonal input handler
         final moveDirection = _diagonalInput.handleDirection(direction);
         if (moveDirection != null) {
@@ -380,6 +414,9 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
           developer.log('Waiting for second direction', name: 'LoopGameScreen');
           return true;
         }
+      } else {
+        // Normal movement - just proceed with the original input
+        developer.log('Normal movement: $input', name: 'LoopGameScreen');
       }
     }
 
