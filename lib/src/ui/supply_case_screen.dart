@@ -119,26 +119,38 @@ class SupplyCaseScreen extends Screen<Input> {
   
   void _applyRewards() {
     var hero = game.hero;
+    if (hero == null) {
+      game.log.error("Error: Hero not found!");
+      onComplete();
+      return;
+    }
     
     switch (earnedTier) {
       case LoopMeterRewardTier.legendary:
         // +2 stat boost + Large bundles
-        var chosenStat = _availableStats[_selectedStat];
-        game.log.gain("Legendary power! Your ${chosenStat.name} increases by 2!");
+        if (_showingStatChoice && _selectedStat < _availableStats.length) {
+          var chosenStat = _availableStats[_selectedStat];
+          // TODO: Implement permanent stat bonus system
+          game.log.gain("Legendary power! Your ${chosenStat.name} would increase by 2!");
+        }
         _addSupplyBundle(BundleSize.large);
         break;
         
       case LoopMeterRewardTier.master:
         // +1 stat boost + Medium bundles
-        var chosenStat = _availableStats[_selectedStat];
-        game.log.gain("Mastery achieved! Your ${chosenStat.name} increases by 1!");
+        if (_showingStatChoice && _selectedStat < _availableStats.length) {
+          var chosenStat = _availableStats[_selectedStat];
+          // TODO: Implement permanent stat bonus system
+          game.log.gain("Mastery achieved! Your ${chosenStat.name} would increase by 1!");
+        }
         _addSupplyBundle(BundleSize.medium);
         break;
         
       case LoopMeterRewardTier.apprentice:
         // +1 random stat + Small bundles
         var randomStat = _availableStats[game.stage.actors.length % _availableStats.length];
-        game.log.gain("Your ${randomStat.name} increases by 1!");
+        // TODO: Implement permanent stat bonus system
+        game.log.gain("Your ${randomStat.name} would increase by 1!");
         _addSupplyBundle(BundleSize.small);
         break;
         
@@ -157,8 +169,8 @@ class SupplyCaseScreen extends Screen<Input> {
     
     // Always restore to full health after every loop
     hero.health = hero.maxHealth;
-    hero.poison.cancel();
-    hero.cold.cancel();
+    if (hero.poison != null) hero.poison.cancel();
+    if (hero.cold != null) hero.cold.cancel();
     game.log.gain("You are fully restored!");
   }
   
@@ -199,8 +211,8 @@ class SupplyCaseScreen extends Screen<Input> {
   }
   
   void _renderStatChoice(Terminal terminal) {
-    var dialogWidth = 50;
-    var dialogHeight = 15;
+    var dialogWidth = 60;
+    var dialogHeight = 18;
     var x = (terminal.width - dialogWidth) ~/ 2;
     var y = (terminal.height - dialogHeight) ~/ 2;
     
@@ -216,12 +228,25 @@ class SupplyCaseScreen extends Screen<Input> {
     
     dialogTerminal.writeAt(2, 2, "Choose Your Stat Boost!", gold);
     
+    // Show current stats
+    dialogTerminal.writeAt(2, 4, "Current Stats:", lightBlue);
+    var hero = game.hero;
+    if (hero != null) {
+      dialogTerminal.writeAt(4, 5, "STR: ${hero.strength.value}", ash);
+      dialogTerminal.writeAt(16, 5, "AGI: ${hero.agility.value}", ash);
+      dialogTerminal.writeAt(28, 5, "FOR: ${hero.fortitude.value}", ash);
+      dialogTerminal.writeAt(4, 6, "INT: ${hero.intellect.value}", ash);
+      dialogTerminal.writeAt(16, 6, "WIL: ${hero.will.value}", ash);
+    }
+    
+    Draw.hLine(dialogTerminal, 2, 7, dialogWidth - 4);
+    
     for (var i = 0; i < _availableStats.length; i++) {
       var stat = _availableStats[i];
       var color = i == _selectedStat ? gold : ash;
       var prefix = i == _selectedStat ? "> " : "  ";
       
-      dialogTerminal.writeAt(4, 4 + i, "${prefix}${stat.name}", color);
+      dialogTerminal.writeAt(4, 9 + i, "${prefix}${stat.name}", color);
     }
     
     Draw.helpKeys(terminal, {
@@ -232,7 +257,7 @@ class SupplyCaseScreen extends Screen<Input> {
   
   void _renderSupplyCaseDisplay(Terminal terminal) {
     var centerTerminal = terminal.rect(
-        (terminal.width - 80) ~/ 2, (terminal.height - 30) ~/ 2, 80, 30);
+        (terminal.width - 80) ~/ 2, (terminal.height - 35) ~/ 2, 80, 35);
     
     centerTerminal.clear();
     Draw.doubleBox(centerTerminal, 0, 0, centerTerminal.width, centerTerminal.height);
@@ -241,9 +266,20 @@ class SupplyCaseScreen extends Screen<Input> {
     centerTerminal.writeAt(3, 2, 'LOOP COMPLETE!', gold);
     centerTerminal.writeAt(3, 3, 'Ring filled to ${meterProgress.toInt()}% - ${earnedTier.displayName} earned!', ash);
     
-    Draw.hLine(centerTerminal, 3, 5, centerTerminal.width - 6);
+    // Show current stats
+    centerTerminal.writeAt(3, 5, 'Current Stats:', lightBlue);
+    var hero = game.hero;
+    if (hero != null) {
+      centerTerminal.writeAt(5, 6, 'STR: ${hero.strength.value}', ash);
+      centerTerminal.writeAt(17, 6, 'AGI: ${hero.agility.value}', ash);
+      centerTerminal.writeAt(29, 6, 'FOR: ${hero.fortitude.value}', ash);
+      centerTerminal.writeAt(41, 6, 'INT: ${hero.intellect.value}', ash);
+      centerTerminal.writeAt(53, 6, 'WIL: ${hero.will.value}', ash);
+    }
     
-    var currentY = 7;
+    Draw.hLine(centerTerminal, 3, 8, centerTerminal.width - 6);
+    
+    var currentY = 10;
     
     // Show all tiers with what you got vs what you missed
     var allTiers = [LoopMeterRewardTier.legendary, LoopMeterRewardTier.master, 
