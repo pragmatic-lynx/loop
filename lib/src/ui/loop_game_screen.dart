@@ -361,10 +361,14 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
           dirty();
         }
       case LoopInput.action4:
-        // Cast active spell
-        action = _handleSpellCastAction();
-        if (action == null) {
-          game.log.message("No spell available to cast.");
+        // Cast stealth spell
+        _actionQueues.setCurrentQueue(4);
+        if (_actionQueues.castCurrentStealthSpell()) {
+          // Spell was cast successfully, no action needed
+          _updateActionMapping();
+          return true;
+        } else {
+          game.log.message("No stealth spell available.");
           dirty();
         }
         

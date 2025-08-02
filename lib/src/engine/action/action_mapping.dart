@@ -24,13 +24,13 @@ class ActionMapping {
     var rangedItem = queues.getRangedQueueItem();
     var magicItem = queues.getMagicQueueItem();
     var healItem = queues.getHealQueueItem();
-    var resistanceItem = queues.getResistanceQueueItem();
+    var stealthItem = queues.getResistanceQueueItem(); // Still using same method name for compatibility
 
     return ActionMapping(
       action1Label: rangedItem.displayText,
       action2Label: magicItem.displayText,
       action3Label: healItem.displayText,
-      action4Label: resistanceItem.displayText,
+      action4Label: stealthItem.displayText,
     );
   }
 

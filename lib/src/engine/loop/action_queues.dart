@@ -3,7 +3,9 @@
 import '../core/game.dart';
 import '../hero/hero.dart';
 import '../items/item.dart';
-import '../items/inventory.dart';
+
+import '../../content/skill/skills.dart';
+import '../hero/skill.dart';
 import 'debug_helper.dart';
 
 /// Queue item representing a single action option
@@ -113,19 +115,19 @@ class ActionQueues {
     );
   }
   
-  /// Get the current resistance queue item
+  /// Get the current stealth spell queue item
   QueueItem getResistanceQueueItem() {
-    var resistanceItems = _getResistanceItems();
-    if (resistanceItems.isEmpty) {
-      return QueueItem(name: "No Resistance", isAvailable: false);
+    var stealthSpells = _getStealthSpells();
+    if (stealthSpells.isEmpty) {
+      return QueueItem(name: "No Stealth", isAvailable: false);
     }
     
-    var index = _resistanceQueueIndex % resistanceItems.length;
-    var item = resistanceItems[index];
+    var index = _resistanceQueueIndex % stealthSpells.length;
+    var spellName = stealthSpells[index];
     return QueueItem(
-      name: item.type.name,
-      count: item.count > 1 ? "(${item.count})" : null,
-      item: item,
+      name: spellName,
+      count: "(Teleport)",
+      item: null, // Spells don't have items
     );
   }
   
@@ -187,10 +189,10 @@ class ActionQueues {
           _healQueueIndex = (_healQueueIndex + 1) % healItems.length;
         }
         break;
-      case 4: // Resistance
-        var resistanceItems = _getResistanceItems();
-        if (resistanceItems.isNotEmpty) {
-          _resistanceQueueIndex = (_resistanceQueueIndex + 1) % resistanceItems.length;
+      case 4: // Stealth
+        var stealthSpells = _getStealthSpells();
+        if (stealthSpells.isNotEmpty) {
+          _resistanceQueueIndex = (_resistanceQueueIndex + 1) % stealthSpells.length;
         }
         break;
     }
@@ -211,9 +213,8 @@ class ActionQueues {
       _addRandomMagicItem();
     } else if (_isHealItem(usedItem)) {
       _addRandomHealItem();
-    } else if (_isResistanceItem(usedItem)) {
-      _addRandomResistanceItem();
     }
+    // Note: Stealth spells don't need replacement as they're skills
   }
   
   /// Add a random magic item as replacement
@@ -226,9 +227,30 @@ class ActionQueues {
     _debugHelper.addRandomHealItems(1);
   }
   
-  /// Add a random resistance item as replacement
-  void _addRandomResistanceItem() {
-    _debugHelper.addRandomResistanceItems(1);
+  /// Cast the current stealth spell
+  bool castCurrentStealthSpell() {
+    var stealthSpells = _getStealthSpells();
+    if (stealthSpells.isEmpty) return false;
+    
+    var index = _resistanceQueueIndex % stealthSpells.length;
+    var spellName = stealthSpells[index];
+    
+    // Try to cast the spell
+    try {
+      var skill = Skills.find(spellName);
+      if (skill is ActionSkill) {
+        var action = skill.onGetAction(game, 1);
+        if (action != null) {
+          hero.setNextAction(action);
+          game.log.message('Cast $spellName!');
+          return true;
+        }
+      }
+    } catch (e) {
+      game.log.message('Failed to cast $spellName: $e');
+    }
+    
+    return false;
   }
   
   /// Auto-equip ranged weapon if needed
@@ -304,15 +326,11 @@ class ActionQueues {
     return items;
   }
   
-  /// Get all resistance items from inventory
-  List<Item> _getResistanceItems() {
-    var items = <Item>[];
-    for (var item in hero.inventory) {
-      if (_isResistanceItem(item)) {
-        items.add(item);
-      }
-    }
-    return items;
+  /// Get all available stealth spells
+  List<String> _getStealthSpells() {
+    // For simplicity, just return all stealth spells
+    // In a real implementation, you'd check if the hero knows these spells
+    return ["Flee", "Escape", "Disappear"];
   }
   
   /// Check if item is a ranged weapon
