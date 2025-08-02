@@ -14,39 +14,6 @@ import 'new_hero_screen.dart';
 import 'storage.dart';
 
 
-const _chars = [
-  r"_____ _____                 ____                     ____",
-  r"\ . / \  ./                 \ .|                     \  |",
-  r" | |   |.|                   | |                      |.|",
-  r" |.|___| |  ____  ____ ____  |.| __     ____  ___  __ | |  ___",
-  r" |::___::|  \:::\ \::| \::|  |:|/::\   /::::\ \::|/::\|:| /::/",
-  r" |x|   |x|  __ \x| |x|  |x|  |x|  \x\ |x|__)x| |x| \x||x|/x/",
-  r" |x|   |x| /xx\|x| |x|  |x|  |x|   |x||x|\xxx| |x|    |xxxx\",
-  r" |X|   |X||X(__|X| |X\__|X|  |X|__/XX||X|____  |X|    |X| \X\",
-  r" |X|   |X| \XXX/\X\ \XX/|XX\/XX/\XXX/  \XXXX/ /XXX\  /XXX\ \X\",
-  r" |X|   |X|",
-  r"_|X|   |X|_",
-  r"\XX|   |XX/",
-  r" \X|   |X/",
-  r"  \|   |/",
-];
-
-const _charColors = [
-  r"LLLLL LLLLL                 LLLL                     LLLL",
-  r"ERRRE ERRRE                 ERRE                     ERRE",
-  r" ERE   ERE                   ERE                      ERE",
-  r" ERELLLERE  LLLL  LLLL LLLL  ERE LL     LLLL  LLL  LL ERE  LLL",
-  r" ERREEERRE  ERRRE ERRE ERRE  EREERRL   LRRRRL ERRLLRRLERE LRRE",
-  r" EOE   EOE  LL EOE EOE  EOE  EOE  EOL EOELLEOE EOE EOEEOELOE",
-  r" EGE   EGE LGGEEGE EGE  EGE  EGE   EGEEGEEGGGE EGE    EGGGGL",
-  r" EYE   EYEEYELLEYE EYLLLEYE  EYELLLYYEEYELLLL  EYE    EYE EYL",
-  r" EYE   EYE EYYYEEYL EYYEEYYLLYYEEYYYE  EYYYYE LYYYL  LYYYL EYL",
-  r" EYE   EYE",
-  r"EEYE   EYEE",
-  r"EYYE   EYYE",
-  r" EYE   EYE",
-  r"  EE   EE",
-];
 
 const _colors = {
   "L": hues.lightWarmGray,
@@ -258,17 +225,8 @@ class MainMenuScreen extends Screen<Input> {
         (terminal.width - 68) ~/ 2, (terminal.height - 34) ~/ 2, 68, 34);
 
     centerTerminal.clear();
-    Draw.doubleBox(
-        centerTerminal, 0, 0, centerTerminal.width, centerTerminal.height);
 
-    for (var y = 0; y < _chars.length; y++) {
-      for (var x = 0; x < _chars[y].length; x++) {
-        var color = _colors[_charColors[y][x]];
-        centerTerminal.writeAt(x + 3, y + 2, _chars[y][x], color);
-      }
-    }
-
-    centerTerminal.writeAt(3, 18, '🎮 LOOP - v0.3', hues.UIHue.text);
+    centerTerminal.writeAt(3, 18, "Devil's Coil", hues.UIHue.text);
 
     Draw.hLine(centerTerminal, 3, 20, centerTerminal.width - 6);
     Draw.hLine(centerTerminal, 3, 29, centerTerminal.width - 6);

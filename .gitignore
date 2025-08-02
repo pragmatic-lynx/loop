@@ -23,3 +23,6 @@ CODE.md
 /lib-working
 *.diff
 code_documentation.md
+/test_backup
+build_web.bat
+build.zip
