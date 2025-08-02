@@ -115,18 +115,18 @@ class ActionQueues {
     );
   }
   
-  /// Get the current stealth spell queue item
+  /// Get the current mage spell queue item
   QueueItem getResistanceQueueItem() {
-    var stealthSpells = _getStealthSpells();
-    if (stealthSpells.isEmpty) {
-      return QueueItem(name: "No Stealth", isAvailable: false);
+    var mageSpells = _getStealthSpells();
+    if (mageSpells.isEmpty) {
+      return QueueItem(name: "No Spells", isAvailable: false);
     }
     
-    var index = _resistanceQueueIndex % stealthSpells.length;
-    var spellName = stealthSpells[index];
+    var index = _resistanceQueueIndex % mageSpells.length;
+    var spellName = mageSpells[index];
     return QueueItem(
       name: spellName,
-      count: "(Teleport)",
+      count: "(Spell)",
       item: null, // Spells don't have items
     );
   }
@@ -227,13 +227,13 @@ class ActionQueues {
     _debugHelper.addRandomHealItems(1);
   }
   
-  /// Cast the current stealth spell
+  /// Cast the current mage spell
   bool castCurrentStealthSpell() {
-    var stealthSpells = _getStealthSpells();
-    if (stealthSpells.isEmpty) return false;
+    var mageSpells = _getStealthSpells();
+    if (mageSpells.isEmpty) return false;
     
-    var index = _resistanceQueueIndex % stealthSpells.length;
-    var spellName = stealthSpells[index];
+    var index = _resistanceQueueIndex % mageSpells.length;
+    var spellName = mageSpells[index];
     
     // Try to cast the spell
     try {
@@ -245,12 +245,43 @@ class ActionQueues {
           game.log.message('Cast $spellName!');
           return true;
         }
+      } else if (skill is TargetSkill) {
+        // For target spells, we need to find a target
+        var target = _findNearestEnemy();
+        if (target != null) {
+          var action = skill.onGetTargetAction(game, 1, target.pos);
+          hero.setNextAction(action);
+          game.log.message('Cast $spellName at ${target.name}!');
+          return true;
+        } else {
+          game.log.message('$spellName needs a target.');
+          return false;
+        }
       }
     } catch (e) {
       game.log.message('Failed to cast $spellName: $e');
     }
     
     return false;
+  }
+  
+  /// Find the nearest enemy for target spells
+  Actor? _findNearestEnemy() {
+    Actor? nearest;
+    var nearestDistance = 999;
+    
+    for (var actor in game.stage.actors) {
+      if (actor == hero || !actor.isAlive) continue;
+      if (!game.heroCanPerceive(actor)) continue;
+      
+      var distance = (actor.pos - hero.pos).rookLength;
+      if (distance < nearestDistance) {
+        nearest = actor;
+        nearestDistance = distance;
+      }
+    }
+    
+    return nearest;
   }
   
   /// Auto-equip ranged weapon if needed
@@ -326,11 +357,20 @@ class ActionQueues {
     return items;
   }
   
-  /// Get all available stealth spells
+  /// Get all available mage spells
   List<String> _getStealthSpells() {
-    // For simplicity, just return all stealth spells
-    // In a real implementation, you'd check if the hero knows these spells
-    return ["Flee", "Escape", "Disappear"];
+    // Return all mage spells that the hero has learned
+    return [
+      "Disappear",
+      "Flee", 
+      "Escape",
+      "Icicle",
+      "Brilliant Beam", 
+      "Windstorm",
+      "Fire Barrier",
+      "Tidal Wave",
+      "Sense Items"
+    ];
   }
   
   /// Check if item is a ranged weapon

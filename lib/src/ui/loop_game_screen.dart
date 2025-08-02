@@ -361,24 +361,24 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
           dirty();
         }
       case LoopInput.action4:
-        // Cast stealth spell
+        // Cast mage spell
         _actionQueues.setCurrentQueue(4);
         if (_actionQueues.castCurrentStealthSpell()) {
           // Spell was cast successfully, no action needed
           _updateActionMapping();
           return true;
         } else {
-          game.log.message("No stealth spell available.");
+          game.log.message("No spell available.");
           dirty();
         }
         
       case LoopInput.cycleSpell:
-        // If stealth queue is active, cycle stealth spells
+        // If mage spell queue is active, cycle mage spells
         if (_actionQueues.currentQueue == 4) {
           _actionQueues.cycleCurrentQueue();
           _updateActionMapping();
           var currentSpell = _actionQueues.getResistanceQueueItem();
-          game.log.message("Active stealth spell: ${currentSpell.name}");
+          game.log.message("Active spell: ${currentSpell.name}");
         } else {
           // Cycle active spell for other queues
           _cycleActiveSpell();
@@ -393,7 +393,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
         _actionQueues.setCurrentQueue(nextQueue);
         _updateActionMapping();
         
-        var queueNames = ["", "Ranged", "Magic", "Heal", "Stealth"];
+        var queueNames = ["", "Ranged", "Magic", "Heal", "Mage Spells"];
         game.log.message("Active queue: ${queueNames[nextQueue]}");
         return true;
         
