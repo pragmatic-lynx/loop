@@ -514,6 +514,13 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
 
   @override
   void activate(Screen popped, Object? result) {
+    // Check if we're returning from SupplyCaseScreen
+    if (popped is SupplyCaseScreen) {
+      // Continue to the next loop after rewards
+      _continueToNextLoop();
+      return;
+    }
+    
     if (!game.hero.needsInput(game)) {
       _pause = 5; // Brief pause for visual feedback
     }
@@ -1111,7 +1118,10 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     var progress = loopMeter.progress;
     
     // Show the new supply case screen for all tiers
-    ui.goTo(SupplyCaseScreen(game, rewardTier, progress, _continueToNextLoop));
+    ui.push(SupplyCaseScreen(game, rewardTier, progress, () {
+      // Pop the supply case screen and return to this screen
+      ui.pop();
+    }));
   }
   
   /// Continue to the next loop after rewards
