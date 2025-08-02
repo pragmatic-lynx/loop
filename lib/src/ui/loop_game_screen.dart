@@ -598,9 +598,6 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
               if (result.remaining == 0) {
                 game.stage.removeItem(item, game.hero.pos);
               }
-              case LoopInput.giveConsumables:
-        _debugHelper.giveAllConsumables();
-        game.log.message("Debug: Gave one-time set of consumables");
             } else {
               game.log.message('Your inventory is full.');
               return true;
