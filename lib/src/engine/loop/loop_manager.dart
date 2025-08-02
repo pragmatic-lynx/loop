@@ -106,18 +106,26 @@ class LoopManager {
   }
   
   /// Trigger the reward selection phase
-  void triggerRewardSelection() {
+  void triggerRewardSelection({String? heroClass}) {
     isLoopActive = false;
     isRewardSelection = true;
     
-    // Don't generate the old style reward options anymore
-    // The new system will handle rewards based on loop meter fill level
-    currentRewardOptions = []; // Clear old options
+    // Generate cycle-based reward options for this loop
+    if (_content != null) {
+      // Use provided hero class or default to ranger
+      var heroClassName = heroClass ?? "ranger";
+      
+      currentRewardOptions = LoopReward.generateRewardOptions(3, currentLoop, _content!, heroClassName);
+      print('Generated ${currentRewardOptions.length} ${RewardCycleManager.getCycleName(currentLoop)} rewards for loop $currentLoop');
+    } else {
+      currentRewardOptions = []; // Clear old options if no content available
+      print('Warning: No content available for reward generation');
+    }
     
     var archetypeInfo = currentArchetypeMetadata != null ? 
         '${currentArchetypeMetadata!.archetype.name}' : 'unknown';
     var meterProgress = _loopMeter.progress.toStringAsFixed(1);
-    print('LOOP_COMPLETE: Loop $currentLoop ($archetypeInfo archetype) - $moveCount moves made, ${meterProgress}% loop meter. Using loop meter rewards!');
+    print('LOOP_COMPLETE: Loop $currentLoop ($archetypeInfo archetype) - $moveCount moves made, ${meterProgress}% loop meter. Generated ${currentRewardOptions.length} rewards!');
   }
   
   /// Apply a selected reward and prepare for next loop

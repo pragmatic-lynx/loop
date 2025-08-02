@@ -1,12 +1,54 @@
 // lib/src/engine/loop/loop_reward.dart
 
+import 'dart:convert';
+import 'dart:math' as math;
 import '../hero/hero_save.dart';
 import '../core/content.dart';
 import '../items/item.dart';
+import '../hero/stat.dart';
 // TODO: Re-enable when build issues are resolved
 // import 'item/loop_item_config.dart';
 // import 'item/loop_item_manager.dart';
 // import 'item/item_category.dart';
+
+/// Manages the 5-step reward cycle: Weapon -> Stats -> Armor -> Stats -> Weapon
+class RewardCycleManager {
+  static const List<RewardType> _cycle = [
+    RewardType.weapon,  // 0
+    RewardType.stats,   // 1  
+    RewardType.armor,   // 2
+    RewardType.stats,   // 3
+    RewardType.weapon,  // 4
+  ];
+  
+  /// Gets the reward type for the given loop number (1-based)
+  static RewardType getRewardType(int loopNumber) {
+    var cyclePosition = (loopNumber - 1) % _cycle.length;
+    return _cycle[cyclePosition];
+  }
+  
+  /// Gets a descriptive name for the current cycle position
+  static String getCycleName(int loopNumber) {
+    var type = getRewardType(loopNumber);
+    var cyclePosition = (loopNumber - 1) % _cycle.length;
+    
+    switch (type) {
+      case RewardType.weapon:
+        return cyclePosition == 0 ? "Primary Weapon" : "Secondary Weapon";
+      case RewardType.stats:
+        return cyclePosition == 1 ? "Combat Stats" : "Core Stats";
+      case RewardType.armor:
+        return "Protective Gear";
+    }
+  }
+}
+
+/// Types of rewards in the cycle
+enum RewardType {
+  weapon,
+  stats, 
+  armor,
+}
 
 /// Base class for rewards that provide temporary benefits for the next loop
 abstract class LoopReward {
@@ -23,21 +65,50 @@ abstract class LoopReward {
   /// Apply this reward's effect to the hero
   void apply(HeroSave hero);
   
-  /// Generate a list of random reward options
-  static List<LoopReward> generateRewardOptions(int count) {
-    var allRewards = _getAllRewards();
+  /// Generate a list of random reward options based on the current loop cycle
+  static List<LoopReward> generateRewardOptions(int count, int loopNumber, Content content, String heroClass) {
+    var rewardType = RewardCycleManager.getRewardType(loopNumber);
+    var rewards = <LoopReward>[];
     
-    // TODO: Re-enable item rewards when build issues are resolved
-    // if (content != null && currentLoop != null) {
-    //   var itemManager = LoopItemManager(content);
-    //   var itemRewards = itemManager.generateItemRewards(currentLoop, 3);
-    //   allRewards.addAll(itemRewards.map((itemReward) => 
-    //     ItemLoopReward(itemReward.config, content)
-    //   ));
-    // }
+    switch (rewardType) {
+      case RewardType.weapon:
+        rewards.addAll(_generateWeaponRewards(content, heroClass, loopNumber));
+        break;
+      case RewardType.stats:
+        rewards.addAll(_generateStatRewards(loopNumber));
+        break;
+      case RewardType.armor:
+        rewards.addAll(_generateArmorRewards(content, heroClass, loopNumber));
+        break;
+    }
     
-    allRewards.shuffle();
-    return allRewards.take(count).toList();
+    rewards.shuffle();
+    return rewards.take(count).toList();
+  }
+  
+  /// Generate weapon rewards for the current loop
+  static List<LoopReward> _generateWeaponRewards(Content content, String heroClass, int loopNumber) {
+    // Determine tier based on loop number (every 5 loops increases tier)
+    var tier = math.min(3, (loopNumber / 5).ceil());
+    return WeaponReward.generateOptions(content, heroClass, tier);
+  }
+  
+  /// Generate stat rewards
+  static List<LoopReward> _generateStatRewards(int loopNumber) {
+    return [
+      StatReward(Stat.strength, 1),
+      StatReward(Stat.agility, 1),
+      StatReward(Stat.fortitude, 1),
+      StatReward(Stat.intellect, 1),
+      StatReward(Stat.will, 1),
+    ];
+  }
+  
+  /// Generate armor rewards for the current loop
+  static List<LoopReward> _generateArmorRewards(Content content, String heroClass, int loopNumber) {
+    // Determine tier based on loop number
+    var tier = math.min(3, (loopNumber / 5).ceil());
+    return ArmorReward.generateOptions(content, heroClass, tier);
   }
   
   static List<LoopReward> _getAllRewards() {
@@ -251,6 +322,149 @@ class SummonReward extends LoopReward {
     //   var item = Item(randomScroll, 3); // Give 3 scrolls
     //   hero.inventory.tryAdd(item);
     // }
+  }
+}
+
+/// Permanent stat bonus reward
+class StatReward extends LoopReward {
+  final Stat stat;
+  final int bonus;
+  
+  StatReward(this.stat, this.bonus) : super(
+    name: "${stat.name} Training",
+    description: "+$bonus permanent ${stat.name.toLowerCase()}",
+    flavorText: "Your ${stat.name.toLowerCase()} improves through training",
+  );
+  
+  @override
+  void apply(HeroSave hero) {
+    hero.addPermanentStatBonus(stat, bonus);
+    print("Applied +$bonus permanent ${stat.name} to ${hero.name}");
+  }
+}
+
+/// Weapon reward that gives actual weapons
+class WeaponReward extends LoopReward {
+  final String weaponName;
+  final Content content;
+  
+  WeaponReward(this.weaponName, this.content) : super(
+    name: weaponName,
+    description: "Equip $weaponName",
+    flavorText: "A fine weapon for your journey",
+  );
+  
+  @override
+  void apply(HeroSave hero) {
+    var weaponType = content.tryFindItem(weaponName);
+    if (weaponType != null) {
+      var weapon = Item(weaponType, 1);
+      var unequipped = hero.equipment.equip(weapon);
+      
+      // Add any unequipped items to inventory
+      for (var unequippedItem in unequipped) {
+        hero.inventory.tryAdd(unequippedItem);
+      }
+      
+      print("Equipped $weaponName on ${hero.name}");
+    } else {
+      print("Warning: Could not find weapon type: $weaponName");
+    }
+  }
+  
+  /// Generate weapon reward options for a class and tier
+  static List<WeaponReward> generateOptions(Content content, String heroClass, int tier) {
+    // Load weapon tiers from the weapon data
+    var weaponOptions = _getWeaponsForClassAndTier(heroClass, tier);
+    return weaponOptions.map((weapon) => WeaponReward(weapon, content)).toList();
+  }
+  
+  static List<String> _getWeaponsForClassAndTier(String heroClass, int tier) {
+    // From weapon_tiers.json structure
+    switch (heroClass.toLowerCase()) {
+      case 'warrior':
+        switch (tier) {
+          case 1: return ["Stick", "Cudgel", "Hatchet"];
+          case 2: return ["Shortsword", "Morningstar", "Spear"];
+          case 3: return ["Mattock", "Battleaxe", "War Hammer"];
+        }
+        break;
+      case 'ranger':
+        switch (tier) {
+          case 1: return ["Short Bow", "Knife", "Dirk"];
+          case 2: return ["Longbow", "Dagger", "Stiletto"];
+          case 3: return ["Crossbow", "Rondel", "Baselard"];
+        }
+        break;
+      case 'mage':
+        // Mages don't get weapon rewards in the JSON, so give them basic options
+        return ["Walking Stick"];
+    }
+    return ["Stick"]; // Fallback
+  }
+}
+
+/// Armor reward that gives actual armor pieces
+class ArmorReward extends LoopReward {
+  final String armorName;
+  final Content content;
+  
+  ArmorReward(this.armorName, this.content) : super(
+    name: armorName,
+    description: "Equip $armorName",
+    flavorText: "Protection for the dangers ahead",
+  );
+  
+  @override
+  void apply(HeroSave hero) {
+    var armorType = content.tryFindItem(armorName);
+    if (armorType != null) {
+      var armor = Item(armorType, 1);
+      var unequipped = hero.equipment.equip(armor);
+      
+      // Add any unequipped items to inventory
+      for (var unequippedItem in unequipped) {
+        hero.inventory.tryAdd(unequippedItem);
+      }
+      
+      print("Equipped $armorName on ${hero.name}");
+    } else {
+      print("Warning: Could not find armor type: $armorName");
+    }
+  }
+  
+  /// Generate armor reward options for a class and tier
+  static List<ArmorReward> generateOptions(Content content, String heroClass, int tier) {
+    var armorOptions = _getArmorForClassAndTier(heroClass, tier);
+    return armorOptions.map((armor) => ArmorReward(armor, content)).toList();
+  }
+  
+  static List<String> _getArmorForClassAndTier(String heroClass, int tier) {
+    // From weapon_tiers.json armorTiers structure
+    switch (heroClass.toLowerCase()) {
+      case 'warrior':
+        switch (tier) {
+          case 1: return ["Leather Cap", "Leather Shirt"];
+          case 2: return ["Chainmail Coif", "Leather Armor"];
+          case 3: return ["Steel Cap", "Mail Hauberk"];
+        }
+        break;
+      case 'ranger':
+        switch (tier) {
+          case 1: return ["Cloth Shirt", "Cloak"];
+          case 2: return ["Jerkin", "Fur Cloak", "Pair of Boots"];
+          case 3: return ["Studded Armor", "Set of Bracers", "Pair of Plated Boots"];
+        }
+        break;
+      case 'mage':
+        switch (tier) {
+          case 1: return ["Robe", "Pair of Sandals"];
+          case 2: return ["Fur-lined Robe", "Pair of Shoes", "Pair of Gloves"];
+          case 3: return ["Spidersilk Cloak", "Pair of Greaves"];
+        }
+        break;
+    }
+    return ["Robe"]; // Fallback
   }
 }
 
