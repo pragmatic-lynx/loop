@@ -93,8 +93,8 @@ class ActionQueues {
       var currentHP = hero.health;
       var maxHP = hero.maxHealth;
       return QueueItem(
-        name: "Healthy",
-        count: "($currentHP/$maxHP HP)",
+        name: "Max HP",
+        count: "",
         isAvailable: false,
       );
     }

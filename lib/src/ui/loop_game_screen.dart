@@ -72,17 +72,17 @@ class ControlsPanel extends Panel {
     // add a space 
     terminal.writeAt(1, 3, " ", ash);
     terminal.writeAt(1, 4, "Actions:", ash);
-    terminal.writeAt(1, 5, "1: 🗡️ ${actionMapping.action1Label}", lightBlue);
-    terminal.writeAt(1, 6, "2: ⚡ ${actionMapping.action2Label}", lima);
-    terminal.writeAt(1, 7, "3: ❤️ ${actionMapping.action3Label}", pink);
-    terminal.writeAt(1, 8, "4: 🛡️ ${actionMapping.action4Label}", aqua);
+    terminal.writeAt(1, 5, "1: ${actionMapping.action1Label}", lightBlue);
+    terminal.writeAt(1, 6, "2: ${actionMapping.action2Label}", lima);
+    terminal.writeAt(1, 7, "3: ${actionMapping.action3Label}", pink);
+    terminal.writeAt(1, 8, "4: ${actionMapping.action4Label}", aqua);
     
     // Context-aware E action
     var eAction = _getEActionDescription();
     terminal.writeAt(1, 9, "E: ${eAction.icon} ${eAction.description}", eAction.color);
     
     // Extra keys
-    terminal.writeAt(1, 11, "J: 📦 Inventory", ash);
+    terminal.writeAt(1, 11, "I: Inventory", ash);
   }
   
   ({String icon, String description, Color color}) _getEActionDescription() {
@@ -92,9 +92,9 @@ class ControlsPanel extends Panel {
     var portal = game.stage[game.hero.pos].portal;
     if (portal == TilePortals.exit) {
       if (_gameScreen._loopManager != null) {
-        return (icon: "🚪", description: "Exit Floor", color: gold);
+        return (icon: "", description: "Exit Floor", color: gold);
       } else {
-        return (icon: "🚪", description: "Exit Dungeon", color: gold);
+        return (icon: "", description: "Exit Dungeon", color: gold);
       }
     }
     
@@ -103,14 +103,14 @@ class ControlsPanel extends Panel {
     if (items.isNotEmpty) {
       var item = items.first;
       if (item.canEquip && (item.equipSlot == 'hand')) {
-        return (icon: "⚔️", description: "Equip ${item.type.name}", color: lightBlue);
+        return (icon: "", description: "Equip ${item.type.name}", color: lightBlue);
       } else {
-        return (icon: "📦", description: "Pick up ${item.type.name}", color: tan);
+        return (icon: "", description: "Pick up ${item.type.name}", color: tan);
       }
     }
     
     // Default action when nothing special is available
-    return (icon: "❌", description: "Nothing to interact with", color: darkCoolGray);
+    return (icon: "❌", description: "", color: ash);
   }
 }
 
