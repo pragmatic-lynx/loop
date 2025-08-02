@@ -26,7 +26,7 @@ class PickUpDialog extends ItemDialog {
   String queryCount(ItemLocation location) => 'Pick up how many?';
 
   @override
-  bool canSelect(Item item) => true;
+  bool canSelect(Item item) => item.equipSlot != "hand"; // Exclude weapons
 
   @override
   void selectItem(Item item, int count, ItemLocation location) {
