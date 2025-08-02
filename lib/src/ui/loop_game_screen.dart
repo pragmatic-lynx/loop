@@ -10,6 +10,8 @@ import '../engine/action/action.dart';
 import '../engine/action/action_mapping.dart';
 import '../engine/action/attack.dart';
 import '../engine/action/item.dart';
+import '../engine/action/slam.dart';
+import '../engine/action/movement.dart';
 import '../engine/action/toss.dart';
 import '../engine/action/walk.dart';
 import '../engine/core/combat.dart';
@@ -69,20 +71,25 @@ class ControlsPanel extends Panel {
     Draw.frame(terminal, 0, 0, terminal.width, terminal.height, label: "CONTROLS");
     terminal.writeAt(1, 1, "Movement:", ash);
     terminal.writeAt(1, 2, "Arrow Keys", lightWarmGray);
-    // add a space 
     terminal.writeAt(1, 3, " ", ash);
     terminal.writeAt(1, 4, "Actions:", ash);
-    terminal.writeAt(1, 5, "1: ${actionMapping.action1Label}", lightBlue);
-    terminal.writeAt(1, 6, "2: ${actionMapping.action2Label}", lima);
-    terminal.writeAt(1, 7, "3: ${actionMapping.action3Label}", pink);
-    terminal.writeAt(1, 8, "4: ${actionMapping.action4Label}", aqua);
+    
+    // New control scheme
+    terminal.writeAt(1, 5, "1: ${actionMapping.attackLabel}", lightBlue);
+    terminal.writeAt(1, 6, "2: ${actionMapping.utilityLabel}", lima);
+    terminal.writeAt(1, 7, "3: ${actionMapping.healLabel}", pink);
+    
+    // Movement and cycling
+    var movementStatus = MovementAction.canUseMovement() ? "Ready" : "${MovementAction.remainingCooldown()} moves";
+    terminal.writeAt(1, 8, "W: Movement ($movementStatus)", aqua);
+    terminal.writeAt(1, 9, "Q: ${actionMapping.categoryLabel}", gold);
     
     // Context-aware E action
     var eAction = _getEActionDescription();
-    terminal.writeAt(1, 9, "E: ${eAction.icon} ${eAction.description}", eAction.color);
+    terminal.writeAt(1, 10, "E: ${eAction.icon} ${eAction.description}", eAction.color);
     
     // Extra keys
-    terminal.writeAt(1, 11, "I: Inventory", ash);
+    terminal.writeAt(1, 12, "I: Inventory", ash);
   }
   
   ({String icon, String description, Color color}) _getEActionDescription() {
@@ -92,9 +99,9 @@ class ControlsPanel extends Panel {
     var portal = game.stage[game.hero.pos].portal;
     if (portal == TilePortals.exit) {
       if (_gameScreen._loopManager != null) {
-        return (icon: "", description: "Exit Floor", color: gold);
+        return (icon: "🚪", description: "Exit Floor", color: gold);
       } else {
-        return (icon: "", description: "Exit Dungeon", color: gold);
+        return (icon: "🚪", description: "Exit Dungeon", color: gold);
       }
     }
     
@@ -103,14 +110,14 @@ class ControlsPanel extends Panel {
     if (items.isNotEmpty) {
       var item = items.first;
       if (item.canEquip && (item.equipSlot == 'hand')) {
-        return (icon: "", description: "Equip ${item.type.name}", color: lightBlue);
+        return (icon: "⚔️", description: "Equip ${item.type.name}", color: lightBlue);
       } else {
-        return (icon: "", description: "Pick up ${item.type.name}", color: tan);
+        return (icon: "📦", description: "Pick up ${item.type.name}", color: tan);
       }
     }
     
     // Default action when nothing special is available
-    return (icon: "❌", description: "", color: ash);
+    return (icon: "❌", description: "Nothing", color: ash);
   }
 }
 
@@ -306,8 +313,9 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
         // TODO: Implement pause menu
         return true;
 
-      case LoopInput.info:
-        // Show/hide action mapping help - no longer needed since always visible
+      case LoopInput.inventory:
+        // Show inventory
+        ui.push(InventoryDialog(game));
         return true;
 
       // Movement inputs
@@ -323,87 +331,44 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
         action = WalkAction(Direction.s);
       case LoopInput.sw:
         action = WalkAction(Direction.sw);
-      case LoopInput.w:
-        action = WalkAction(Direction.w);
       case LoopInput.nw:
         action = WalkAction(Direction.nw);
       case LoopInput.wait:
         action = WalkAction(Direction.none);
 
-      // Smart action buttons
-      case LoopInput.action1:
-        // First try to interact with staircase if standing on one
-        var portal = game.stage[game.hero.pos].portal;
-        if (portal == TilePortals.exit) {
-          // Trigger staircase interaction
-          if (_loopManager != null) {
-            _handleLoopExit();
-          } else {
-            ui.push(ExitPopup(_previousSave, game));
-          }
-          return true;
-        }
-        
-        // Ranged attack - set queue context and handle
-        _actionQueues.setCurrentQueue(1);
-        action = _handleRangedAction();
+      // New control scheme
+      case LoopInput.attack:
+        action = _handleAttackAction();
         if (action == null) {
-          game.log.message("No ranged weapon available.");
+          game.log.message("Cannot attack.");
           dirty();
         }
 
-      case LoopInput.action2:
-        // Magic - set queue context and handle
-        _actionQueues.setCurrentQueue(2);
-        action = _handleMagicAction();
+      case LoopInput.utility:
+        action = _handleUtilityAction();
         if (action == null) {
-          game.log.message("No magic available.");
+          game.log.message("No utility items available.");
           dirty();
         }
 
-      case LoopInput.action3:
-        // Heal - set queue context and handle
-        _actionQueues.setCurrentQueue(3);
+      case LoopInput.heal:
         action = _handleHealAction();
         if (action == null) {
           game.log.message("No healing available.");
           dirty();
         }
-      case LoopInput.action4:
-        // Cast mage spell
-        _actionQueues.setCurrentQueue(4);
-        if (_actionQueues.castCurrentStealthSpell()) {
-          // Spell was cast successfully, no action needed
-          _updateActionMapping();
-          return true;
-        } else {
-          game.log.message("No spell available.");
+        
+      case LoopInput.movement:
+        action = MovementAction();
+        if (action == null) {
           dirty();
         }
         
-      case LoopInput.cycleSpell:
-        // If mage spell queue is active, cycle mage spells
-        if (_actionQueues.currentQueue == 4) {
-          _actionQueues.cycleCurrentQueue();
-          _updateActionMapping();
-          var currentSpell = _actionQueues.getResistanceQueueItem();
-          game.log.message("Active spell: ${currentSpell.name}");
-        } else {
-          // Cycle active spell for other queues
-          _cycleActiveSpell();
-          _updateActionMapping();
-        }
-        return true;
-        
-      case LoopInput.cycleQueue:
-        // Cycle which queue is currently active (1-4)
-        var currentQueue = _actionQueues.currentQueue;
-        var nextQueue = (currentQueue % 4) + 1;
-        _actionQueues.setCurrentQueue(nextQueue);
+      case LoopInput.cycle:
+        // Cycle between categories (spells/utility/healing)
+        _actionQueues.cycleCategory();
         _updateActionMapping();
-        
-        var queueNames = ["", "Ranged", "Magic", "Heal", "Mage Spells"];
-        game.log.message("Active queue: ${queueNames[nextQueue]}");
+        game.log.message("Active category: ${_actionQueues.getCategoryName()}");
         return true;
         
       case LoopInput.debug:
@@ -412,64 +377,8 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
         _updateActionMapping();
         return true;
 
-      case LoopInput.equip:
-        // First try to interact with staircase if standing on one
-        var portal = game.stage[game.hero.pos].portal;
-        if (portal == TilePortals.exit) {
-          // Trigger staircase interaction
-          if (_loopManager != null) {
-            _handleLoopExit();
-          } else {
-            ui.push(ExitPopup(_previousSave, game));
-          }
-          return true;
-        }
-        
-        // Check for items to pick up at current position
-        var items = game.stage.itemsAt(game.hero.pos);
-        if (items.isNotEmpty) {
-          var item = items.first;
-          
-          // Special handling for weapons - replace current weapon
-          if (item.canEquip && (item.equipSlot == 'hand')) {
-            // This is a weapon, so replace current weapon
-            var unequippedItems = game.hero.equipment.equip(item);
-            game.stage.removeItem(item, game.hero.pos);
-            
-            // Drop any unequipped weapons on the ground
-            for (var unequippedItem in unequippedItems) {
-              game.stage.addItem(unequippedItem, game.hero.pos);
-              game.log.message('Dropped ${unequippedItem.type.name}.');
-            }
-            
-            game.hero.pickUp(game, item);
-            game.log.message('Equipped ${item.type.name}.');
-            _updateActionMapping();
-            return true;
-          } else {
-            // Regular item pickup
-            var result = game.hero.inventory.tryAdd(item);
-            if (result.added > 0) {
-              game.log.message('Picked up ${item.clone(result.added)}.');
-              
-              if (result.remaining == 0) {
-                game.stage.removeItem(item, game.hero.pos);
-              }
-              
-              game.hero.pickUp(game, item);
-              _updateActionMapping();
-              return true;
-            } else {
-              game.log.message('Your inventory is full.');
-              return true;
-            }
-          }
-        }
-        
-        // For now, just show a message that equipment is not available in loop mode
-        game.log.message("Nothing to pick up or interact with.");
-        dirty();
-        return true;
+      case LoopInput.interact:
+        return _handleInteractAction();
     }
 
     if (action != null) {
@@ -754,107 +663,188 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     ui.goTo(LoopGameScreen.create(_storage, game.content, game.hero.save, _loopManager));
   }
   
-  /// Handle ranged weapon action
-  Action? _handleRangedAction() {
-    var rangedItem = _actionQueues.getRangedQueueItem();
+  /// Handle context-aware attack action (button 1)
+  Action? _handleAttackAction() {
+    var hero = game.hero;
     
-    // Debug: Show what we found
-    // game.log.message("Debug: Ranged item: ${rangedItem.name}, available: ${rangedItem.isAvailable}");
-    
-    if (!rangedItem.isAvailable) {
-      // Try to auto-equip a ranged weapon
-      if (_actionQueues.autoEquipRangedWeapon()) {
-        _updateActionMapping();
-        rangedItem = _actionQueues.getRangedQueueItem();
-        //game.log.message("Debug: After auto-equip: ${rangedItem.name}, available: ${rangedItem.isAvailable}");
+    // 1. If warrior class and has adjacent enemy -> SlamAction
+    if (hero.save.heroClass.name.toLowerCase() == 'warrior') {
+      if (_hasAdjacentEnemies()) {
+        return SlamAction();
       }
     }
     
-    if (!rangedItem.isAvailable || rangedItem.item == null) {
-      return null;
+    // 2. If adjacent enemy -> MeleeAction
+    var adjacentEnemy = _getAdjacentEnemy();
+    if (adjacentEnemy != null) {
+      return AttackAction(adjacentEnemy);
     }
     
-    // Try to use the Archery skill if available
-    var archerySkill = _findArcherySkill();
-    if (archerySkill != null) {
+    // 3. If bow equipped and line of sight -> BoltAction
+    if (_hasBowEquipped() && _hasRangedTarget()) {
       var target = _findRangedTarget();
-      if (target == null) {
-        game.log.message("No target in range.");
-        return null;
-      }
-      
-      // Use archery skill if we have it
-      var level = game.hero.skills.level(archerySkill);
-      if (level > 0) {
-        // game.log.message("Debug: Using archery skill level $level");
-        return archerySkill.onGetTargetAction(game, level, target.pos);
+      if (target != null) {
+        return _createBowAttack(target);
       }
     }
     
-    // Fallback: try using the weapon as a tossable item
-    var weapon = rangedItem.item!;
-    if (weapon.canToss) {
-      var target = _findRangedTarget();
-      if (target == null) {
-        game.log.message("No target in range.");
-        return null;
-      }
-      
-      // game.log.message("Debug: Tossing ${weapon.type.name} at target");
-      // Create a hit for the toss action
-      var hit = weapon.toss!.attack.createHit();
-      return TossAction(ItemLocation.equipment, weapon, hit, target.pos);
-    } else {
-      // If we can't toss it, just do a regular attack (this might not work well)
-      var target = _findRangedTarget();
-      if (target == null) {
-        game.log.message("No target in range.");
-        return null;
-      }
-      
-      //game.log.message("Debug: Melee attacking target with ${rangedItem.name}");
-      return AttackAction(target);
+    // 4. If spell equipped -> CastSpell (but not movement spells)
+    var spellItem = _getFirstNonMovementSpell();
+    if (spellItem != null) {
+      return UseAction(ItemLocation.inventory, spellItem);
     }
+    
+    return null;
   }
   
-  /// Handle magic item action
-  Action? _handleMagicAction() {
-    var magicItem = _actionQueues.getMagicQueueItem();
-    if (!magicItem.isAvailable || magicItem.item == null) {
+  /// Check if hero has adjacent enemies
+  bool _hasAdjacentEnemies() {
+    for (var direction in Direction.all) {
+      var pos = game.hero.pos + direction;
+      var actor = game.stage.actorAt(pos);
+      if (actor != null && actor != game.hero && actor.isAlive) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  /// Get first adjacent enemy
+  Actor? _getAdjacentEnemy() {
+    for (var direction in Direction.all) {
+      var pos = game.hero.pos + direction;
+      var actor = game.stage.actorAt(pos);
+      if (actor != null && actor != game.hero && actor.isAlive) {
+        return actor;
+      }
+    }
+    return null;
+  }
+  
+  /// Check if hero has bow equipped
+  bool _hasBowEquipped() {
+    for (var item in game.hero.equipment) {
+      var name = item.type.name.toLowerCase();
+      if (name.contains('bow') || name.contains('crossbow')) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  /// Check if there are ranged targets
+  bool _hasRangedTarget() {
+    return _findRangedTarget() != null;
+  }
+  
+  /// Create bow attack action
+  Action? _createBowAttack(Actor target) {
+    // Find equipped bow
+    for (var item in game.hero.equipment) {
+      var name = item.type.name.toLowerCase();
+      if (name.contains('bow') || name.contains('crossbow')) {
+        if (item.canToss) {
+          var hit = item.toss!.attack.createHit();
+          return TossAction(ItemLocation.equipment, item, hit, target.pos);
+        }
+      }
+    }
+    return AttackAction(target); // Fallback to melee
+  }
+  
+  /// Get first non-movement spell from inventory
+  Item? _getFirstNonMovementSpell() {
+    for (var item in game.hero.inventory) {
+      if (item.use != null) {
+        var name = item.type.name.toLowerCase();
+        // Exclude movement spells
+        if (!name.contains('flee') && !name.contains('escape') && !name.contains('disappear')) {
+          return item;
+        }
+      }
+    }
+    return null;
+  }
+  
+  /// Handle utility action (button 2) - changes based on active category
+  Action? _handleUtilityAction() {
+    var utilityItem = _actionQueues.getUtilityQueueItem();
+    if (!utilityItem.isAvailable || utilityItem.item == null) {
       return null;
     }
     
-    var action = UseAction(ItemLocation.inventory, magicItem.item!);
+    var action = UseAction(ItemLocation.inventory, utilityItem.item!);
     
     // Replace the used item with a new one after use
-    _actionQueues.replaceUsedItem(magicItem.item!);
+    _actionQueues.replaceUsedItem(utilityItem.item!);
     
     return action;
   }
   
-  /// Handle spell casting action
-  Action? _handleSpellCastAction() {
-    var activeSpell = _smartCombat.activeSpell;
-    if (activeSpell == null) {
-      return null;
+  /// Handle interact action (E key)
+  bool _handleInteractAction() {
+    // First try to interact with staircase if standing on one
+    var portal = game.stage[game.hero.pos].portal;
+    if (portal == TilePortals.exit) {
+      // Trigger staircase interaction
+      if (_loopManager != null) {
+        _handleLoopExit();
+      } else {
+        ui.push(ExitPopup(_previousSave, game));
+      }
+      return true;
     }
     
-    // Cast the spell
-    var action = UseAction(ItemLocation.inventory, activeSpell);
+    // Check for items to pick up at current position
+    var items = game.stage.itemsAt(game.hero.pos);
+    if (items.isNotEmpty) {
+      var item = items.first;
+      
+      // Special handling for weapons - replace current weapon
+      if (item.canEquip && (item.equipSlot == 'hand')) {
+        // This is a weapon, so replace current weapon
+        var unequippedItems = game.hero.equipment.equip(item);
+        game.stage.removeItem(item, game.hero.pos);
+        
+        // Drop any unequipped weapons on the ground
+        for (var unequippedItem in unequippedItems) {
+          game.stage.addItem(unequippedItem, game.hero.pos);
+          game.log.message('Dropped ${unequippedItem.type.name}.');
+        }
+        
+        game.hero.pickUp(game, item);
+        game.log.message('Equipped ${item.type.name}.');
+        _updateActionMapping();
+        return true;
+      } else {
+        // Regular item pickup
+        var result = game.hero.inventory.tryAdd(item);
+        if (result.added > 0) {
+          game.log.message('Picked up ${item.clone(result.added)}.');
+          
+          if (result.remaining == 0) {
+            game.stage.removeItem(item, game.hero.pos);
+          }
+          
+          game.hero.pickUp(game, item);
+          _updateActionMapping();
+          return true;
+        } else {
+          game.log.message('Your inventory is full.');
+          return true;
+        }
+      }
+    }
     
-    return action;
+    // Nothing to interact with
+    game.log.message("Nothing to pick up or interact with.");
+    dirty();
+    return true;
   }
   
-  /// Cycle the active spell
-  void _cycleActiveSpell() {
-    _smartCombat.cycleActiveSpell();
-    
-    var newActiveSpell = _smartCombat.activeSpell;
-    if (newActiveSpell != null) {
-      game.log.message("Active spell: ${newActiveSpell.type.name}");
-    } else {
-      game.log.message("No spells available.");
-    }
+  /// Track movement for cooldown system
+  void _trackMovement() {
+    MovementAction.recordMove();
   }
   
   /// Handle heal item action

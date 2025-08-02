@@ -1,30 +1,23 @@
 // lib/src/ui/loop_input.dart
 
 /// Simplified input system for roguelite loop mode
-/// Only movement + 3 smart action buttons for ADHD-friendly gameplay
+/// Streamlined controls for ADHD-friendly gameplay
 enum LoopInput {
   // Movement (keep these intuitive)
-  n, e, s, w, ne, nw, se, sw, wait,
+  n, e, s, ne, nw, se, sw, wait,
 
-  // Smart action buttons (1,2,3,4)
-  action1,  // 🗡️ Primary Attack/Interact
-  action2,  // ⚡ Magic/Secondary Ability
-  action3,  // ❤️ Heal/Consumable
-  action4,  // 🔮 Cast Spell
-
-  // Spell management
-  cycleSpell, // Q - cycle active spell
-  
-  // Queue management
-  cycleQueue, // Tab - cycle current queue
-
-  // Equipment and staircase interaction
-  equip,    // E - equip items or interact with staircases
+  // New control scheme
+  attack,       // 1 - Attack WITH CLASS WEAPON (context-aware)
+  utility,      // 2 - Utility (non-healing consumables, scrolls, buffs, CC)
+  heal,         // 3 - Heal (healing items from inventory)
+  movement,     // W - Movement (Flee spell effect with cooldown)
+  interact,     // E - Interact (stays the same)
+  cycle,        // Q - Cycle through Spells/Utility/Healing categories
 
   // Debug functionality
-  debug,    // Z - debug hotkey
+  debug,        // Z - debug hotkey
 
   // Minimal essential controls
-  cancel,   // ESC - pause/menu
-  info,     // TAB - show info
+  cancel,       // ESC - pause/menu
+  inventory,    // I - inventory
 }

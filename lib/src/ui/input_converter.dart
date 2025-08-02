@@ -23,34 +23,24 @@ class InputConverter {
         return LoopInput.s;
       case Input.sw:
         return LoopInput.sw;
-      case Input.w:
-        return LoopInput.w;
       case Input.nw:
         return LoopInput.nw;
       case Input.ok:
         return LoopInput.wait;
       
-      // Action button mappings (1,2,3) - Smart UI system
+      // New control scheme mappings
       case Input.selectSkill:  // Mapped to '1' key
-        return LoopInput.action1;
+        return LoopInput.attack;
       case Input.use:          // Mapped to '2' key  
-        return LoopInput.action2;
+        return LoopInput.utility;
       case Input.drop:         // Mapped to '3' key
-        return LoopInput.action3;
-      case Input.toss:         // Mapped to '4' key  
-        return LoopInput.action4;
-      
-      // Spell management
-      case Input.cycleQueue:   // Mapped to 'Q' key
-        return LoopInput.cycleSpell;
-      
-      // Queue management
-      case Input.tab:          // Mapped to 'Tab' key
-        return LoopInput.cycleQueue;
-      
-      // Equipment and staircase interaction
-      case Input.equip:        // Mapped to 'E' key
-        return LoopInput.equip;
+        return LoopInput.heal;
+      case Input.w:            // W key for movement (Flee effect)
+        return LoopInput.movement;
+      case Input.operate:      // E key for interact
+        return LoopInput.interact;
+      case Input.cycleQueue:   // Q key for cycling categories
+        return LoopInput.cycle;
       
       // Debug functionality
       case Input.debug:        // Mapped to 'Z' key
@@ -59,10 +49,8 @@ class InputConverter {
       // Essential controls
       case Input.cancel:
         return LoopInput.cancel;
-      
-      // Map hero info to our info display
-      case Input.heroInfo:
-        return LoopInput.info;
+      case Input.inventory:
+        return LoopInput.inventory;
       
       // All other inputs are ignored in loop mode
       default:
@@ -74,11 +62,11 @@ class InputConverter {
   static String getActionDescription(int actionNumber) {
     switch (actionNumber) {
       case 1:
-        return "🗡️ Primary Attack/Interact";
+        return "🗡️ Attack WITH CLASS WEAPON";
       case 2:
-        return "⚡ Magic/Secondary Ability";
+        return "⚡ Utility (Scrolls/Buffs/CC)";
       case 3:
-        return "❤️ Heal/Consumable";
+        return "❤️ Heal (From Inventory)";
       default:
         return "Unknown Action";
     }
@@ -90,7 +78,7 @@ class InputConverter {
       case 1:
         return "Attack";
       case 2:
-        return "Magic";
+        return "Utility";
       case 3:
         return "Heal";
       default:
