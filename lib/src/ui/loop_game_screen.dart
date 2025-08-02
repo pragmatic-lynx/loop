@@ -759,14 +759,14 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     var rangedItem = _actionQueues.getRangedQueueItem();
     
     // Debug: Show what we found
-    game.log.message("Debug: Ranged item: ${rangedItem.name}, available: ${rangedItem.isAvailable}");
+    // game.log.message("Debug: Ranged item: ${rangedItem.name}, available: ${rangedItem.isAvailable}");
     
     if (!rangedItem.isAvailable) {
       // Try to auto-equip a ranged weapon
       if (_actionQueues.autoEquipRangedWeapon()) {
         _updateActionMapping();
         rangedItem = _actionQueues.getRangedQueueItem();
-        game.log.message("Debug: After auto-equip: ${rangedItem.name}, available: ${rangedItem.isAvailable}");
+        //game.log.message("Debug: After auto-equip: ${rangedItem.name}, available: ${rangedItem.isAvailable}");
       }
     }
     
@@ -786,7 +786,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
       // Use archery skill if we have it
       var level = game.hero.skills.level(archerySkill);
       if (level > 0) {
-        game.log.message("Debug: Using archery skill level $level");
+        // game.log.message("Debug: Using archery skill level $level");
         return archerySkill.onGetTargetAction(game, level, target.pos);
       }
     }
@@ -800,7 +800,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
         return null;
       }
       
-      game.log.message("Debug: Tossing ${weapon.type.name} at target");
+      // game.log.message("Debug: Tossing ${weapon.type.name} at target");
       // Create a hit for the toss action
       var hit = weapon.toss!.attack.createHit();
       return TossAction(ItemLocation.equipment, weapon, hit, target.pos);
@@ -812,7 +812,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
         return null;
       }
       
-      game.log.message("Debug: Melee attacking target with ${rangedItem.name}");
+      //game.log.message("Debug: Melee attacking target with ${rangedItem.name}");
       return AttackAction(target);
     }
   }
@@ -882,7 +882,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
         }
       }
     } catch (e) {
-      game.log.message('Debug: Error finding archery skill: $e');
+      // game.log.message('Debug: Error finding archery skill: $e');
     }
     return null;
   }
@@ -914,7 +914,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     } else {
       game.hero.experience = experienceLevelCost(game.hero.level + 1);
       game.hero.refreshProperties();
-      game.log.message("Debug: Level up! You are now level ${game.hero.level}.");
+      //game.log.message("Debug: Level up! You are now level ${game.hero.level}.");
     }
     dirty();
   }

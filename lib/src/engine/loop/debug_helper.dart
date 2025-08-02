@@ -46,7 +46,7 @@ class DebugHelper {
     // Give hero basic archery skill so ranged weapons work
     _giveBasicArcherySkill();
     
-    game.log.message('Debug: Added lots of random test items!');
+    // game.log.message('Debug: Added lots of random test items!');
   }
   
   /// Add multiple random ranged weapons
@@ -68,7 +68,7 @@ class DebugHelper {
       var weapon = allRangedWeapons[_random.nextInt(allRangedWeapons.length)];
       var result = hero.inventory.tryAdd(weapon);
       if (result.added > 0) {
-        game.log.message('Debug: Added ${weapon.type.name}');
+        //game.log.message('Debug: Added ${weapon.type.name}');
       }
       // Don't remove from list - allow duplicates for easier testing
     }
@@ -93,7 +93,7 @@ class DebugHelper {
       var item = allMagicItems[_random.nextInt(allMagicItems.length)];
       var result = hero.inventory.tryAdd(item);
       if (result.added > 0) {
-        game.log.message('Debug: Added ${item.type.name}');
+        //game.log.message('Debug: Added ${item.type.name}');
       }
     }
   }
@@ -117,7 +117,7 @@ class DebugHelper {
       var item = allHealItems[_random.nextInt(allHealItems.length)];
       var result = hero.inventory.tryAdd(item);
       if (result.added > 0) {
-        game.log.message('Debug: Added ${item.type.name}');
+        //game.log.message('Debug: Added ${item.type.name}');
       }
     }
   }
@@ -141,7 +141,7 @@ class DebugHelper {
       var item = allResistanceItems[_random.nextInt(allResistanceItems.length)];
       var result = hero.inventory.tryAdd(item);
       if (result.added > 0) {
-        game.log.message('Debug: Added ${item.type.name}');
+        //game.log.message('Debug: Added ${item.type.name}');
       }
     }
   }
@@ -239,13 +239,13 @@ class DebugHelper {
         if (skill.name.toLowerCase() == 'archery') {
           // Give enough points for level 10 archery (should be proficient)
           hero.skills.earnPoints(skill, 5000);
-          game.log.message('Debug: Granted advanced Archery skill (Level 10)!');
+          //game.log.message('Debug: Granted advanced Archery skill (Level 10)!');
           break;
         }
       }
     } catch (e) {
       // If we can't find the skill system, just log it
-      game.log.message('Debug: Could not grant archery skill: $e');
+      //game.log.message('Debug: Could not grant archery skill: $e');
     }
   }
 }
