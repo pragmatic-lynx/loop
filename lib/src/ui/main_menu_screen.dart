@@ -269,7 +269,7 @@ class MainMenuScreen extends Screen<Input> {
       }
     }
 
-    centerTerminal.writeAt(3, 18, '🎮 LOOP MODE v0.2 - Smart 3-Button UI!', hues.UIHue.text);
+    centerTerminal.writeAt(3, 18, '🎮 LOOP - v0.3', hues.UIHue.text);
 
     Draw.hLine(centerTerminal, 3, 20, centerTerminal.width - 6);
     Draw.hLine(centerTerminal, 3, 29, centerTerminal.width - 6);
