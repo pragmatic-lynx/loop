@@ -569,7 +569,189 @@ class Hero extends Actor {
     lore.findItem(item);
 
     _gainItemSkills(game, item);
+    
+    // Try to auto-equip the item if it's equipment
+    _tryAutoEquip(game, item);
+    
     refreshProperties();
+  }
+
+  /// Tries to auto-equip an item if it's better than what's currently equipped.
+  void _tryAutoEquip(Game game, Item item) {
+    print('[AUTO-EQUIP] Checking item: ${item.nounText}');
+    
+    // Only try to auto-equip equippable items
+    if (!item.canEquip) {
+      print('[AUTO-EQUIP] Item cannot be equipped, skipping');
+      return;
+    }
+    
+    if (!equipment.canEquip(item)) {
+      print('[AUTO-EQUIP] Equipment cannot equip this item type, skipping');
+      return;
+    }
+    
+    var equipSlot = item.equipSlot!;
+    print('[AUTO-EQUIP] Item equip slot: $equipSlot, item type: ${_getItemType(item)}');
+    
+    // Find current item in this slot
+    Item? currentItem;
+    int? slotIndex;
+    for (var i = 0; i < equipment.slotTypes.length; i++) {
+      if (equipment.slotTypes[i] == equipSlot && equipment.slots[i] != null) {
+        currentItem = equipment.slots[i];
+        slotIndex = i;
+        break;
+      }
+    }
+    
+    if (currentItem == null) {
+      // Empty slot - always equip
+      print('[AUTO-EQUIP] Empty slot found, equipping item');
+      _autoEquipItem(game, item);
+      return;
+    }
+    
+    print('[AUTO-EQUIP] Current item in slot: ${currentItem.nounText}, type: ${_getItemType(currentItem)}');
+    
+    // Compare items to see if new one is better
+    if (_isItemBetter(item, currentItem)) {
+      print('[AUTO-EQUIP] New item is better, auto-equipping');
+      _autoEquipItem(game, item);
+    } else {
+      print('[AUTO-EQUIP] Current item is better, keeping it equipped');
+    }
+  }
+  
+  /// Determine the general type of an item for debugging.
+  String _getItemType(Item item) {
+    if (item.attack != null) return 'weapon';
+    if (item.baseArmor > 0) return 'armor';
+    return 'other';
+  }
+  
+  /// Determines if the new item is better than the current item.
+  bool _isItemBetter(Item newItem, Item currentItem) {
+    // For weapons, compare damage potential and attributes
+    if (newItem.attack != null || currentItem.attack != null) {
+      return _compareWeapons(newItem, currentItem);
+    }
+    
+    // For armor items, prioritize armor value
+    if (newItem.baseArmor > 0 || currentItem.baseArmor > 0) {
+      return _compareArmor(newItem, currentItem);
+    }
+    
+    // For other equipment (rings, necklaces, etc.), use price as primary comparison
+    print('[AUTO-EQUIP] Other equipment, comparing price: new=${newItem.price} vs current=${currentItem.price}');
+    if (newItem.price != currentItem.price) {
+      return newItem.price > currentItem.price;
+    }
+    
+    // If price is equal, prefer lighter items
+    print('[AUTO-EQUIP] Price equal, comparing weight: new=${newItem.weight} vs current=${currentItem.weight}');
+    return newItem.weight < currentItem.weight;
+  }
+  
+  /// Compare two weapons to determine which is better.
+  bool _compareWeapons(Item newWeapon, Item currentWeapon) {
+    // Calculate base damage potential
+    var newDamage = newWeapon.attack?.damage ?? 0;
+    var currentDamage = currentWeapon.attack?.damage ?? 0;
+    
+    print('[AUTO-EQUIP] Comparing weapons - new damage: $newDamage, current damage: $currentDamage');
+    
+    if (newDamage != currentDamage) {
+      return newDamage > currentDamage;
+    }
+    
+    // If damage is equal, compare price (accounts for affixes and quality)
+    if (newWeapon.price != currentWeapon.price) {
+      print('[AUTO-EQUIP] Weapon damage equal, comparing price: new=${newWeapon.price} vs current=${currentWeapon.price}');
+      return newWeapon.price > currentWeapon.price;
+    }
+    
+    // If price is equal, prefer lighter weapons
+    print('[AUTO-EQUIP] Weapon damage and price equal, comparing weight: new=${newWeapon.weight} vs current=${currentWeapon.weight}');
+    return newWeapon.weight < currentWeapon.weight;
+  }
+  
+  /// Compare two armor items to determine which is better.
+  bool _compareArmor(Item newArmor, Item currentArmor) {
+    var newArmorValue = newArmor.armor;
+    var currentArmorValue = currentArmor.armor;
+    
+    print('[AUTO-EQUIP] Comparing armor: new=$newArmorValue vs current=$currentArmorValue');
+    
+    if (newArmorValue != currentArmorValue) {
+      return newArmorValue > currentArmorValue;
+    }
+    
+    // If armor is equal, prefer lighter items
+    if (newArmor.weight != currentArmor.weight) {
+      print('[AUTO-EQUIP] Armor equal, comparing weight: new=${newArmor.weight} vs current=${currentArmor.weight}');
+      return newArmor.weight < currentArmor.weight;
+    }
+    
+    // If armor and weight are equal, prefer more expensive items (better affixes)
+    print('[AUTO-EQUIP] Armor and weight equal, comparing price: new=${newArmor.price} vs current=${currentArmor.price}');
+    return newArmor.price > currentArmor.price;
+  }
+  
+  /// Actually equips the item and handles any unequipped items.
+  void _autoEquipItem(Game game, Item item) {
+    try {
+      // Create a single-count item for equipping if this is a stack
+      Item itemToEquip;
+      if (item.count > 1) {
+        print('[AUTO-EQUIP] Splitting stack to equip single item');
+        itemToEquip = item.splitStack(1);
+        inventory.countChanged();
+      } else {
+        // Remove the item from inventory first (it should be there from pickup)
+        var foundInInventory = false;
+        for (var i = 0; i < inventory.length; i++) {
+          if (inventory[i] == item) {
+            inventory.removeAt(i);
+            foundInInventory = true;
+            break;
+          }
+        }
+        
+        if (!foundInInventory) {
+          print('[AUTO-EQUIP] Warning: Item not found in inventory, still attempting to equip');
+        }
+        
+        itemToEquip = item;
+      }
+      
+      // Equip the item
+      var unequippedItems = equipment.equip(itemToEquip);
+      
+      // Handle any unequipped items
+      for (var unequippedItem in unequippedItems) {
+        var result = inventory.tryAdd(unequippedItem, wasUnequipped: true);
+        if (result.remaining == 0) {
+          game.log.message('${unequippedItem.nounText} was unequipped.');
+        } else {
+          // No room in inventory, drop it
+          game.stage.addItem(unequippedItem, pos);
+          game.log.message('${unequippedItem.nounText} was unequipped and dropped to the ground.');
+        }
+      }
+      
+      game.log.message('You auto-equipped ${itemToEquip.nounText}.');
+      print('[AUTO-EQUIP] Successfully equipped: ${itemToEquip.nounText}');
+      
+      // Update emanation if needed
+      if (itemToEquip.emanationLevel > 0) {
+        game.stage.actorEmanationChanged();
+      }
+      
+    } catch (e) {
+      print('[AUTO-EQUIP] Error during auto-equip: $e');
+      game.log.error('Failed to auto-equip ${item.nounText}.');
+    }
   }
 
   /// See if any known skills have leveled up.
