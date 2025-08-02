@@ -44,6 +44,7 @@ void main() {
 
   // Load the user's font preference, if any.
   var fontName = html.window.localStorage["font"];
+  _font = _fonts[6]; // Default to 16x16 font
   for (var thisFont in _fonts) {
     if (thisFont.name == fontName) {
       _font = thisFont;
