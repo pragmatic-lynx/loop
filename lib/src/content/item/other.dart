@@ -118,7 +118,7 @@ void food() {
 
 void lightSources() {
   category(CharCode.notSign, verb: "hit[s]")
-    ..tag("equipment/light")
+    ..tag("item/light")
     ..toss(breakage: 70);
 
   // TODO: Ball of fire when hits toss target.

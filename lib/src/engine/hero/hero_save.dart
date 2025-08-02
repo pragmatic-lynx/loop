@@ -72,7 +72,7 @@ class HeroSave {
   final will = Will();
 
   int get emanationLevel {
-    var level = 0;
+    var level = 5; // Default light radius (equivalent to 2 candles)
 
     // Add the emanation of all equipment.
     for (var item in equipment) {
