@@ -126,6 +126,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   late final StagePanel _stagePanel;
   late final EquipmentStatusPanel _equipmentPanel;
   final ActionQueues _actionQueues;
+  late final SmartCombat _smartCombat;
   final DebugHelper _debugHelper;
   late ActionMapping _actionMapping;
   final LoopManager _loopManager;
@@ -168,6 +169,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
 
   LoopGameScreen(this._storage, this.game, this._loopManager)
       : _actionQueues = ActionQueues(game),
+        _smartCombat = SmartCombat(game),
         _debugHelper = DebugHelper(game),
         _previousSave = game.hero.save.clone(),
         _logPanel = LogPanel(game.log),
@@ -359,19 +361,40 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
           dirty();
         }
       case LoopInput.action4:
-        // Resistance - set queue context and handle
+        // Cast mage spell
         _actionQueues.setCurrentQueue(4);
-        action = _handleResistanceAction();
-        if (action == null) {
-          game.log.message("No resistance items available.");
+        if (_actionQueues.castCurrentStealthSpell()) {
+          // Spell was cast successfully, no action needed
+          _updateActionMapping();
+          return true;
+        } else {
+          game.log.message("No spell available.");
           dirty();
         }
         
+      case LoopInput.cycleSpell:
+        // If mage spell queue is active, cycle mage spells
+        if (_actionQueues.currentQueue == 4) {
+          _actionQueues.cycleCurrentQueue();
+          _updateActionMapping();
+          var currentSpell = _actionQueues.getResistanceQueueItem();
+          game.log.message("Active spell: ${currentSpell.name}");
+        } else {
+          // Cycle active spell for other queues
+          _cycleActiveSpell();
+          _updateActionMapping();
+        }
+        return true;
+        
       case LoopInput.cycleQueue:
-        // Cycle the current queue
-        _actionQueues.cycleCurrentQueue();
+        // Cycle which queue is currently active (1-4)
+        var currentQueue = _actionQueues.currentQueue;
+        var nextQueue = (currentQueue % 4) + 1;
+        _actionQueues.setCurrentQueue(nextQueue);
         _updateActionMapping();
-        game.log.message("Cycled queue.");
+        
+        var queueNames = ["", "Ranged", "Magic", "Heal", "Mage Spells"];
+        game.log.message("Active queue: ${queueNames[nextQueue]}");
         return true;
         
       case LoopInput.debug:
@@ -800,20 +823,29 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     return action;
   }
   
-  /// Handle resistance item action
-  Action? _handleResistanceAction() {
-    var resistanceItem = _actionQueues.getResistanceQueueItem();
-    if (!resistanceItem.isAvailable || resistanceItem.item == null) {
+  /// Handle spell casting action
+  Action? _handleSpellCastAction() {
+    var activeSpell = _smartCombat.activeSpell;
+    if (activeSpell == null) {
       return null;
     }
     
-    // Always allow using resistance items, even if already have the effect
-    var action = UseAction(ItemLocation.inventory, resistanceItem.item!);
-    
-    // Replace the used item with a new one after use
-    _actionQueues.replaceUsedItem(resistanceItem.item!);
+    // Cast the spell
+    var action = UseAction(ItemLocation.inventory, activeSpell);
     
     return action;
+  }
+  
+  /// Cycle the active spell
+  void _cycleActiveSpell() {
+    _smartCombat.cycleActiveSpell();
+    
+    var newActiveSpell = _smartCombat.activeSpell;
+    if (newActiveSpell != null) {
+      game.log.message("Active spell: ${newActiveSpell.type.name}");
+    } else {
+      game.log.message("No spells available.");
+    }
   }
   
   /// Handle heal item action
