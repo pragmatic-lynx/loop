@@ -358,19 +358,15 @@ class ActionQueues {
     return items;
   }
   
-  /// Get all available mage spells
+  /// Get all available mage spells (sorcery only)
   List<String> _getStealthSpells() {
-    // Return all mage spells that the hero has learned
+    // Return only the specific sorcery spells
     return [
-      "Disappear",
-      "Flee", 
-      "Escape",
       "Icicle",
       "Brilliant Beam", 
       "Windstorm",
       "Fire Barrier",
-      "Tidal Wave",
-      "Sense Items"
+      "Tidal Wave"
     ];
   }
   
