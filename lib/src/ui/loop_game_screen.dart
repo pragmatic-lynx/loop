@@ -126,6 +126,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   late final StagePanel _stagePanel;
   late final EquipmentStatusPanel _equipmentPanel;
   final ActionQueues _actionQueues;
+  late final SmartCombat _smartCombat;
   final DebugHelper _debugHelper;
   late ActionMapping _actionMapping;
   final LoopManager _loopManager;
@@ -168,6 +169,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
 
   LoopGameScreen(this._storage, this.game, this._loopManager)
       : _actionQueues = ActionQueues(game),
+        _smartCombat = SmartCombat(game),
         _debugHelper = DebugHelper(game),
         _previousSave = game.hero.save.clone(),
         _logPanel = LogPanel(game.log),
@@ -359,13 +361,18 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
           dirty();
         }
       case LoopInput.action4:
-        // Resistance - set queue context and handle
-        _actionQueues.setCurrentQueue(4);
-        action = _handleResistanceAction();
+        // Cast active spell
+        action = _handleSpellCastAction();
         if (action == null) {
-          game.log.message("No resistance items available.");
+          game.log.message("No spell available to cast.");
           dirty();
         }
+        
+      case LoopInput.cycleSpell:
+        // Cycle active spell
+        _cycleActiveSpell();
+        _updateActionMapping();
+        return true;
         
       case LoopInput.cycleQueue:
         // Cycle the current queue
@@ -800,20 +807,29 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     return action;
   }
   
-  /// Handle resistance item action
-  Action? _handleResistanceAction() {
-    var resistanceItem = _actionQueues.getResistanceQueueItem();
-    if (!resistanceItem.isAvailable || resistanceItem.item == null) {
+  /// Handle spell casting action
+  Action? _handleSpellCastAction() {
+    var activeSpell = _smartCombat.activeSpell;
+    if (activeSpell == null) {
       return null;
     }
     
-    // Always allow using resistance items, even if already have the effect
-    var action = UseAction(ItemLocation.inventory, resistanceItem.item!);
-    
-    // Replace the used item with a new one after use
-    _actionQueues.replaceUsedItem(resistanceItem.item!);
+    // Cast the spell
+    var action = UseAction(ItemLocation.inventory, activeSpell);
     
     return action;
+  }
+  
+  /// Cycle the active spell
+  void _cycleActiveSpell() {
+    _smartCombat.cycleActiveSpell();
+    
+    var newActiveSpell = _smartCombat.activeSpell;
+    if (newActiveSpell != null) {
+      game.log.message("Active spell: ${newActiveSpell.type.name}");
+    } else {
+      game.log.message("No spells available.");
+    }
   }
   
   /// Handle heal item action

@@ -40,8 +40,12 @@ class InputConverter {
       case Input.toss:         // Mapped to '4' key  
         return LoopInput.action4;
       
-      // Queue management
+      // Spell management
       case Input.cycleQueue:   // Mapped to 'Q' key
+        return LoopInput.cycleSpell;
+      
+      // Queue management
+      case Input.tab:          // Mapped to 'Tab' key
         return LoopInput.cycleQueue;
       
       // Equipment and staircase interaction
