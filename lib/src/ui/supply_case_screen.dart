@@ -30,6 +30,8 @@ class SupplyCaseScreen extends Screen<Input> {
     
     switch (input) {
       case Input.ok:
+      case Input.confirm:
+      case Input.enter:
         if (earnedTier == LoopMeterRewardTier.legendary || earnedTier == LoopMeterRewardTier.master) {
           _showingStatChoice = true;
           dirty();
@@ -44,9 +46,56 @@ class SupplyCaseScreen extends Screen<Input> {
     }
   }
   
+  @override
+  bool keyDown(int keyCode, {required bool shift, required bool alt}) {
+    if (_showingStatChoice) {
+      switch (keyCode) {
+        case 38: // Up arrow
+        case 87: // W key
+          if (_selectedStat > 0) {
+            _selectedStat--;
+            dirty();
+          }
+          return true;
+          
+        case 40: // Down arrow
+        case 83: // S key
+          if (_selectedStat < _availableStats.length - 1) {
+            _selectedStat++;
+            dirty();
+          }
+          return true;
+          
+        case 13: // Enter
+        case 32: // Space
+        case 69: // E key
+          _applyRewards();
+          onComplete();
+          return true;
+      }
+    } else {
+      switch (keyCode) {
+        case 13: // Enter
+        case 32: // Space
+        case 69: // E key
+          if (earnedTier == LoopMeterRewardTier.legendary || earnedTier == LoopMeterRewardTier.master) {
+            _showingStatChoice = true;
+            dirty();
+          } else {
+            _applyRewards();
+            onComplete();
+          }
+          return true;
+      }
+    }
+    
+    return false;
+  }
+  
   bool _handleStatChoice(Input input) {
     switch (input) {
       case Input.n:
+      case Input.up:
         if (_selectedStat > 0) {
           _selectedStat--;
           dirty();
@@ -54,6 +103,7 @@ class SupplyCaseScreen extends Screen<Input> {
         return true;
         
       case Input.s:
+      case Input.down:
         if (_selectedStat < _availableStats.length - 1) {
           _selectedStat++;
           dirty();
@@ -61,6 +111,8 @@ class SupplyCaseScreen extends Screen<Input> {
         return true;
         
       case Input.ok:
+      case Input.confirm:
+      case Input.enter:
         _applyRewards();
         onComplete();
         return true;
@@ -179,7 +231,7 @@ class SupplyCaseScreen extends Screen<Input> {
     
     Draw.helpKeys(terminal, {
       "↕": "Choose stat",
-      "OK": "Confirm choice",
+      "Enter": "Confirm choice",
     });
   }
   
@@ -228,11 +280,11 @@ class SupplyCaseScreen extends Screen<Input> {
     // Instructions
     if (earnedTier == LoopMeterRewardTier.legendary || earnedTier == LoopMeterRewardTier.master) {
       Draw.helpKeys(terminal, {
-        "OK": "Choose stat boost",
+        "Enter": "Choose stat boost",
       });
     } else {
       Draw.helpKeys(terminal, {
-        "OK": "Continue",
+        "Enter": "Continue",
       });
     }
   }

@@ -835,18 +835,20 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
       }
     }
     
-    var result = List<Color>.filled(15, baseColor);
+    var result = List<Color>.filled(25, baseColor); // 5x5 = 25 positions
     var progress = loopMeter.progressRatio;
     var fillPositions = (progress * 12).round();
-    var clockOrder = [2, 3, 4, 9, 14, 13, 12, 11, 10, 5, 0, 1];
+    var clockOrder = [2, 3, 4, 9, 14, 19, 18, 17, 16, 15, 10, 5];
     
     for (var i = 0; i < fillPositions && i < clockOrder.length; i++) {
-      result[clockOrder[i]] = fillColor;
+      if (clockOrder[i] < result.length) {
+        result[clockOrder[i]] = fillColor;
+      }
     }
     
     // Special color for center when full
     if (loopMeter.isFull) {
-      result[7] = gold; // Center position
+      result[12] = gold; // Center position in 5x5 grid
     }
     
     return result;
