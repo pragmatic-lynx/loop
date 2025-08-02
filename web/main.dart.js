@@ -35102,7 +35102,7 @@
             return A.ioore(t2, x);
           centerTerminal.writeAt$4(x + 3, t1, t2[x], color);
         }
-      centerTerminal.writeAt$4(3, 18, "Which hero shall you play? v0.2", B.Color_132_126_135);
+      centerTerminal.writeAt$4(3, 18, "Which hero shall you play?", B.Color_132_126_135);
       A.Draw_hLine(centerTerminal, 3, 20, 62);
       A.Draw_hLine(centerTerminal, 3, 29, 62);
       t1 = _this.storage.heroes;
