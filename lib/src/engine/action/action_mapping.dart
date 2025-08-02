@@ -1,5 +1,7 @@
 // lib/src/engine/action/action_mapping.dart
 
+import 'package:piecemeal/piecemeal.dart';
+
 import '../core/game.dart';
 import '../hero/hero.dart';
 import '../loop/action_queues.dart';

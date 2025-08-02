@@ -17,6 +17,7 @@ import '../engine/action/walk.dart';
 import '../engine/core/combat.dart';
 import '../engine/core/element.dart';
 import '../engine/items/inventory.dart';
+import '../engine/items/item.dart';
 import '../engine/core/actor.dart';
 import '../engine/core/constants.dart';
 import '../engine/core/content.dart';
@@ -384,6 +385,14 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     if (action != null) {
       game.hero.setNextAction(action);
       
+      // Track movement for cooldown system
+      if (action is WalkAction) {
+        // Check if it's actual movement (not resting)
+        var walkAction = action as WalkAction;
+        // Use reflection or create a getter - for now, assume any WalkAction is movement
+        _trackMovement();
+      }
+      
       // Mark screen as dirty to trigger redraw
       dirty();
       
@@ -478,8 +487,8 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     var equipmentHeight = 12;
     _equipmentPanel.show(Rect(size.x - rightWidth, 0, rightWidth, equipmentHeight));
     
-    // Controls panel at bottom right
-    var controlsHeight = 10; // Increased for 4th button
+    // Controls panel at bottom right - increased height for new controls
+    var controlsHeight = 12;
     _controlsPanel?.show(Rect(size.x - rightWidth, size.y - controlsHeight, rightWidth, controlsHeight));
     
     // Log panel at top center

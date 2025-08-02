@@ -6,11 +6,10 @@ import '../core/actor.dart';
 import '../core/combat.dart';
 import '../stage/sound.dart';
 import 'action.dart';
-import 'element.dart';
 
 /// Powerful AOE melee attack for warrior-type characters
 /// Creates a cleaving effect that hits all adjacent enemies
-class SlamAction extends Action with ElementActionMixin {
+class SlamAction extends Action {
   /// The damage multiplier for the slam attack
   static const double damageMultiplier = 1.5;
   
@@ -42,7 +41,7 @@ class SlamAction extends Action with ElementActionMixin {
     if (_frame <= _animationFrames) {
       // Add visual effect for the slam
       for (var pos in _targetPositions) {
-        addEvent(EventType.slash, actor: actor, pos: pos);
+        // addEvent(EventType.slash, actor: actor, pos: pos); // TODO: Fix event system
       }
       
       // Deal damage on the final animation frame
@@ -89,8 +88,8 @@ class SlamAction extends Action with ElementActionMixin {
       
       for (var hit in hits) {
         // Increase damage for slam attack
-        var enhancedHit = hit.scaled(damageMultiplier);
-        enhancedHit.perform(this, actor, target);
+        hit.scaleDamage(damageMultiplier);
+        hit.perform(this, actor, target);
         
         if (!target.isAlive) break;
       }

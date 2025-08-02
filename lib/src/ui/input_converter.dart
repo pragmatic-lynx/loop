@@ -2,6 +2,7 @@
 
 import 'input.dart';
 import 'loop_input.dart';
+import 'package:piecemeal/piecemeal.dart';
 
 /// Converts between standard Input and simplified LoopInput
 /// Allows loop mode to use a simplified control scheme while

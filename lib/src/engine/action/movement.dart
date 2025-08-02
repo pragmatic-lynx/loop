@@ -30,7 +30,7 @@ class MovementAction extends Action {
     
     // Use the same teleport logic as the Flee spell
     var teleportAction = TeleportAction(range);
-    teleportAction.bind(game, actor);
+    teleportAction.bind(game, actor!);
     
     var result = teleportAction.onPerform();
     

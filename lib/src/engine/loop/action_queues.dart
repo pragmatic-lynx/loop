@@ -5,6 +5,7 @@ import '../core/game.dart';
 import '../hero/hero.dart';
 import '../items/item.dart';
 import '../items/inventory.dart';
+import '../action/action.dart';
 import '../action/item.dart';
 
 import '../../content/skill/skills.dart';
