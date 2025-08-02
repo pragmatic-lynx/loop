@@ -2,6 +2,7 @@ import 'package:malison/malison.dart';
 
 import '../../hues.dart';
 import '../elements.dart';
+import '../rarity.dart';
 import 'builder.dart';
 
 void weapons() {
@@ -68,7 +69,8 @@ void weapons() {
   item("War Hammer", lightCoolGray, price: 400)
     ..depth(52)
     ..weapon(44, heft: 38)
-    ..toss(damage: 20);
+    ..toss(damage: 20)
+    ..rarity(Rarity.rare);
 
   // Maces.
   category(CharCode.latinSmallLetterUWithAcute, verb: "bash[es]")
@@ -267,5 +269,40 @@ void weapons() {
     ..depth(28)
     ..ranged("the bolt", heft: 24, damage: 14, range: 16)
     ..toss(damage: 4)
-    ..destroy(Elements.fire, chance: 4, fuel: 14);
+    ..destroy(Elements.fire, chance: 4, fuel: 14)
+    ..rarity(Rarity.rare);
+
+  // Legendary weapons - placeholder items with over-tuned stats
+  
+  // Legendary sword
+  category(CharCode.feminineOrdinalIndicator, verb: "cleave[s]")
+    ..tag("equipment/weapon/sword")
+    ..frequency(0.1);
+  item("Phoenix Edge", moltenOrange, price: 5000)
+    ..depth(40)
+    ..weapon(50, heft: 35)
+    ..toss(damage: 45)
+    ..rarity(Rarity.legendary);
+
+  // Legendary bow
+  category(CharCode.reversedNotSign, verb: "hit[s]")
+    ..tag("equipment/weapon/bow")
+    ..frequency(0.1)
+    ..twoHanded();
+  item("Void Repeater", purple, price: 4500)
+    ..depth(38)
+    ..ranged("the void bolt", heft: 28, damage: 35, range: 20)
+    ..toss(damage: 30)
+    ..rarity(Rarity.legendary);
+
+  // Legendary staff
+  category(CharCode.latinSmallLetterIWithAcute, verb: "hit[s]")
+    ..tag("equipment/weapon/staff")
+    ..frequency(0.1)
+    ..twoHanded();
+  item("Celestial Tome", gold, price: 4000)
+    ..depth(35)
+    ..weapon(40, heft: 20)
+    ..toss(damage: 25)
+    ..rarity(Rarity.legendary);
 }

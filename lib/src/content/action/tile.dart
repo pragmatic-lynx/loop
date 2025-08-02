@@ -1,8 +1,11 @@
 import 'package:piecemeal/piecemeal.dart';
 
 import '../../engine.dart';
+import '../chest.dart';
+import '../elements.dart';
 import '../item/drops.dart';
 import '../tiles.dart';
+import '../rarity.dart';
 
 /// Base class for actions that open a container tile.
 abstract class _OpenTileAction extends Action {
@@ -65,26 +68,60 @@ class OpenBarrelAction extends _OpenTileAction {
 }
 
 /// Open a chest and place its drops.
-class OpenChestAction extends _OpenTileAction {
-  OpenChestAction(super.pos);
+class OpenChestAction extends Action {
+  final Vec _pos;
+
+  OpenChestAction(this._pos);
 
   @override
-  String get _name => "chest";
+  ActionResult onPerform() {
+    final currentTile = game.stage[_pos].type;
+    final ChestType chestType;
+    final TileType openTile;
 
-  @override
-  TileType get _openTile => Tiles.openChest;
+    // Determine chest type and corresponding open tile
+    if (currentTile == Tiles.closedChest) {
+      chestType = ChestType.wooden;
+      openTile = Tiles.openChest;
+    } else if (currentTile == Tiles.closedOrnateChest) {
+      chestType = ChestType.ornate;
+      openTile = Tiles.openOrnateChest;
+    } else if (currentTile == Tiles.closedMythicChest) {
+      chestType = ChestType.mythic;
+      openTile = Tiles.openMythicChest;
+    } else {
+      // Fallback to wooden chest
+      chestType = ChestType.wooden;
+      openTile = Tiles.openChest;
+    }
 
-  @override
-  int get _minDepthEmptyChance => 20;
+    // Change the tile to open
+    game.stage[_pos].type = openTile;
+    addEvent(EventType.openBarrel, pos: _pos);
 
-  @override
-  int get _maxDepthEmptyChance => 2;
+    // Generate loot using the new chest system
+    final chest = Chest(chestType, game.depth);
+    final loot = chest.open();
 
-  // TODO: Drop more than one item sometimes.
-  @override
-  Drop _createDrop() => dropOneOf({
-        parseDrop("treasure", depth: game.depth): 0.5,
-        parseDrop("magic", depth: game.depth): 0.2,
-        parseDrop("equipment", depth: game.depth): 0.3
-      });
+    // Add gold to hero
+    if (loot.gold > 0) {
+      game.hero.gold += loot.gold;
+    }
+
+    // Place items on the ground
+    for (final item in loot.items) {
+      game.stage.addItem(item, _pos);
+    }
+
+    // Create treasure found event for UI feedback
+    addEvent(EventType.openBarrel, pos: _pos);
+
+    if (loot.items.isNotEmpty || loot.gold > 0) {
+      log("{1} open[s] the ${chestType.name}.", actor);
+    } else {
+      log("The ${chestType.name} is empty.", actor);
+    }
+
+    return ActionResult.success;
+  }
 }

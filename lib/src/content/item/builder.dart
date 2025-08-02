@@ -13,6 +13,7 @@ import '../action/perception.dart';
 import '../action/ray.dart';
 import '../action/teleport.dart';
 import '../skill/skills.dart';
+import '../rarity.dart';
 import 'affixes.dart';
 import 'items.dart';
 
@@ -173,6 +174,7 @@ class ItemBuilder extends _BaseBuilder {
   int? _heft;
   int? _armor;
   bool _isArtifact = false;
+  Rarity _rarity = Rarity.common;
 
   AffixType? _instrinsicAffix;
 
@@ -196,6 +198,11 @@ class ItemBuilder extends _BaseBuilder {
     if (buildAffix != null) {
       instrinsicAffix(buildAffix);
     }
+  }
+
+  /// Set the rarity of this item.
+  void rarity(Rarity rarity) {
+    _rarity = rarity;
   }
 
   /// Give this item type an intrinsic affix populated by calling [buildAffix].
@@ -375,7 +382,8 @@ class ItemBuilder extends _BaseBuilder {
         fuel: _fuel ?? _category._fuel,
         treasure: _category._isTreasure,
         twoHanded: _category._isTwoHanded ?? _isTwoHanded ?? false,
-        isArtifact: _isArtifact);
+        isArtifact: _isArtifact,
+        rarity: _rarity);
 
     itemType.destroyChance.addAll(_category._destroyChance);
     itemType.destroyChance.addAll(_destroyChance);
