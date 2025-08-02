@@ -93,7 +93,7 @@ class SidebarPanel extends Panel {
 
     // Draw the nearby monsters.
     terminal.writeAt(1, y, "@", _gameScreen.heroColor);
-    terminal.writeAt(3, y, hero.save.name, UIHue.text);
+    terminal.writeAt(3, y, hero.save.name, gold);
     y += 1;
     _drawHealthBar(terminal, y, hero);
     y += 1;
