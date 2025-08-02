@@ -550,7 +550,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
         game.log.message("Debug: Gave one-time set of consumables");
         return true;
         
-      // Debug functionality has been removed
+      // No debug functionality - intentionally left blank
 
       case LoopInput.equip:
         // First try to interact with staircase if standing on one
