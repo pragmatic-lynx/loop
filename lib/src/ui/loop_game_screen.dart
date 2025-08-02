@@ -648,16 +648,17 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     var archetypeText = archetype.name.toUpperCase();
     var color = _getArchetypeColor(archetype);
     
+    // TODO decide if this even show
     // Display archetype in top-left corner of the stage area
-    terminal.writeAt(leftWidth + 1, 4, archetypeText, color, darkerCoolGray);
+    //terminal.writeAt(leftWidth + 1, 4, archetypeText, color, darkerCoolGray);
     
     // Display scalars if tuning overlay is not active (to avoid clutter)
     if (!_showTuningOverlay) {
       var scalars = metadata.scalars;
       var enemyText = "E:${(scalars.enemyMultiplier * 100).round()}%";
       var itemText = "I:${(scalars.itemMultiplier * 100).round()}%";
-      terminal.writeAt(leftWidth + 1, 5, enemyText, lightWarmGray, darkerCoolGray);
-      terminal.writeAt(leftWidth + 8, 5, itemText, lightWarmGray, darkerCoolGray);
+      // terminal.writeAt(leftWidth + 1, 5, enemyText, lightWarmGray, darkerCoolGray);
+      // terminal.writeAt(leftWidth + 8, 5, itemText, lightWarmGray, darkerCoolGray);
     }
   }
   
