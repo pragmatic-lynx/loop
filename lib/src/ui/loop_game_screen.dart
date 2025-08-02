@@ -71,14 +71,12 @@ class ControlsPanel extends Panel {
     Draw.frame(terminal, 0, 0, terminal.width, terminal.height, label: "CONTROLS");
     terminal.writeAt(1, 1, "Movement:", ash);
     terminal.writeAt(1, 2, "Arrow Keys", lightWarmGray);
-    terminal.writeAt(1, 3, "Shift + 2 Directions", lightWarmGray);
-    terminal.writeAt(1, 4, "for Diagonal", lightWarmGray);
     
-    terminal.writeAt(1, 6, "Actions:", ash);
-    terminal.writeAt(1, 7, "1: ${actionMapping.action1Label}", lightBlue);
-    terminal.writeAt(1, 8, "2: ${actionMapping.action2Label}", lima);
-    terminal.writeAt(1, 9, "3: ${actionMapping.action3Label}", pink);
-    terminal.writeAt(1, 10, "4: ${actionMapping.action4Label}", aqua);
+    terminal.writeAt(1, 3, "Actions:", ash);
+    terminal.writeAt(1, 4, "1: ${actionMapping.action1Label}", lightBlue);
+    terminal.writeAt(1, 5, "2: ${actionMapping.action2Label}", lima);
+    terminal.writeAt(1, 6, "3: ${actionMapping.action3Label}", pink);
+    terminal.writeAt(1, 7, "4: ${actionMapping.action4Label}", aqua);
     
     // Context-aware E action
     var eAction = _getEActionDescription();
