@@ -130,8 +130,8 @@ class SupplyCaseScreen extends Screen<Input> {
         // +2 stat boost + Large bundles
         if (_showingStatChoice && _selectedStat < _availableStats.length) {
           var chosenStat = _availableStats[_selectedStat];
-          // TODO: Implement permanent stat bonus system
-          game.log.gain("Legendary power! Your ${chosenStat.name} would increase by 2!");
+          hero.save.addPermanentStatBonus(chosenStat, 2);
+          game.log.gain("Legendary power! Your ${chosenStat.name} increased by 2!");
         }
         _addSupplyBundle(BundleSize.large);
         break;
@@ -140,8 +140,8 @@ class SupplyCaseScreen extends Screen<Input> {
         // +1 stat boost + Medium bundles
         if (_showingStatChoice && _selectedStat < _availableStats.length) {
           var chosenStat = _availableStats[_selectedStat];
-          // TODO: Implement permanent stat bonus system
-          game.log.gain("Mastery achieved! Your ${chosenStat.name} would increase by 1!");
+          hero.save.addPermanentStatBonus(chosenStat, 1);
+          game.log.gain("Mastery achieved! Your ${chosenStat.name} increased by 1!");
         }
         _addSupplyBundle(BundleSize.medium);
         break;
@@ -149,8 +149,8 @@ class SupplyCaseScreen extends Screen<Input> {
       case LoopMeterRewardTier.apprentice:
         // +1 random stat + Small bundles
         var randomStat = _availableStats[game.stage.actors.length % _availableStats.length];
-        // TODO: Implement permanent stat bonus system
-        game.log.gain("Your ${randomStat.name} would increase by 1!");
+        hero.save.addPermanentStatBonus(randomStat, 1);
+        game.log.gain("Your ${randomStat.name} increased by 1!");
         _addSupplyBundle(BundleSize.small);
         break;
         

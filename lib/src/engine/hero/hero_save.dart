@@ -71,6 +71,38 @@ class HeroSave {
   final intellect = Intellect();
   final will = Will();
 
+  /// Permanent stat bonuses gained from loop rewards
+  final Map<Stat, int> _permanentStatBonuses = {};
+
+  /// Adds a permanent bonus to the specified stat
+  void addPermanentStatBonus(Stat stat, int bonus) {
+    _permanentStatBonuses[stat] = (_permanentStatBonuses[stat] ?? 0) + bonus;
+    
+    // Refresh the stat to trigger logging and update
+    switch (stat) {
+      case Stat.strength:
+        strength.refresh(this);
+        break;
+      case Stat.agility:
+        agility.refresh(this);
+        break;
+      case Stat.fortitude:
+        fortitude.refresh(this);
+        break;
+      case Stat.intellect:
+        intellect.refresh(this);
+        break;
+      case Stat.will:
+        will.refresh(this);
+        break;
+    }
+  }
+
+  /// Gets the permanent bonus for a specific stat
+  int getPermanentStatBonus(Stat stat) {
+    return _permanentStatBonuses[stat] ?? 0;
+  }
+
   int get emanationLevel {
     var level = 5; // Default light radius (equivalent to 2 candles)
 
@@ -178,9 +210,12 @@ class HeroSave {
     return resistance;
   }
 
-  /// Gets the total modifiers to [stat] provided by all equipment.
+  /// Gets the total modifiers to [stat] provided by equipment and permanent bonuses.
   int statBonus(Stat stat) {
     var bonus = 0;
+
+    // Add permanent stat bonuses from loop rewards
+    bonus += getPermanentStatBonus(stat);
 
     // Let equipment modify it.
     for (var item in equipment) {
