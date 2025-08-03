@@ -39,7 +39,6 @@ class AudioManager {
       await _scanAudioFiles();
       _initialized = true;
       print('AudioManager initialized successfully');
-      print('Available sounds: ${_loadedSounds.keys.toList()}');
     } catch (e) {
       print('AudioManager failed to initialize: $e');
       // Continue without audio - fail-safe behavior
@@ -77,7 +76,6 @@ class AudioManager {
     if (_audioContext == null) return;
 
     try {
-      print('Attempting to load: assets/audio/sfx/$filePath');
       final response = await html.HttpRequest.request(
         'assets/audio/sfx/$filePath',
         responseType: 'arraybuffer',
@@ -91,12 +89,9 @@ class AudioManager {
         final id = _extractSoundId(filePath);
         
         _loadedSounds.putIfAbsent(id, () => []).add(audioBuffer);
-        print('✓ Loaded audio: $filePath -> $id');
-      } else {
-        print('✗ Failed to load $filePath: HTTP ${response.status}');
       }
     } catch (e) {
-      print('✗ Error loading $filePath: $e');
+      // Silently ignore missing files - this is expected fail-safe behavior
     }
   }
 
@@ -112,17 +107,12 @@ class AudioManager {
     final baseName = nameWithoutExt.replaceAll(RegExp(r'_\d+$'), '');
     
     // Combine directory and filename: 'player/magic_cast_01.ogg' -> 'player_magic_cast'
-    final result = '${directory}_$baseName';
-    print('Extracting ID: $filePath -> $result');
-    return result;
+    return '${directory}_$baseName';
   }
 
   /// Play a sound effect
   void play(String id, {double volume = 1.0, double pitchVar = 0.05}) {
-    if (!_initialized || _audioContext == null) {
-      print('AudioManager not initialized, cannot play $id');
-      return;
-    }
+    if (!_initialized || _audioContext == null) return;
 
     // Resume audio context if suspended (browser requirement)
     _resumeAudioContext();
@@ -134,8 +124,6 @@ class AudioManager {
     }
 
     try {
-      print('Playing sound: $id (${sounds.length} variations available)');
-      
       // Pick a random variation if multiple exist
       final audioBuffer = sounds[_random.nextInt(sounds.length)];
       
@@ -156,7 +144,6 @@ class AudioManager {
       gainNode.connectNode(_audioContext!.destination!);
       
       source.start();
-      print('Sound $id started successfully');
     } catch (e) {
       print('Error playing sound $id: $e');
     }
@@ -219,9 +206,7 @@ class AudioManager {
   /// Resume audio context if suspended (required by modern browsers)
   void _resumeAudioContext() {
     if (_audioContext?.state == 'suspended') {
-      _audioContext!.resume().then((_) {
-        print('AudioContext resumed');
-      }).catchError((e) {
+      _audioContext!.resume().catchError((e) {
         print('Failed to resume AudioContext: $e');
       });
     }

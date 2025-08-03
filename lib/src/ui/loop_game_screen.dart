@@ -421,7 +421,6 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
         }
       } else {
         // Normal movement - just proceed with the original input
-        developer.log('Normal movement: $input', name: 'LoopGameScreen');
       }
     }
 
