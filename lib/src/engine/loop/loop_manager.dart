@@ -257,7 +257,7 @@ class LoopManager {
     
     var newProgress = _loopMeter.addKillProgress();
     
-    // Check for instant Ring Loop completion at 100%
+    // Check for instant Loop completion at 100%
     if (_loopMeter.progress >= 100.0 && !isRewardSelection) {
       triggerRewardSelection();
     }
@@ -269,7 +269,7 @@ class LoopManager {
     
     var newProgress = _loopMeter.addLootProgress();
     
-    // Check for instant Ring Loop completion at 100%
+    // Check for instant Loop completion at 100%
     if (_loopMeter.progress >= 100.0 && !isRewardSelection) {
       triggerRewardSelection();
     }
@@ -282,7 +282,7 @@ class LoopManager {
     var newProgress = _loopMeter.addSacrificeProgress(hpLost, maxHp);
     var progressAdded = (hpLost / maxHp) * 100.0;
     
-    // Check for instant Ring Loop completion at 100%
+    // Check for instant Loop completion at 100%
     if (_loopMeter.progress >= 100.0 && !isRewardSelection) {
       triggerRewardSelection();
     }

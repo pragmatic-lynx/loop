@@ -278,9 +278,9 @@ class SupplyCaseScreen extends Screen<Input> {
     Draw.doubleBox(centerTerminal, 0, 0, centerTerminal.width, centerTerminal.height);
     
     // Title with progress and reward cycle info
-    centerTerminal.writeAt(3, 2, 'LOOP $loopNumber COMPLETE!', gold);
+    centerTerminal.writeAt(3, 2, 'LOOP $loopNumber COMPLETE', gold);
     var cycleName = RewardCycleManager.getCycleName(loopNumber);
-    centerTerminal.writeAt(3, 3, 'Ring filled to ${meterProgress.toInt()}% - ${earnedTier.displayName} earned!', ash);
+    centerTerminal.writeAt(3, 3, 'Loop filled to ${meterProgress.toInt()}% - ${earnedTier.displayName} earned', ash);
     centerTerminal.writeAt(3, 4, 'Reward Type: $cycleName', lightBlue);
     
     // Show current stats
