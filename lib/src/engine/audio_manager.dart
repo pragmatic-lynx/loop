@@ -29,6 +29,13 @@ class AudioManager {
 
     try {
       _audioContext = web_audio.AudioContext();
+      
+      // Modern browsers require user interaction before audio can play
+      // The context starts in 'suspended' state until user interacts
+      if (_audioContext!.state == 'suspended') {
+        print('AudioContext suspended - will resume on first user interaction');
+      }
+      
       await _scanAudioFiles();
       _initialized = true;
       print('AudioManager initialized successfully');
@@ -101,7 +108,13 @@ class AudioManager {
 
   /// Play a sound effect
   void play(String id, {double volume = 1.0, double pitchVar = 0.05}) {
-    if (!_initialized || _audioContext == null) return;
+    if (!_initialized || _audioContext == null) {
+      print('AudioManager not initialized, cannot play $id');
+      return;
+    }
+
+    // Resume audio context if suspended (browser requirement)
+    _resumeAudioContext();
 
     final sounds = _loadedSounds[id];
     if (sounds == null || sounds.isEmpty) {
@@ -110,6 +123,8 @@ class AudioManager {
     }
 
     try {
+      print('Playing sound: $id (${sounds.length} variations available)');
+      
       // Pick a random variation if multiple exist
       final audioBuffer = sounds[_random.nextInt(sounds.length)];
       
@@ -130,6 +145,7 @@ class AudioManager {
       gainNode.connectNode(_audioContext!.destination!);
       
       source.start();
+      print('Sound $id started successfully');
     } catch (e) {
       print('Error playing sound $id: $e');
     }
@@ -138,6 +154,9 @@ class AudioManager {
   /// Start looping a sound
   void loop(String id, {double volume = 1.0}) {
     if (!_initialized || _audioContext == null) return;
+
+    // Resume audio context if suspended (browser requirement)
+    _resumeAudioContext();
 
     // Stop existing loop if any
     stopLoop(id);
@@ -184,6 +203,17 @@ class AudioManager {
   /// Check if a sound effect is available
   bool isSfxAvailable(String id) {
     return _loadedSounds.containsKey(id) && _loadedSounds[id]!.isNotEmpty;
+  }
+
+  /// Resume audio context if suspended (required by modern browsers)
+  void _resumeAudioContext() {
+    if (_audioContext?.state == 'suspended') {
+      _audioContext!.resume().then((_) {
+        print('AudioContext resumed');
+      }).catchError((e) {
+        print('Failed to resume AudioContext: $e');
+      });
+    }
   }
 
   /// Log warning once per session for missing sounds
