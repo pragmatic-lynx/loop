@@ -523,7 +523,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
           game.log.message("No healing available.");
           dirty();
         }
-
+        break;
         
       case LoopInput.cycleSpell:
         // If mage spell queue is active, cycle mage spells
@@ -553,6 +553,15 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
       case LoopInput.giveConsumables:
         _debugHelper.giveAllConsumables();
         game.log.message("Debug: Gave one-time set of consumables");
+        return true;
+        
+      case LoopInput.incrementMeter:
+        if (_loopManager != null) {
+          var newProgress = _loopManager!.loopMeter.addDebugProgress();
+          game.log.message("Debug: Loop meter increased by 20% (now ${newProgress.toStringAsFixed(1)}%)");
+        } else {
+          game.log.message("Debug: Loop meter not available");
+        }
         return true;
         
       // No debug functionality - intentionally left blank

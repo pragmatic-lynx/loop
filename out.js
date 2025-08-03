@@ -10670,52 +10670,22 @@
           return "Stick";
       }
     },
-    NewHeroScreen$(_content, _storage) {
-      var t4, t5, t6, t7, t8,
-        t1 = type$.JSArray_Control,
-        t2 = A._setArrayType([], t1),
-        t3 = $.$get$rng();
-      type$.List_String._as(B.List_E8g);
-      t4 = B.List_E8g.length;
-      t5 = t3.range$1(t4);
-      if (!(t5 >= 0 && t5 < t4))
-        return A.ioore(B.List_E8g, t5);
-      t5 = new A.NameControl(0, 0, _storage, B.List_E8g[t5]);
-      t5._refreshUnique$0();
-      t4 = $.$get$Races_all();
-      t6 = A._arrayInstanceType(t4);
-      t7 = t6._eval$1("MappedListIterable<1,String>");
-      t4 = A.List_List$_of(new A.MappedListIterable(t4, t6._eval$1("String(1)")._as(new A.NewHeroScreen_closure()), t7), t7._eval$1("ListIterable.E"));
-      t4 = new A.SelectControl(0, 4, "Race", t4);
-      t6 = $.$get$Classes_all();
-      t7 = A._arrayInstanceType(t6);
-      t8 = t7._eval$1("MappedListIterable<1,String>");
-      t6 = A.List_List$_of(new A.MappedListIterable(t6, t7._eval$1("String(1)")._as(new A.NewHeroScreen_closure0()), t8), t8._eval$1("ListIterable.E"));
-      t6 = new A.SelectControl(0, 14, "Class", t6);
-      t7 = new A.SelectControl(0, 28, "Death", B.List_Stairs_Permanent);
-      B.JSArray_methods.addAll$1(t2, A._setArrayType([t5, t4, t6, t7], t1));
-      t4.selected = t3.range$1(5);
-      t6.selected = t3.range$1(3);
-      return new A.NewHeroScreen(_content, _storage, t5, t4, t6, t7, t2);
-    },
-    NewHeroScreen: function NewHeroScreen(t0, t1, t2, t3, t4, t5, t6) {
+    NewHeroScreen: function NewHeroScreen(t0, t1, t2, t3, t4) {
       var _ = this;
       _._new_hero_screen$_content = t0;
       _._storage = t1;
       _._new_hero_screen$_focus = 0;
       _._new_hero_screen$_name = t2;
-      _._new_hero_screen$_race = t3;
-      _._class = t4;
-      _._death = t5;
-      _._controls = t6;
+      _._class = t3;
+      _._controls = t4;
+      _.__NewHeroScreen__randomRaceIndex_F = $;
       _._ui = null;
-    },
-    NewHeroScreen_closure: function NewHeroScreen_closure() {
-    },
-    NewHeroScreen_closure0: function NewHeroScreen_closure0() {
     },
     NewHeroScreen_render_closure: function NewHeroScreen_render_closure(t0) {
       this.$this = t0;
+    },
+    NewHeroScreen_keyDown_closure: function NewHeroScreen_keyDown_closure(t0) {
+      this.selectedClassName = t0;
     },
     Control: function Control() {
     },
@@ -12573,7 +12543,9 @@
       t2 = $.___ui._readField$0().keyPress;
       t2._bindings.$indexSet(0, new A._KeyBinding(85, false, false), t2.$ti._precomputed1._as(B.Input_use));
       t2 = $.___ui._readField$0().keyPress;
-      t2._bindings.$indexSet(0, new A._KeyBinding(71, false, false), t2.$ti._precomputed1._as(B.Input_pickUp));
+      t2._bindings.$indexSet(0, new A._KeyBinding(70, false, false), t2.$ti._precomputed1._as(B.Input_giveConsumables));
+      t2 = $.___ui._readField$0().keyPress;
+      t2._bindings.$indexSet(0, new A._KeyBinding(71, true, false), t2.$ti._precomputed1._as(B.Input_pickUp));
       t2 = $.___ui._readField$0().keyPress;
       t2._bindings.$indexSet(0, new A._KeyBinding(88, false, false), t2.$ti._precomputed1._as(B.Input_swap));
       t2 = $.___ui._readField$0().keyPress;
@@ -12671,9 +12643,9 @@
       t2 = $.___ui._readField$0().keyPress;
       t2._bindings.$indexSet(0, new A._KeyBinding(77, true, false), t2.$ti._precomputed1._as(B.Input_metricsCapture));
       t2 = $.___ui._readField$0().keyPress;
-      t2._bindings.$indexSet(0, new A._KeyBinding(81, false, false), t2.$ti._precomputed1._as(B.Input_cycleQueue));
+      t2._bindings.$indexSet(0, new A._KeyBinding(77, false, true), t2.$ti._precomputed1._as(B.Input_incrementMeter));
       t2 = $.___ui._readField$0().keyPress;
-      t2._bindings.$indexSet(0, new A._KeyBinding(90, false, false), t2.$ti._precomputed1._as(B.Input_debug));
+      t2._bindings.$indexSet(0, new A._KeyBinding(81, false, false), t2.$ti._precomputed1._as(B.Input_cycleQueue));
       t2 = $.___ui._readField$0().keyPress;
       t2._bindings.$indexSet(0, new A._KeyBinding(49, false, false), t2.$ti._precomputed1._as(B.Input_selectSkill));
       t2 = $.___ui._readField$0().keyPress;
@@ -13988,12 +13960,14 @@
           return B.LoopInput_13;
         case B.Input_equip:
           return B.LoopInput_14;
-        case B.Input_debug:
-          return B.LoopInput_15;
-        case B.Input_cancel:
-          return B.LoopInput_16;
-        case B.Input_heroInfo:
+        case B.Input_giveConsumables:
           return B.LoopInput_17;
+        case B.Input_cancel:
+          return B.LoopInput_15;
+        case B.Input_heroInfo:
+          return B.LoopInput_16;
+        case B.Input_incrementMeter:
+          return B.LoopInput_18;
         default:
           return null;
       }
@@ -15841,7 +15815,7 @@
     call$2(o, tag) {
       return this.getUnknownTag(o, tag);
     },
-    $signature: 110
+    $signature: 109
   };
   A.initHooks_closure1.prototype = {
     call$1(tag) {
@@ -16270,7 +16244,7 @@
       t1.storedCallback = null;
       f.call$0();
     },
-    $signature: 49
+    $signature: 39
   };
   A._AsyncRun__initializeScheduleImmediate_closure.prototype = {
     call$1(callback) {
@@ -16337,19 +16311,19 @@
     call$1(result) {
       return this.bodyFunction.call$2(0, result);
     },
-    $signature: 116
+    $signature: 115
   };
   A._awaitOnObject_closure0.prototype = {
     call$2(error, stackTrace) {
       this.bodyFunction.call$2(1, new A.ExceptionAndStackTrace(error, type$.StackTrace._as(stackTrace)));
     },
-    $signature: 125
+    $signature: 124
   };
   A._wrapJsFunctionForAsync_closure.prototype = {
     call$2(errorCode, result) {
       this.$protected(A._asInt(errorCode), result);
     },
-    $signature: 128
+    $signature: 126
   };
   A._SyncStarIterator.prototype = {
     get$current() {
@@ -16743,7 +16717,7 @@
     call$1(__wc0_formal) {
       this.joinedResult._completeWithResultOf$1(this.originalSource);
     },
-    $signature: 49
+    $signature: 39
   };
   A._Future__propagateToListeners_handleWhenCompleteCallback_closure0.prototype = {
     call$2(e, s) {
@@ -17237,7 +17211,7 @@
       t2 = A.S(v);
       t1._contents += t2;
     },
-    $signature: 34
+    $signature: 47
   };
   A._UnmodifiableMapMixin.prototype = {};
   A.MapView.prototype = {
@@ -17795,7 +17769,7 @@
       B.JSArray_methods.$indexSet(t1, t2.i++, key);
       B.JSArray_methods.$indexSet(t1, t2.i++, value);
     },
-    $signature: 34
+    $signature: 47
   };
   A._JsonStringStringifier.prototype = {
     get$_partialResult() {
@@ -18517,7 +18491,7 @@
     call$1(e) {
       return type$.Element._is(type$.Node._as(e));
     },
-    $signature: 36
+    $signature: 34
   };
   A.Event0.prototype = {$isEvent0: 1};
   A.EventTarget.prototype = {
@@ -18811,7 +18785,7 @@
     call$2(k, v) {
       return B.JSArray_methods.add$1(this.keys, k);
     },
-    $signature: 23
+    $signature: 22
   };
   A.TableElement.prototype = {
     createFragment$3$treeSanitizer$validator(receiver, html, treeSanitizer, validator) {
@@ -19134,13 +19108,13 @@
     call$1(v) {
       return type$.NodeValidator._as(v).allowsElement$1(this.element);
     },
-    $signature: 51
+    $signature: 49
   };
   A.NodeValidatorBuilder_allowsAttribute_closure.prototype = {
     call$1(v) {
       return type$.NodeValidator._as(v).allowsAttribute$3(this.element, this.attributeName, this.value);
     },
-    $signature: 51
+    $signature: 49
   };
   A._SimpleNodeValidator.prototype = {
     _SimpleNodeValidator$4$allowedAttributes$allowedElements$allowedUriAttributes(uriPolicy, allowedAttributes, allowedElements, allowedUriAttributes) {
@@ -19508,7 +19482,7 @@
     call$1(n) {
       return type$.Element._is(type$.Node._as(n));
     },
-    $signature: 36
+    $signature: 34
   };
   A.FilteredElementList__iterable_closure0.prototype = {
     call$1(n) {
@@ -19556,7 +19530,7 @@
       $.$get$_installSafeToStringHook();
       return new A.JsFunction(t1);
     },
-    $signature: 164
+    $signature: 162
   };
   A._wrapToDart_closure0.prototype = {
     call$1(o) {
@@ -19998,7 +19972,7 @@
       if (neighbor.element === $.$get$Elements_fire())
         this._box_0.fire += amount;
     },
-    $signature: 37
+    $signature: 36
   };
   A.GameContent__spreadPoison_neighbor.prototype = {
     call$2(x, y) {
@@ -20362,7 +20336,7 @@
     call$0() {
       return A._setArrayType([], type$.JSArray_Vec);
     },
-    $signature: 38
+    $signature: 40
   };
   A.DetectAction__findTiles_closure.prototype = {
     call$2(item, pos) {
@@ -20375,14 +20349,14 @@
       ++this._box_0.foundItems;
       this.addTile.call$1(pos);
     },
-    $signature: 115
+    $signature: 110
   };
   A.DetectAction__findTiles_closure0.prototype = {
     call$2(a, b) {
       A._asInt(a);
       return B.JSInt_methods.compareTo$1(A._asInt(b), a);
     },
-    $signature: 47
+    $signature: 37
   };
   A.DetectAction__findTiles_closure1.prototype = {
     call$1(distance) {
@@ -20390,7 +20364,7 @@
       t1.toString;
       return t1;
     },
-    $signature: 124
+    $signature: 116
   };
   A.EatAction.prototype = {
     onPerform$0() {
@@ -21087,7 +21061,7 @@
       t1.reachTile$2(pos, Math.sqrt(pos.$sub(0, t2).get$lengthSquared()));
       return false;
     },
-    $signature: 126
+    $signature: 125
   };
   A.RayAction.prototype = {
     get$range() {
@@ -21466,14 +21440,14 @@
       A._asInt(_);
       return new A.WindAction();
     },
-    $signature: 130
+    $signature: 128
   };
   A.Elements_fire_closure.prototype = {
     call$1(_) {
       A._asInt(_);
       return new A.BurnActorAction();
     },
-    $signature: 131
+    $signature: 130
   };
   A.Elements_fire_closure0.prototype = {
     call$4(pos, hit, distance, fuel) {
@@ -21485,13 +21459,13 @@
     },
     "call*": "call$4",
     $requiredArgCount: 4,
-    $signature: 133
+    $signature: 131
   };
   A.Elements_cold_closure.prototype = {
     call$1(damage) {
       return new A.FreezeActorAction(A._asInt(damage));
     },
-    $signature: 135
+    $signature: 133
   };
   A.Elements_cold_closure0.prototype = {
     call$4(pos, hit, distance, _) {
@@ -21527,13 +21501,13 @@
     call$1(damage) {
       return new A.BlindAction(A._asInt(damage));
     },
-    $signature: 144
+    $signature: 142
   };
   A.Elements_light_closure.prototype = {
     call$1(damage) {
       return new A.DazzleAction(A._asInt(damage));
     },
-    $signature: 149
+    $signature: 143
   };
   A.Elements_light_closure0.prototype = {
     call$4(pos, hit, distance, _) {
@@ -21548,7 +21522,7 @@
     },
     "call*": "call$4",
     $requiredArgCount: 4,
-    $signature: 154
+    $signature: 148
   };
   A._BaseBuilder.prototype = {
     toss$4$breakage$damage$element$range(breakage, damage, element, range) {
@@ -21712,37 +21686,37 @@
     call$0() {
       return new A.EatAction(this.amount);
     },
-    $signature: 155
+    $signature: 152
   };
   A.ItemBuilder_detection_closure.prototype = {
     call$0() {
       return A.DetectAction$(this.types, this.range);
     },
-    $signature: 156
+    $signature: 153
   };
   A.ItemBuilder_perception_closure.prototype = {
     call$0() {
       return new A.PerceiveAction(this.duration, this.distance);
     },
-    $signature: 159
+    $signature: 57
   };
   A.ItemBuilder_resistSalve_closure.prototype = {
     call$0() {
       return new A.ResistAction(40, this.element);
     },
-    $signature: 56
+    $signature: 157
   };
   A.ItemBuilder_mapping_closure.prototype = {
     call$0() {
       return new A.MappingAction(this.distance, this.illuminate);
     },
-    $signature: 163
+    $signature: 158
   };
   A.ItemBuilder_haste_closure.prototype = {
     call$0() {
       return A.HasteAction$(this.amount, this.duration);
     },
-    $signature: 57
+    $signature: 161
   };
   A.ItemBuilder_teleport_closure.prototype = {
     call$0() {
@@ -23471,7 +23445,7 @@
     },
     "call*": "call$3",
     $requiredArgCount: 3,
-    $signature: 22
+    $signature: 24
   };
   A.conjuringSpells_closure0.prototype = {
     call$3(spell, game, level) {
@@ -23482,7 +23456,7 @@
     },
     "call*": "call$3",
     $requiredArgCount: 3,
-    $signature: 22
+    $signature: 24
   };
   A.conjuringSpells_closure1.prototype = {
     call$3(spell, game, level) {
@@ -23493,7 +23467,7 @@
     },
     "call*": "call$3",
     $requiredArgCount: 3,
-    $signature: 22
+    $signature: 24
   };
   A.divinationSpells_closure.prototype = {
     call$3(spell, game, level) {
@@ -23543,7 +23517,7 @@
     },
     "call*": "call$3",
     $requiredArgCount: 3,
-    $signature: 39
+    $signature: 56
   };
   A.sorcerySpells_closure2.prototype = {
     call$4(spell, game, level, target) {
@@ -23575,7 +23549,7 @@
     },
     "call*": "call$3",
     $requiredArgCount: 3,
-    $signature: 39
+    $signature: 56
   };
   A.Spell.prototype = {
     gainMessage$1(level) {
@@ -25540,7 +25514,7 @@
     call$0() {
       return A._setArrayType([], type$.JSArray_Vec);
     },
-    $signature: 38
+    $signature: 40
   };
   A.Decorator__spawnMonster_spawn.prototype = {
     call$2(breed, pos) {
@@ -26193,7 +26167,7 @@
       t1 = t1.stage.tiles.bounds.size;
       return A.lerpDouble(xDistance + yDistance, 0, t1.x + t1.y, 2, -3);
     },
-    $signature: 40
+    $signature: 38
   };
   A.Keep__tryAttachRoom_closure.prototype = {
     call$1(pos) {
@@ -27349,19 +27323,19 @@
     call$1(pos) {
       return A.OpenChestAction$(pos);
     },
-    $signature: 24
+    $signature: 25
   };
   A.Tiles_closedOrnateChest_closure.prototype = {
     call$1(pos) {
       return A.OpenChestAction$(pos);
     },
-    $signature: 24
+    $signature: 25
   };
   A.Tiles_closedMythicChest_closure.prototype = {
     call$1(pos) {
       return A.OpenChestAction$(pos);
     },
-    $signature: 24
+    $signature: 25
   };
   A.Tiles_closedBarrel_closure.prototype = {
     call$1(pos) {
@@ -27437,13 +27411,13 @@
     call$0() {
       return A._MonsterLog$(this.monster);
     },
-    $signature: 25
+    $signature: 26
   };
   A.Debug_monsterStat_closure.prototype = {
     call$0() {
       return A._MonsterLog$(this.monster);
     },
-    $signature: 25
+    $signature: 26
   };
   A.Debug_monsterStat_closure0.prototype = {
     call$0() {
@@ -27455,7 +27429,7 @@
     call$0() {
       return A._MonsterLog$(this.monster);
     },
-    $signature: 25
+    $signature: 26
   };
   A._MonsterLog.prototype = {
     toString$0(_) {
@@ -27505,7 +27479,7 @@
     call$2($length, $name) {
       return Math.max(A._asInt($length), A._asString($name).length);
     },
-    $signature: 26
+    $signature: 27
   };
   A.Action.prototype = {
     get$isImmediate() {
@@ -28584,7 +28558,7 @@
       A._asInt(_);
       return null;
     },
-    $signature: 27
+    $signature: 28
   };
   A.Element_closure0.prototype = {
     call$4(_, __, ___, ____) {
@@ -30057,7 +30031,7 @@
     call$1(previous) {
       this.$this.save.log.gain$1("You have reached level " + this.level + ".");
     },
-    $signature: 27
+    $signature: 28
   };
   A.Hero_refreshProperties_closure0.prototype = {
     call$1(previous) {
@@ -30215,7 +30189,7 @@
     call$2(a, b) {
       return A._asInt(a) + A._asInt(b);
     },
-    $signature: 47
+    $signature: 37
   };
   A.Lore_seeBreed_closure.prototype = {
     call$0() {
@@ -30336,7 +30310,7 @@
       var t = this.level / 49;
       return (1 - t) * from + t * to;
     },
-    $signature: 40
+    $signature: 38
   };
   A.Skill.prototype = {
     get$useName() {
@@ -30497,7 +30471,7 @@
       else
         t2.add$5(0, B.LogType_1, "You feel " + t1.get$_loseAdjective() + "! Your " + t1.get$_stat().name + " decreased by " + -gain + ".", null, null, null);
     },
-    $signature: 27
+    $signature: 28
   };
   A.Strength.prototype = {
     get$_stat() {
@@ -30888,7 +30862,7 @@
     call$1(item) {
       return type$.Item._as(item).clone$0(0);
     },
-    $signature: 108
+    $signature: 135
   };
   A.AddItemResult.prototype = {};
   A._Inventory_IterableMixin_ItemCollection.prototype = {};
@@ -31056,7 +31030,7 @@
       type$.Affix._as(affix);
       return bonus + affix.type._affix$_strikeBonus.call$1(affix.parameter);
     },
-    $signature: 10
+    $signature: 14
   };
   A.Item_damageScale_closure.prototype = {
     call$2(bonus, affix) {
@@ -31072,7 +31046,7 @@
       type$.Affix._as(affix);
       return bonus + affix.type._affix$_damageBonus.call$1(affix.parameter);
     },
-    $signature: 10
+    $signature: 14
   };
   A.Item_armorModifier_closure.prototype = {
     call$2(bonus, affix) {
@@ -31080,7 +31054,7 @@
       type$.Affix._as(affix);
       return bonus + affix.type._affix$_armorBonus.call$1(affix.parameter);
     },
-    $signature: 10
+    $signature: 14
   };
   A.Item_quantifiableName_closure.prototype = {
     call$2($name, affix) {
@@ -31096,7 +31070,7 @@
       type$.Affix._as(affix);
       return weight + affix.type._weightBonus.call$1(affix.parameter);
     },
-    $signature: 10
+    $signature: 14
   };
   A.Item_heft_closure.prototype = {
     call$2(heft, affix) {
@@ -31110,7 +31084,7 @@
     call$2(resistance, affix) {
       return A._asInt(resistance) + type$.Affix._as(affix).resistance$1(this.element);
     },
-    $signature: 10
+    $signature: 14
   };
   A.ItemUse.prototype = {};
   A.Toss.prototype = {};
@@ -31287,19 +31261,6 @@
           break;
       }
     },
-    replaceUsedItem$1(usedItem) {
-      var t1, _this = this,
-        _s12_ = "_debugHelper";
-      if (_this._isMagicItem$1(usedItem)) {
-        t1 = _this.__ActionQueues__debugHelper_F;
-        t1 === $ && A.throwLateFieldNI(_s12_);
-        t1.addRandomMagicItems$1(1);
-      } else if (_this._isHealItem$1(usedItem)) {
-        t1 = _this.__ActionQueues__debugHelper_F;
-        t1 === $ && A.throwLateFieldNI(_s12_);
-        t1.addRandomHealItems$1(1);
-      }
-    },
     castCurrentStealthSpell$0() {
       var skill, action, target, action0, e, t1, t2, exception, _this = this, _null = null,
         spellName = ["Icicle", "Brilliant Beam", "Windstorm", "Fire Barrier", "Tidal Wave"][B.JSInt_methods.$mod(_this._resistanceQueueIndex, 5)];
@@ -31398,25 +31359,64 @@
       return weapons;
     },
     _getMagicItems$0() {
-      var t1, t2, t3,
+      var t1, t2, t3, $name, t4,
         items = A._setArrayType([], type$.JSArray_Item);
       for (t1 = this.hero.save._inventory._items, t2 = A._arrayInstanceType(t1), t1 = new J.ArrayIterator(t1, t1.length, t2._eval$1("ArrayIterator<1>")), t2 = t2._precomputed1; t1.moveNext$0();) {
         t3 = t1._current;
         if (t3 == null)
           t3 = t2._as(t3);
-        if (this._isMagicItem$1(t3))
+        $name = A.Log__categorize(t3.type.quantifiableName, false, true).toLowerCase();
+        t4 = true;
+        if (!A.stringContainsUnchecked($name, "scroll", 0))
+          if (!A.stringContainsUnchecked($name, "wand", 0))
+            if (!A.stringContainsUnchecked($name, "spell", 0))
+              if (!A.stringContainsUnchecked($name, "tome", 0))
+                if (!A.stringContainsUnchecked($name, "book", 0))
+                  if (!A.stringContainsUnchecked($name, "orb", 0))
+                    if (!A.stringContainsUnchecked($name, "bottled", 0))
+                      if (A.stringContainsUnchecked($name, "scroll", 0)) {
+                        if (!A.stringContainsUnchecked($name, "lightning", 0))
+                          if (!A.stringContainsUnchecked($name, "fireball", 0))
+                            if (!A.stringContainsUnchecked($name, "ice", 0))
+                              if (!A.stringContainsUnchecked($name, "teleport", 0))
+                                if (!A.stringContainsUnchecked($name, "magic", 0))
+                                  if (!A.stringContainsUnchecked($name, "bolt", 0))
+                                    if (!A.stringContainsUnchecked($name, "frost", 0))
+                                      if (!A.stringContainsUnchecked($name, "fire", 0))
+                                        if (!A.stringContainsUnchecked($name, "wind", 0))
+                                          if (!A.stringContainsUnchecked($name, "earth", 0))
+                                            t4 = A.stringContainsUnchecked($name, "water", 0);
+                      } else
+                        t4 = false;
+        if (t4)
           B.JSArray_methods.add$1(items, t3);
       }
       return items;
     },
     _getHealItems$0() {
-      var t1, t2, t3,
+      var t1, t2, t3, $name, t4,
         items = A._setArrayType([], type$.JSArray_Item);
       for (t1 = this.hero.save._inventory._items, t2 = A._arrayInstanceType(t1), t1 = new J.ArrayIterator(t1, t1.length, t2._eval$1("ArrayIterator<1>")), t2 = t2._precomputed1; t1.moveNext$0();) {
         t3 = t1._current;
         if (t3 == null)
           t3 = t2._as(t3);
-        if (this._isHealItem$1(t3))
+        $name = A.Log__categorize(t3.type.quantifiableName, false, true).toLowerCase();
+        t4 = true;
+        if (!A.stringContainsUnchecked($name, "healing", 0))
+          if (!A.stringContainsUnchecked($name, "potion", 0))
+            if (!A.stringContainsUnchecked($name, "elixir", 0))
+              if (!A.stringContainsUnchecked($name, "balm", 0))
+                if (!A.stringContainsUnchecked($name, "salve", 0))
+                  if (!A.stringContainsUnchecked($name, "mending", 0))
+                    if (!A.stringContainsUnchecked($name, "soothing", 0))
+                      if (!A.stringContainsUnchecked($name, "amelioration", 0))
+                        if (!A.stringContainsUnchecked($name, "rejuvenation", 0))
+                          if (!A.stringContainsUnchecked($name, "antidote", 0))
+                            if (A.stringContainsUnchecked($name, "salve", 0))
+                              t4 = A.stringContainsUnchecked($name, "resistance", 0);
+                            else
+                              t4 = false;
+        if (t4)
           B.JSArray_methods.add$1(items, t3);
       }
       return items;
@@ -31470,37 +31470,6 @@
         return rangedItem.name + " (" + targetStatus + ")";
       }
       return _this.getRangedQueueItem$0().get$displayText();
-    },
-    _isMagicItem$1(item) {
-      var $name = A.Log__categorize(item.type.quantifiableName, false, true).toLowerCase(),
-        t1 = true;
-      if (!B.JSString_methods.contains$1($name, "scroll"))
-        if (!B.JSString_methods.contains$1($name, "wand"))
-          if (!B.JSString_methods.contains$1($name, "spell"))
-            if (!B.JSString_methods.contains$1($name, "tome"))
-              if (!B.JSString_methods.contains$1($name, "book"))
-                if (!B.JSString_methods.contains$1($name, "orb")) {
-                  t1 = B.JSString_methods.contains$1($name, "bottled");
-                  !t1;
-                }
-      return t1;
-    },
-    _isHealItem$1(item) {
-      var $name = A.Log__categorize(item.type.quantifiableName, false, true).toLowerCase(),
-        t1 = true;
-      if (!B.JSString_methods.contains$1($name, "healing"))
-        if (!B.JSString_methods.contains$1($name, "potion"))
-          if (!B.JSString_methods.contains$1($name, "elixir"))
-            if (!B.JSString_methods.contains$1($name, "balm"))
-              if (!B.JSString_methods.contains$1($name, "salve"))
-                if (!B.JSString_methods.contains$1($name, "mending"))
-                  if (!B.JSString_methods.contains$1($name, "soothing"))
-                    if (!B.JSString_methods.contains$1($name, "amelioration"))
-                      if (!B.JSString_methods.contains$1($name, "rejuvenation")) {
-                        t1 = B.JSString_methods.contains$1($name, "antidote");
-                        !t1;
-                      }
-      return t1;
     },
     _getHealAmount$1(item) {
       var $name = A.Log__categorize(item.type.quantifiableName, false, true).toLowerCase();
@@ -31556,40 +31525,6 @@
     }
   };
   A.DebugHelper.prototype = {
-    addRandomRangedWeapons$1(count) {
-      var _i, items, t1, _i0, item, $name, t2, i, t3,
-        allRangedWeapons = A._setArrayType([], type$.JSArray_Item);
-      for (_i = 0; _i < 8; ++_i) {
-        items = this._findItemsByKeyword$1(B.List_8nZ[_i]);
-        for (t1 = items.length, _i0 = 0; _i0 < items.length; items.length === t1 || (0, A.throwConcurrentModificationError)(items), ++_i0) {
-          item = items[_i0];
-          $name = A.Log__categorize(item.type.quantifiableName, false, true).toLowerCase();
-          t2 = true;
-          if (!A.stringContainsUnchecked($name, "bow", 0))
-            if (!A.stringContainsUnchecked($name, "crossbow", 0))
-              if (!A.stringContainsUnchecked($name, "dart", 0))
-                if (!A.stringContainsUnchecked($name, "sling", 0))
-                  if (!A.stringContainsUnchecked($name, "javelin", 0))
-                    if (!A.stringContainsUnchecked($name, "throwing", 0))
-                      if (!A.stringContainsUnchecked($name, "short bow", 0))
-                        t2 = A.stringContainsUnchecked($name, "longbow", 0);
-          if (t2)
-            B.JSArray_methods.add$1(allRangedWeapons, item);
-        }
-      }
-      t1 = this._debug_helper$_random;
-      t2 = this.hero.save._inventory;
-      i = 0;
-      while (true) {
-        if (!(i < count && allRangedWeapons.length !== 0))
-          break;
-        t3 = t1.nextInt$1(allRangedWeapons.length);
-        if (!(t3 >= 0 && t3 < allRangedWeapons.length))
-          return A.ioore(allRangedWeapons, t3);
-        t2.tryAdd$1(allRangedWeapons[t3]);
-        ++i;
-      }
-    },
     addRandomMagicItems$1(count) {
       var _i, items, t1, _i0, item, $name, t2, i, t3,
         allMagicItems = A._setArrayType([], type$.JSArray_Item);
@@ -31723,22 +31658,6 @@
           B.JSArray_methods.add$1(foundItems, new A.Item(t3, null, null, null, 1));
       }
       return foundItems;
-    },
-    _giveBasicArcherySkill$0() {
-      var skill, t1, t2, _i, t3, exception;
-      try {
-        for (t1 = $.$get$Skills_all(), t2 = t1.length, _i = 0; _i < t1.length; t1.length === t2 || (0, A.throwConcurrentModificationError)(t1), ++_i) {
-          skill = t1[_i];
-          if (J.get$name$x(skill).toLowerCase() === "archery") {
-            t1 = type$.Skill._as(skill);
-            t2 = this.hero.save.skills._points;
-            t3 = t2.$index(0, t1);
-            t2.$indexSet(0, t1, 5000 + (t3 == null ? 0 : t3));
-            break;
-          }
-        }
-      } catch (exception) {
-      }
     }
   };
   A.DensityScalars.prototype = {
@@ -31809,14 +31728,13 @@
       if (_this.moveCount >= 100)
         _this.triggerRewardSelection$0();
     },
-    triggerRewardSelection$1$heroClass(heroClass) {
-      var t1, heroClassName, archetypeInfo, meterProgress, _this = this;
+    triggerRewardSelection$0() {
+      var t1, archetypeInfo, meterProgress, _this = this;
       _this.isLoopActive = false;
       _this.isRewardSelection = true;
       t1 = _this._content;
       if (t1 != null) {
-        heroClassName = heroClass == null ? "ranger" : heroClass;
-        t1 = A.LoopReward_generateRewardOptions(3, _this.currentLoop, t1, heroClassName);
+        t1 = A.LoopReward_generateRewardOptions(3, _this.currentLoop, t1, "ranger");
         _this.currentRewardOptions = t1;
         A.print("Generated " + t1.length + " " + A.RewardCycleManager_getCycleName(_this.currentLoop) + " rewards for loop " + _this.currentLoop);
       } else {
@@ -31827,9 +31745,6 @@
       archetypeInfo = t1 != null ? t1.archetype.name : "unknown";
       meterProgress = B.JSInt_methods.toStringAsFixed$1(_this._loopMeter._progress, 1);
       A.print("LOOP_COMPLETE: Loop " + _this.currentLoop + " (" + archetypeInfo + " archetype) - " + _this.moveCount + " moves made, " + meterProgress + "% loop meter. Generated " + _this.currentRewardOptions.length + " rewards!");
-    },
-    triggerRewardSelection$0() {
-      return this.triggerRewardSelection$1$heroClass(null);
     },
     selectReward$1(reward) {
       var t1, prevArchetype, t2, archetype, scalars, nextArchetype, t3, _this = this;
@@ -32508,13 +32423,13 @@
     call$1(witness) {
       witness._viewHeroDamage$2(this.action, this.damage);
     },
-    $signature: 55
+    $signature: 51
   };
   A.Monster_onTakeDamage_closure.prototype = {
     call$1(witness) {
       witness._viewMonsterDamage$3(this.action, this.$this, this.damage);
     },
-    $signature: 55
+    $signature: 51
   };
   A.Monster_onTakeDamage_closure0.prototype = {
     call$1(move) {
@@ -34392,7 +34307,7 @@
         t2 = t1.helpTextLength = t2 + 2;
       t1.helpTextLength = t2 + (key.length + text.length + 3);
     },
-    $signature: 23
+    $signature: 22
   };
   A.Draw_helpKeys_closure0.prototype = {
     call$2(key, text) {
@@ -34416,7 +34331,7 @@
       t1.x = t1.x + text.length;
       t1.first = false;
     },
-    $signature: 23
+    $signature: 22
   };
   A.ElementEffect.prototype = {
     update$1(_, game) {
@@ -35177,6 +35092,9 @@
             t5.add$5(0, B.LogType_0, "Level up! You are now level " + t1 + ".", _null, _null, _null);
           }
           break;
+        case B.Input_giveConsumables:
+          _this._giveAllConsumables$0();
+          break;
       }
       if (action != null)
         _this.game.hero._behavior = new A.ActionBehavior(action);
@@ -35568,6 +35486,31 @@
       t1.toString;
       t2.push$1(new A._ShopScreen(t1, this));
     },
+    _giveAllConsumables$0() {
+      var t1, t2, t3, t4, t5, t6, t7, itemsGiven, t8, item, _null = null,
+        _s17_ = "consumables_given";
+      if (window.localStorage.getItem(_s17_) === "true") {
+        this.game.hero.save.log.add$5(0, B.LogType_0, "Consumables have already been given.", _null, _null, _null);
+        return;
+      }
+      for (t1 = $.$get$Items_types().get$all(), t2 = A._instanceType(t1), t1 = new A.MappedIterator(J.get$iterator$ax(t1.__internal$_iterable), t1._f, t2._eval$1("MappedIterator<1,2>")), t2 = t2._rest[1], t3 = this.game, t4 = t3.hero, t5 = t4.save, t6 = t5._inventory, t7 = t5.lore, itemsGiven = 0; t1.moveNext$0();) {
+        t8 = t1.__internal$_current;
+        if (t8 == null)
+          t8 = t2._as(t8);
+        if (t8.use != null && t8.equipSlot == null) {
+          item = new A.Item(t8, _null, _null, _null, 1);
+          t6.tryAdd$1(item);
+          t7.findItem$1(item);
+          t4._gainItemSkills$2(t3, item);
+          t4._tryAutoEquip$2(t3, item);
+          t4.refreshProperties$0();
+          ++itemsGiven;
+        }
+      }
+      window.localStorage.setItem(_s17_, "true");
+      this._game_screen$_storage.save$0(0);
+      t5.log.add$5(0, B.LogType_0, "Received " + itemsGiven + " consumable items!", _null, _null, _null);
+    },
     $isGameScreenInterface: 1,
     get$game() {
       return this.game;
@@ -35679,7 +35622,7 @@
         t1.writeAt$4(x + 3 - t2, y, string, B.Color_204_35_57);
       }
     },
-    $signature: 37
+    $signature: 36
   };
   A.HeroEquipmentDialog_render_closure.prototype = {
     call$2(item, y) {
@@ -36173,7 +36116,7 @@
         return -1;
       return B.JSInt_methods.compareTo$1(aChar, bChar);
     },
-    $signature: 28
+    $signature: 29
   };
   A.HeroMonsterLoreDialog__listBreeds_compareGlyph_isUpper.prototype = {
     call$1(c) {
@@ -36186,7 +36129,7 @@
       var t1 = type$.Breed;
       return B.JSInt_methods.compareTo$1(t1._as(a).depth, t1._as(b).depth);
     },
-    $signature: 28
+    $signature: 29
   };
   A.HeroMonsterLoreDialog__listBreeds_closure0.prototype = {
     call$2(a, b) {
@@ -36201,7 +36144,7 @@
       }
       return B.JSString_methods.compareTo$1(A.Log__categorize(a._breed$_name, false, true).toLowerCase(), A.Log__categorize(b._breed$_name, false, true).toLowerCase());
     },
-    $signature: 28
+    $signature: 29
   };
   A._Sort0.prototype = {
     get$next() {
@@ -36421,13 +36364,13 @@
     call$0() {
       return A._setArrayType([], type$.JSArray_Item);
     },
-    $signature: 29
+    $signature: 23
   };
   A.InventoryDialog_render_closure0.prototype = {
     call$0() {
       return A._setArrayType([], type$.JSArray_Item);
     },
-    $signature: 29
+    $signature: 23
   };
   A.InventoryDialog__drawCategory_closure.prototype = {
     call$2(a, b) {
@@ -36442,7 +36385,7 @@
     call$0() {
       return A._setArrayType([], type$.JSArray_Item);
     },
-    $signature: 29
+    $signature: 23
   };
   A.InventoryDialog__drawCategory_closure1.prototype = {
     call$2(sum, item) {
@@ -38094,12 +38037,11 @@
     },
     _handleLoopInput$1(input) {
       var t1, t2, t3, heroClassName, newActiveSpell, nextQueue, t4, items, item, t5, t6, unequippedItems, _i, unequippedItem, result, _this = this, _null = null, _s6_ = "_stage",
-        _s28_ = "Loot collected! Loop meter: ",
         action = _null;
       switch (input.index) {
-        case 16:
+        case 15:
           return true;
-        case 17:
+        case 16:
           return true;
         case 0:
           action = A.WalkAction$(B.Direction_0_m1_1_n);
@@ -38201,23 +38143,17 @@
           _this._updateActionMapping$0();
           _this.game.hero.save.log.add$5(0, B.LogType_0, "Active queue: " + ["", "Ranged", "Magic", "Heal", "Mage Spells"][nextQueue], _null, _null, _null);
           return true;
-        case 15:
+        case 17:
           t1 = _this._debugHelper;
-          t1.addRandomRangedWeapons$1(2);
-          t1.addRandomMagicItems$1(5);
-          t1.addRandomHealItems$1(4);
-          t1.addRandomResistanceItems$1(3);
-          t1._giveBasicArcherySkill$0();
-          t1 = _this._loopManager;
-          t2 = t1._loopMeter;
-          t3 = _this.game.hero.save;
-          t4 = t3.log;
-          t4.add$5(0, B.LogType_0, "Debug: Added 15% loop meter progress (" + B.JSInt_methods.toStringAsFixed$1(t2._progress += 15, 1) + "%)", _null, _null, _null);
-          if (t2._progress >= 100 && t1.isLoopActive && !t1.isRewardSelection) {
-            t4.add$5(0, B.LogType_0, "Debug triggered ring completion!", _null, _null, _null);
-            t1.triggerRewardSelection$1$heroClass(t3.heroClass.name);
-          }
-          _this._updateActionMapping$0();
+          t1.addRandomHealItems$1(1);
+          t1.addRandomMagicItems$1(1);
+          t1.addRandomResistanceItems$1(1);
+          t1.addRandomHealItems$1(3);
+          t1.game.hero.save.log.gain$1("You receive a set of useful consumables!");
+          _this.game.hero.save.log.add$5(0, B.LogType_0, "Debug: Gave one-time set of consumables", _null, _null, _null);
+          return true;
+        case 18:
+          _this.game.hero.save.log.add$5(0, B.LogType_0, "Debug: Loop meter increased by 20% (now " + B.JSInt_methods.toStringAsFixed$1(_this._loopManager._loopMeter._progress += 20, 1) + "%)", _null, _null, _null);
           return true;
         case 14:
           t1 = _this.game;
@@ -38248,23 +38184,17 @@
               t6.add$5(0, B.LogType_0, "Equipped " + A.Log__categorize(t4.quantifiableName, false, true) + ".", _null, _null, _null);
               t1 = _this._loopManager;
               t1.recordLootPickup$0();
-              t6.add$5(0, B.LogType_0, _s28_ + B.JSInt_methods.toStringAsFixed$1(t1._loopMeter._progress, 1) + "%", _null, _null, _null);
+              t6.add$5(0, B.LogType_0, "Loot collected! Loop meter: " + B.JSInt_methods.toStringAsFixed$1(t1._loopMeter._progress, 1) + "%", _null, _null, _null);
               _this._updateActionMapping$0();
               return true;
             } else {
               result = t6._inventory.tryAdd$1(item);
-              t4 = result.added;
+              t1 = result.added;
               t6 = t6.log;
-              if (t4 > 0) {
-                t6.add$5(0, B.LogType_0, "Picked up " + item.clone$1(0, t4).toString$0(0) + ".", _null, _null, _null);
+              if (t1 > 0) {
+                t6.add$5(0, B.LogType_0, "Picked up " + item.clone$1(0, t1).toString$0(0) + ".", _null, _null, _null);
                 if (result.remaining === 0)
                   t2.removeItem$2(item, t3._pos);
-                t3.pickUp$2(t1, item);
-                t1 = _this._loopManager;
-                t1.recordLootPickup$0();
-                t6.add$5(0, B.LogType_0, _s28_ + B.JSInt_methods.toStringAsFixed$1(t1._loopMeter._progress, 1) + "%", _null, _null, _null);
-                _this._updateActionMapping$0();
-                return true;
               } else {
                 t6.add$5(0, B.LogType_0, "Your inventory is full.", _null, _null, _null);
                 return true;
@@ -38669,28 +38599,22 @@
       }
     },
     _handleMagicAction$0() {
-      var t2, action,
-        t1 = this._actionQueues,
-        magicItem = t1.getMagicQueueItem$0();
+      var t1,
+        magicItem = this._actionQueues.getMagicQueueItem$0();
       if (!magicItem.isAvailable || magicItem.item == null)
         return null;
-      t2 = magicItem.item;
-      t2.toString;
-      action = A.UseAction$(B.ItemLocation_Inventory, t2);
-      t1.replaceUsedItem$1(t2);
-      return action;
+      t1 = magicItem.item;
+      t1.toString;
+      return A.UseAction$(B.ItemLocation_Inventory, t1);
     },
     _handleHealAction$0() {
-      var t2, action,
-        t1 = this._actionQueues,
-        healItem = t1.getHealQueueItem$0();
+      var t1,
+        healItem = this._actionQueues.getHealQueueItem$0();
       if (!healItem.isAvailable || healItem.item == null)
         return null;
-      t2 = healItem.item;
-      t2.toString;
-      action = A.UseAction$(B.ItemLocation_Inventory, t2);
-      t1.replaceUsedItem$1(t2);
-      return action;
+      t1 = healItem.item;
+      t1.toString;
+      return A.UseAction$(B.ItemLocation_Inventory, t1);
     },
     _findArcherySkill$0() {
       var skill, t1, t2, _i, exception;
@@ -38978,7 +38902,7 @@
         _this._scroll = t2 - 8 + 1;
     },
     keyDown$3$alt$shift(keyCode, alt, shift) {
-      var t1, t2, t3, _this = this;
+      var t1, t2, t3, t4, t5, t6, t7, _this = this;
       if (shift || alt)
         return false;
       switch (keyCode) {
@@ -38998,7 +38922,24 @@
           _this._isActive = false;
           t1 = _this._ui;
           t1.toString;
-          t1.push$1(A.NewHeroScreen$(_this.content, _this.storage));
+          t2 = _this.storage;
+          t3 = type$.JSArray_Control;
+          t4 = A._setArrayType([], t3);
+          t5 = $.$get$rng();
+          type$.List_String._as(B.List_E8g);
+          t6 = B.List_E8g.length;
+          t7 = t5.range$1(t6);
+          if (!(t7 >= 0 && t7 < t6))
+            return A.ioore(B.List_E8g, t7);
+          t7 = new A.NameControl(0, 0, t2, B.List_E8g[t7]);
+          t7._refreshUnique$0();
+          t6 = new A.SelectControl(0, 8, "Class", A._setArrayType(["Ranger", "Mage"], type$.JSArray_String));
+          t2 = new A.NewHeroScreen(_this.content, t2, t7, t6, t4);
+          B.JSArray_methods.addAll$1(t4, A._setArrayType([t7, t6], t3));
+          t6.selected = 0;
+          $.$get$Races_all();
+          t2.__NewHeroScreen__randomRaceIndex_F = t5.range$1(5);
+          t1.push$1(t2);
           return true;
       }
       return false;
@@ -39202,16 +39143,21 @@
       if (_this._new_hero_screen$_name._isUnique)
         t1.$indexSet(0, "Enter", "Create hero");
       t1.$indexSet(0, "`", "Cancel");
-      A.Draw_dialog(terminal, 80, 40, new A.NewHeroScreen_render_closure(_this), t1, "Out of the forgotten wilderness, a hero appears...");
+      A.Draw_dialog(terminal, 80, 35, new A.NewHeroScreen_render_closure(_this), t1, "Create New Hero");
     },
     _renderRace$1(terminal) {
       var race, y, _i, stat,
         t1 = $.$get$Races_all(),
-        t2 = this._new_hero_screen$_race.selected;
+        t2 = this.__NewHeroScreen__randomRaceIndex_F;
+      t2 === $ && A.throwLateFieldNI("_randomRaceIndex");
       if (!(t2 >= 0 && t2 < 5))
         return A.ioore(t1, t2);
       race = t1[t2];
-      this._renderText$2(terminal, race.description);
+      terminal.writeAt$4(0, 1, "Race: " + race.name, B.Color_132_126_135);
+      for (t1 = A.Log_wordWrap(59, race.description), t2 = t1.length, y = 2, _i = 0; _i < t1.length; t1.length === t2 || (0, A.throwConcurrentModificationError)(t1), ++_i) {
+        terminal.writeAt$4(19, y, t1[_i], B.Color_132_126_135);
+        ++y;
+      }
       for (t1 = race.stats, y = 3, _i = 0; _i < 5; ++_i) {
         stat = B.List_uSn[_i];
         terminal.writeAt$4(0, y, B.JSString_methods.substring$2(stat.name, 0, 3), B.Color_38_42_66);
@@ -39223,7 +39169,7 @@
     },
     _renderText$2(terminal, description) {
       var t1, t2, y, _i;
-      for (t1 = A.Log_wordWrap(59, description), t2 = t1.length, y = 3, _i = 0; _i < t1.length; t1.length === t2 || (0, A.throwConcurrentModificationError)(t1), ++_i) {
+      for (t1 = A.Log_wordWrap(59, description), t2 = t1.length, y = 20, _i = 0; _i < t1.length; t1.length === t2 || (0, A.throwConcurrentModificationError)(t1), ++_i) {
         terminal.writeAt$4(19, y, t1[_i], B.Color_132_126_135);
         ++y;
       }
@@ -39292,7 +39238,7 @@
       t1.goTo$1(A.LoopGameScreen_LoopGameScreen$create(this._storage, this._new_hero_screen$_content, hero, loopManager));
     },
     keyDown$3$alt$shift(keyCode, alt, shift) {
-      var t3, t4, hero, offset, _this = this,
+      var selectedClassName, heroClass, selectedRace, hero, offset, _this = this,
         t1 = _this._controls,
         t2 = _this._new_hero_screen$_focus;
       if (!(t2 >= 0 && t2 < t1.length))
@@ -39304,22 +39250,26 @@
       if (alt)
         return false;
       if (13 === keyCode && _this._new_hero_screen$_name._isUnique) {
-        t1 = _this._new_hero_screen$_name;
-        t2 = t1._enteredName;
-        t1 = t2.length !== 0 ? t2 : t1._defaultName;
-        t2 = $.$get$Races_all();
-        t3 = _this._new_hero_screen$_race.selected;
-        if (!(t3 >= 0 && t3 < 5))
-          return A.ioore(t2, t3);
-        t3 = t2[t3];
-        t2 = $.$get$Classes_all();
-        t4 = _this._class.selected;
-        if (!(t4 >= 0 && t4 < 3))
-          return A.ioore(t2, t4);
-        hero = _this._new_hero_screen$_content.createHero$4$heroClass$permadeath$race(t1, t2[t4], _this._death.selected === 1, t3);
-        t3 = _this._storage;
-        B.JSArray_methods.add$1(t3.heroes, hero);
-        t3.save$0(0);
+        t1 = _this._class;
+        t2 = t1._options;
+        t1 = t1.selected;
+        if (!(t1 >= 0 && t1 < 2))
+          return A.ioore(t2, t1);
+        selectedClassName = t2[t1];
+        heroClass = B.JSArray_methods.firstWhere$1($.$get$Classes_all(), new A.NewHeroScreen_keyDown_closure(selectedClassName));
+        t1 = $.$get$Races_all();
+        t2 = _this.__NewHeroScreen__randomRaceIndex_F;
+        t2 === $ && A.throwLateFieldNI("_randomRaceIndex");
+        if (!(t2 >= 0 && t2 < 5))
+          return A.ioore(t1, t2);
+        selectedRace = t1[t2];
+        t2 = _this._new_hero_screen$_name;
+        t1 = t2._enteredName;
+        t1 = t1.length !== 0 ? t1 : t2._defaultName;
+        hero = _this._new_hero_screen$_content.createHero$4$heroClass$permadeath$race(t1, heroClass, true, selectedRace);
+        t1 = _this._storage;
+        B.JSArray_methods.add$1(t1.heroes, hero);
+        t1.save$0(0);
         _this._startLoopMode$1(hero);
         return true;
       }
@@ -39332,42 +39282,27 @@
       return false;
     }
   };
-  A.NewHeroScreen_closure.prototype = {
-    call$1(race) {
-      return type$.Race._as(race).name;
-    },
-    $signature: 142
-  };
-  A.NewHeroScreen_closure0.prototype = {
-    call$1(cls) {
-      return type$.HeroClass._as(cls).name;
-    },
-    $signature: 143
-  };
   A.NewHeroScreen_render_closure.prototype = {
     call$1(terminal) {
-      var t2, t3, t4, t5, i,
+      var t2, i,
         t1 = terminal.size.x;
-      A.Draw_hLine(terminal, 0, 3, t1);
-      A.Draw_hLine(terminal, 0, 13, t1);
-      A.Draw_hLine(terminal, 0, 27, t1);
+      A.Draw_hLine(terminal, 0, 7, t1);
+      A.Draw_hLine(terminal, 0, 17, t1);
       t2 = this.$this;
-      t2._renderRace$1(terminal.rect$4(0, 0, 4, t1, 8));
-      t3 = terminal.rect$4(0, 0, 14, t1, 15);
-      t4 = $.$get$Classes_all();
-      t5 = t2._class.selected;
-      if (!(t5 >= 0 && t5 < 3))
-        return A.ioore(t4, t5);
-      t2._renderText$2(t3, t4[t5].description);
-      t1 = terminal.rect$4(0, 0, 28, t1, 7);
-      t5 = t2._death.selected;
-      if (!(t5 >= 0 && t5 < 2))
-        return A.ioore(B.List_rWY, t5);
-      t2._renderText$2(t1, B.List_rWY[t5]);
+      t2._renderRace$1(terminal.rect$4(0, 0, 1, t1, 6));
+      t1 = terminal.rect$4(0, 0, 18, t1, 8);
+      t1.writeAt$4(0, 18, "Death: Permanent", B.Color_132_126_135);
+      t2._renderText$2(t1, "When you die, that's it. Your hero is gone forever. This is the most challenging way to play, but often the most rewarding as well.");
       for (t1 = t2._controls, i = 0; i < t1.length; ++i)
         t1[i].render$2$focus(terminal, i === t2._new_hero_screen$_focus);
     },
     $signature: 45
+  };
+  A.NewHeroScreen_keyDown_closure.prototype = {
+    call$1(cls) {
+      return type$.HeroClass._as(cls).name === this.selectedClassName;
+    },
+    $signature: 52
   };
   A.Control.prototype = {
     handleInput$1(input) {
@@ -39471,15 +39406,13 @@
       return A.LinkedHashMap_LinkedHashMap$_literal(["\u25c4\u25ba", "Select " + this._new_hero_screen$_name.toLowerCase()], t1, t1);
     },
     handleInput$1(input) {
-      var t1, t2, _this = this;
+      var _this = this;
       switch (input) {
         case B.Input_w:
-          t1 = _this.selected;
-          t2 = _this._options.length;
-          _this.selected = B.JSInt_methods.$mod(t1 + t2 - 1, t2);
+          _this.selected = B.JSInt_methods.$mod(_this.selected + 2 - 1, 2);
           return true;
         case B.Input_e:
-          _this.selected = B.JSInt_methods.$mod(_this.selected + 1, _this._options.length);
+          _this.selected = B.JSInt_methods.$mod(_this.selected + 1, 2);
           return true;
       }
       return false;
@@ -39493,7 +39426,7 @@
       terminal.writeAt$4(t1, t3, _this._new_hero_screen$_name + ":", t4);
       x = t1 + 19;
       if ($focus)
-        for (t1 = _this._options, i = 0; i < t1.length; ++i) {
+        for (t1 = _this._options, i = 0; i < 2; ++i) {
           option = t1[i];
           if (i === _this.selected) {
             t4 = x - 1;
@@ -39508,7 +39441,7 @@
       else {
         t1 = _this._options;
         t2 = _this.selected;
-        if (!(t2 >= 0 && t2 < t1.length))
+        if (!(t2 >= 0 && t2 < 2))
           return A.ioore(t1, t2);
         terminal.writeAt$4(x, t3, t1[t2], B.Color_226_223_240);
       }
@@ -39982,7 +39915,7 @@
       t2 = this.hero._pos;
       return B.JSInt_methods.compareTo$1(t1.$sub(0, t2).get$lengthSquared(), b._pos.$sub(0, t2).get$lengthSquared());
     },
-    $signature: 145
+    $signature: 144
   };
   A.SidebarPanel__drawStats_drawStat.prototype = {
     call$1(stat) {
@@ -39997,7 +39930,7 @@
       t1.writeAt$4(t4, t3 + 1, B.JSString_methods.padLeft$1(B.JSInt_methods.toString$0(t5), 3), B.Color_226_223_240);
       t2.x = t2.x + B.JSInt_methods._tdivFast$1(t1.size.x - 4, 4);
     },
-    $signature: 146
+    $signature: 145
   };
   A.SidebarPanel__drawHealthBar_drawCondition.prototype = {
     call$3(char, fore, $back) {
@@ -40011,7 +39944,7 @@
     call$2(char, fore) {
       return this.call$3(char, fore, null);
     },
-    $signature: 147
+    $signature: 146
   };
   A.StagePanel.prototype = {
     drawStageGlyph$4(terminal, x, y, glyph) {
@@ -40266,7 +40199,7 @@
     call$1(effect) {
       return !type$.Effect._as(effect).update$1(0, this.$this._gameScreen.get$game());
     },
-    $signature: 148
+    $signature: 147
   };
   A.StagePanel_renderPanel_multiply.prototype = {
     call$2(a, b) {
@@ -40291,7 +40224,7 @@
     call$3(x, y, glyph) {
       this.$this._drawStageGlyph$4(this.terminal, x, y, glyph);
     },
-    $signature: 52
+    $signature: 53
   };
   A.StagePanel__positionCamera_centerX.prototype = {
     call$0() {
@@ -40374,13 +40307,13 @@
     call$2(width, line) {
       return Math.max(A._asInt(width), A._asString(line).length);
     },
-    $signature: 26
+    $signature: 27
   };
   A.Popup_render_closure0.prototype = {
     call$2(width, line) {
       return Math.max(A._asInt(width), A._asString(line).length);
     },
-    $signature: 26
+    $signature: 27
   };
   A.SelectDepthPopup.prototype = {
     get$width(_) {
@@ -41143,7 +41076,7 @@
     call$1(c) {
       return type$.HeroClass._as(c).name === this.name;
     },
-    $signature: 150
+    $signature: 52
   };
   A.Storage__load_closure0.prototype = {
     call$2($name, shop) {
@@ -41159,19 +41092,19 @@
         t1.$indexSet(0, shop, shop.create$0());
       }
     },
-    $signature: 151
+    $signature: 149
   };
   A.Storage__loadRace_closure.prototype = {
     call$1(race) {
       return type$.Race._as(race).name === this.name;
     },
-    $signature: 152
+    $signature: 150
   };
   A.Storage__loadLog_closure.prototype = {
     call$1(type) {
       return type$.LogType._as(type)._core$_name === A._asString(J.$index$asx(this.messageMap, "type"));
     },
-    $signature: 153
+    $signature: 151
   };
   A.Storage__loadLore_closure.prototype = {
     call$2(breedName, count) {
@@ -41833,13 +41766,13 @@
     call$1(monster) {
       return type$.Monster._as(monster)._pos.$sub(0, this.target).get$lengthSquared();
     },
-    $signature: 53
+    $signature: 54
   };
   A.TargetDialog__changeMonsterTarget_closure0.prototype = {
     call$1(monster) {
       return type$.Monster._as(monster)._pos.$sub(0, this.target).get$lengthSquared();
     },
-    $signature: 53
+    $signature: 54
   };
   A.TuningOverlay.prototype = {
     handleArrowKey$1(direction) {
@@ -42489,7 +42422,7 @@
       B.CanvasRenderingContext2D_methods.set$imageSmoothingEnabled(t6, false);
       t6.drawImage(color, t1 * t3, t4 * t5, t3, t5, t8, t9, t10, t7);
     },
-    $signature: 52
+    $signature: 53
   };
   A.Terminal.prototype = {
     fill$5(_, x, y, width, height, color) {
@@ -43488,7 +43421,7 @@
         A._refreshDebugBoxes();
       }
     },
-    $signature: 54
+    $signature: 55
   };
   A._addFont_closure1.prototype = {
     call$1(_) {
@@ -43515,13 +43448,13 @@
       A._refreshDebugBoxes();
       window.localStorage.setItem("font", t1);
     },
-    $signature: 54
+    $signature: 55
   };
   A._refreshDebugBoxes_closure.prototype = {
     call$1(monster) {
       return type$.Monster._as(monster)._health <= 0;
     },
-    $signature: 157
+    $signature: 155
   };
   A._exposeSandboxToggle_closure.prototype = {
     call$0() {
@@ -43600,8 +43533,8 @@
       _instance_2_u = hunkHelpers._instance_2u,
       _instance = hunkHelpers.installInstanceTearOff,
       _instance_0_u = hunkHelpers._instance_0u;
-    _static_2(J, "_interceptors_JSArray__compareAny$closure", "JSArray__compareAny", 158);
-    _instance_1_i(J.JSArray.prototype, "get$add", "add$1", 160);
+    _static_2(J, "_interceptors_JSArray__compareAny$closure", "JSArray__compareAny", 156);
+    _instance_1_i(J.JSArray.prototype, "get$add", "add$1", 154);
     _static_0(A, "_js_helper_Primitives_dateNow$closure", "Primitives_dateNow", 2);
     _static_1(A, "async__AsyncRun__scheduleImmediateJsOverride$closure", "_AsyncRun__scheduleImmediateJsOverride", 33);
     _static_1(A, "async__AsyncRun__scheduleImmediateWithSetImmediate$closure", "_AsyncRun__scheduleImmediateWithSetImmediate", 33);
@@ -43610,8 +43543,8 @@
     _static_1(A, "convert___defaultToEncodable$closure", "_defaultToEncodable", 16);
     _static(A, "html__Html5NodeValidator__standardAttributeValidator$closure", 4, null, ["call$4"], ["_Html5NodeValidator__standardAttributeValidator"], 42, 0);
     _static(A, "html__Html5NodeValidator__uriAttributeValidator$closure", 4, null, ["call$4"], ["_Html5NodeValidator__uriAttributeValidator"], 42, 0);
-    _static_1(A, "js___convertToJS$closure", "_convertToJS", 161);
-    _static_1(A, "js___convertToDart$closure", "_convertToDart", 162);
+    _static_1(A, "js___convertToJS$closure", "_convertToJS", 159);
+    _static_1(A, "js___convertToDart$closure", "_convertToDart", 160);
     _static_1(A, "furnishing_builder___mirrorCharBoth$closure", "_mirrorCharBoth", 5);
     _static_1(A, "furnishing_builder___mirrorCharHorizontal$closure", "_mirrorCharHorizontal", 5);
     _static_1(A, "furnishing_builder___mirrorCharVertical$closure", "_mirrorCharVertical", 5);
@@ -43634,14 +43567,14 @@
     _instance_1_u(_ = A.ItemDialog.prototype, "get$getPrice", "getPrice$1", 50);
     _instance_1_u(_, "get$_item_dialog$_canSelect", "_item_dialog$_canSelect$1", 3);
     _static_1(A, "item_renderer___defaultCanSelect$closure", "_defaultCanSelect", 3);
-    _static_1(A, "item_renderer___defaultGetPrice$closure", "_defaultGetPrice", 14);
+    _static_1(A, "item_renderer___defaultGetPrice$closure", "_defaultGetPrice", 10);
     _instance_1_u(A.SellDialog.prototype, "get$getPrice", "getPrice$1", 50);
     _instance_1_u(_ = A.TownScreen.prototype, "get$_canSelect", "_canSelect$1", 3);
-    _instance_1_u(_, "get$_itemPrice", "_itemPrice$1", 14);
+    _instance_1_u(_, "get$_itemPrice", "_itemPrice$1", 10);
     _instance_0_u(A._CrucibleScreen.prototype, "get$_refreshRecipe", "_refreshRecipe$0", 0);
-    _instance_1_u(A._ShopScreen.prototype, "get$_itemPrice", "_itemPrice$1", 14);
-    _instance_1_u(A._ShopBuyScreen.prototype, "get$_itemPrice", "_itemPrice$1", 14);
-    _instance_1_u(A._CountScreen.prototype, "get$_itemPrice", "_itemPrice$1", 14);
+    _instance_1_u(A._ShopScreen.prototype, "get$_itemPrice", "_itemPrice$1", 10);
+    _instance_1_u(A._ShopBuyScreen.prototype, "get$_itemPrice", "_itemPrice$1", 10);
+    _instance_1_u(A._CountScreen.prototype, "get$_itemPrice", "_itemPrice$1", 10);
     _instance_0_u(_ = A.WizardDialog.prototype, "get$_mapDungeon", "_mapDungeon$0", 0);
     _instance_0_u(_, "get$_illuminateDungeon", "_illuminateDungeon$0", 0);
     _instance_0_u(_, "get$_dropItem", "_dropItem$0", 0);
@@ -43655,7 +43588,7 @@
     _instance_1_u(_ = A.UserInterface.prototype, "get$_keyDown", "_keyDown$1", 32);
     _instance_1_u(_, "get$_keyUp", "_keyUp$1", 32);
     _instance_1_u(_, "get$_tick", "_tick$1", 44);
-    _static_1(A, "skills_Skills_find$closure", "Skills_find", 109);
+    _static_1(A, "skills_Skills_find$closure", "Skills_find", 108);
   })();
   (function inheritance() {
     var _mixin = hunkHelpers.mixin,
@@ -43687,7 +43620,7 @@
     _inherit(A.UnmodifiableMapView, A._UnmodifiableMapView_MapView__UnmodifiableMapMixin);
     _inherit(A.ConstantMapView, A.UnmodifiableMapView);
     _inheritMany(A.ConstantMap, [A.ConstantStringMap, A.GeneralConstantMap]);
-    _inheritMany(A.Closure, [A.Closure0Args, A.Closure2Args, A.TearOffClosure, A.initHooks_closure, A.initHooks_closure1, A._AsyncRun__initializeScheduleImmediate_internalCallback, A._AsyncRun__initializeScheduleImmediate_closure, A._awaitOnObject_closure, A._Future__propagateToListeners_handleWhenCompleteCallback_closure, A.Stream_length_closure, A._RootZone_bindUnaryCallbackGuarded_closure, A.Element_Element$html_closure, A.Window_animationFrame_closure, A._EventStreamSubscription_closure, A.NodeValidatorBuilder_allowsElement_closure, A.NodeValidatorBuilder_allowsAttribute_closure, A._SimpleNodeValidator_closure, A._SimpleNodeValidator_closure0, A._TemplatingNodeValidator_closure, A.FilteredElementList__iterable_closure, A.FilteredElementList__iterable_closure0, A.FilteredElementList_removeRange_closure, A._convertToJS_closure, A._convertToJS_closure0, A._wrapToDart_closure, A._wrapToDart_closure0, A._wrapToDart_closure1, A.GameContent__tryToIgniteTile_neighbor, A.DetectAction__findTiles_addTile, A.DetectAction__findTiles_closure1, A.WindAction_onPerform_closure, A.FlowAction_onPerform_closure, A.RayActionBase_onPerform_closure, A.Chest__generateItemForCategory_closure, A.furnishing_closure, A.Elements_air_closure, A.Elements_fire_closure, A.Elements_fire_closure0, A.Elements_cold_closure, A.Elements_cold_closure0, A.Elements_poison_closure, A.Elements_poison_closure0, A.Elements_dark_closure, A.Elements_light_closure, A.Elements_light_closure0, A.ItemBuilder_ball_closure0, A.ItemBuilder_flow_closure0, A.AffixBuilder_price_closure, A.AffixBuilder_price_closure0, A.AffixBuilder_heft_closure, A.AffixBuilder_weight_closure, A.AffixBuilder_brand_closure, A.AffixBuilder_resist_closure, A.fixed_closure, A.scaleParam_closure, A.rings_closure, A.weapons_closure, A.SpawnMove_onGetAction_checkNeighbor, A.Archery__hasBow_closure, A.MasteryDiscipline__hasWeapon_closure, A.Swordfighting_getDefense_closure, A.conjuringSpells_closure, A.conjuringSpells_closure0, A.conjuringSpells_closure1, A.divinationSpells_closure, A.sorcerySpells_closure, A.sorcerySpells_closure0, A.sorcerySpells_closure1, A.sorcerySpells_closure2, A.sorcerySpells_closure3, A.Decorator__spawnMonster_closure, A.Keep_spawnMonsters_closure, A.Keep__tryAttachRoom_closure, A.Room__calculateEdges_isFloor, A.Tiles_closedChest_closure, A.Tiles_closedOrnateChest_closure, A.Tiles_closedMythicChest_closure, A.Tiles_closedBarrel_closure, A.DestroyActionMixin_destroyFloorItems_closure, A.DestroyActionMixin_destroyHeldItems_closure, A.DestroyActionMixin_destroyHeldItems_closure0, A.Element_closure, A.Element_closure0, A.Game_generate_closure, A.Log_wordWrap_finishWord, A.hashPoint_hashInt, A.ResourceSet_all_closure, A.ResourceSet_hasTag_closure, A.ResourceSet_getTags_closure, A.ResourceSet_tryChoose_closure, A.ResourceSet_tryChoose_closure0, A.ResourceSet_tryChooseMatching_closure, A.ResourceSet_tryChooseMatching_closure0, A.ResourceSet_tryChooseMatching__closure, A.RunBehavior_canPerform_closure, A.RunBehavior__shouldKeepRunning_actorAt, A.Hero_createRangedHit_closure, A.Hero_refreshProperties_closure, A.Hero_refreshProperties_closure0, A.SkillSet_acquired_closure, A.StatBase_refresh_closure, A.Equipment_weapons_closure, A.Equipment_canEquip_closure, A.Inventory_clone_closure, A.DifficultyScheduler_toString_closure, A.WeaponReward_generateOptions_closure, A.ArmorReward_generateOptions_closure, A.Monster_onGiveDamage_closure, A.Monster_onTakeDamage_closure, A.Monster_onTakeDamage_closure0, A.MonsterState__meander_closure, A.AwakeState_getAction_closure, A.AwakeState__escapeSubstance_closure, A.AwakeState__findRangedPath_isValidRangedPosition, A.AfraidState_getAction_closure, A.AfraidState_getAction_closure0, A.Flow__directionsTo_walkBack, A.Lighting__lightWalls_checkNeighbor, A.Stage_closure, A.Stage_placeDrops_closure, A.Stage_placeDrops__closure, A.DirectionDialog_render_draw, A.ExitPopup_add, A.ExitPopup_closure, A.GameOverScreen_render_closure, A.GameScreen_activate_closure0, A.GameScreen__pickUp_closure, A.GameScreen__openTargetDialog_closure, A.HeroEquipmentDialog_render_writeScale, A.HeroEquipmentDialog_render_writeBonus, A.HeroMonsterLoreDialog__describeBreed_closure, A.HeroMonsterLoreDialog__describeBreed_closure0, A.HeroMonsterLoreDialog__listBreeds_closure, A.HeroMonsterLoreDialog__listBreeds_compareGlyph_isUpper, A.renderItems_drawStat, A.TossDialog_selectItem_closure, A.LoopGameScreen_closure, A.LoopGameScreen__handleLoopInput_closure, A.LoopGameScreen__trackGameEvents_closure, A.NewHeroScreen_closure, A.NewHeroScreen_closure0, A.NewHeroScreen_render_closure, A.NameControl__refreshUnique_closure, A.SidebarPanel__drawStats_drawStat, A.SidebarPanel__drawHealthBar_drawCondition, A.StagePanel_update_closure, A.StagePanel_renderPanel_closure, A.Storage_remove_closure, A.Storage_replace_closure, A.Storage__load_closure, A.Storage__loadRace_closure, A.Storage__loadLog_closure, A.TargetDialog__changeMonsterTarget_closure, A.TargetDialog__changeMonsterTarget_closure0, A._SearchDialog__matchedItems_closure, A._WizardSpawnDialog__selectItem_closure, A.RetroTerminal$__closure, A.RetroTerminal_render_closure, A.main_closure, A.main_closure0, A._addFont_closure, A._addFont_closure0, A._addFont_closure1, A._refreshDebugBoxes_closure]);
+    _inheritMany(A.Closure, [A.Closure0Args, A.Closure2Args, A.TearOffClosure, A.initHooks_closure, A.initHooks_closure1, A._AsyncRun__initializeScheduleImmediate_internalCallback, A._AsyncRun__initializeScheduleImmediate_closure, A._awaitOnObject_closure, A._Future__propagateToListeners_handleWhenCompleteCallback_closure, A.Stream_length_closure, A._RootZone_bindUnaryCallbackGuarded_closure, A.Element_Element$html_closure, A.Window_animationFrame_closure, A._EventStreamSubscription_closure, A.NodeValidatorBuilder_allowsElement_closure, A.NodeValidatorBuilder_allowsAttribute_closure, A._SimpleNodeValidator_closure, A._SimpleNodeValidator_closure0, A._TemplatingNodeValidator_closure, A.FilteredElementList__iterable_closure, A.FilteredElementList__iterable_closure0, A.FilteredElementList_removeRange_closure, A._convertToJS_closure, A._convertToJS_closure0, A._wrapToDart_closure, A._wrapToDart_closure0, A._wrapToDart_closure1, A.GameContent__tryToIgniteTile_neighbor, A.DetectAction__findTiles_addTile, A.DetectAction__findTiles_closure1, A.WindAction_onPerform_closure, A.FlowAction_onPerform_closure, A.RayActionBase_onPerform_closure, A.Chest__generateItemForCategory_closure, A.furnishing_closure, A.Elements_air_closure, A.Elements_fire_closure, A.Elements_fire_closure0, A.Elements_cold_closure, A.Elements_cold_closure0, A.Elements_poison_closure, A.Elements_poison_closure0, A.Elements_dark_closure, A.Elements_light_closure, A.Elements_light_closure0, A.ItemBuilder_ball_closure0, A.ItemBuilder_flow_closure0, A.AffixBuilder_price_closure, A.AffixBuilder_price_closure0, A.AffixBuilder_heft_closure, A.AffixBuilder_weight_closure, A.AffixBuilder_brand_closure, A.AffixBuilder_resist_closure, A.fixed_closure, A.scaleParam_closure, A.rings_closure, A.weapons_closure, A.SpawnMove_onGetAction_checkNeighbor, A.Archery__hasBow_closure, A.MasteryDiscipline__hasWeapon_closure, A.Swordfighting_getDefense_closure, A.conjuringSpells_closure, A.conjuringSpells_closure0, A.conjuringSpells_closure1, A.divinationSpells_closure, A.sorcerySpells_closure, A.sorcerySpells_closure0, A.sorcerySpells_closure1, A.sorcerySpells_closure2, A.sorcerySpells_closure3, A.Decorator__spawnMonster_closure, A.Keep_spawnMonsters_closure, A.Keep__tryAttachRoom_closure, A.Room__calculateEdges_isFloor, A.Tiles_closedChest_closure, A.Tiles_closedOrnateChest_closure, A.Tiles_closedMythicChest_closure, A.Tiles_closedBarrel_closure, A.DestroyActionMixin_destroyFloorItems_closure, A.DestroyActionMixin_destroyHeldItems_closure, A.DestroyActionMixin_destroyHeldItems_closure0, A.Element_closure, A.Element_closure0, A.Game_generate_closure, A.Log_wordWrap_finishWord, A.hashPoint_hashInt, A.ResourceSet_all_closure, A.ResourceSet_hasTag_closure, A.ResourceSet_getTags_closure, A.ResourceSet_tryChoose_closure, A.ResourceSet_tryChoose_closure0, A.ResourceSet_tryChooseMatching_closure, A.ResourceSet_tryChooseMatching_closure0, A.ResourceSet_tryChooseMatching__closure, A.RunBehavior_canPerform_closure, A.RunBehavior__shouldKeepRunning_actorAt, A.Hero_createRangedHit_closure, A.Hero_refreshProperties_closure, A.Hero_refreshProperties_closure0, A.SkillSet_acquired_closure, A.StatBase_refresh_closure, A.Equipment_weapons_closure, A.Equipment_canEquip_closure, A.Inventory_clone_closure, A.DifficultyScheduler_toString_closure, A.WeaponReward_generateOptions_closure, A.ArmorReward_generateOptions_closure, A.Monster_onGiveDamage_closure, A.Monster_onTakeDamage_closure, A.Monster_onTakeDamage_closure0, A.MonsterState__meander_closure, A.AwakeState_getAction_closure, A.AwakeState__escapeSubstance_closure, A.AwakeState__findRangedPath_isValidRangedPosition, A.AfraidState_getAction_closure, A.AfraidState_getAction_closure0, A.Flow__directionsTo_walkBack, A.Lighting__lightWalls_checkNeighbor, A.Stage_closure, A.Stage_placeDrops_closure, A.Stage_placeDrops__closure, A.DirectionDialog_render_draw, A.ExitPopup_add, A.ExitPopup_closure, A.GameOverScreen_render_closure, A.GameScreen_activate_closure0, A.GameScreen__pickUp_closure, A.GameScreen__openTargetDialog_closure, A.HeroEquipmentDialog_render_writeScale, A.HeroEquipmentDialog_render_writeBonus, A.HeroMonsterLoreDialog__describeBreed_closure, A.HeroMonsterLoreDialog__describeBreed_closure0, A.HeroMonsterLoreDialog__listBreeds_closure, A.HeroMonsterLoreDialog__listBreeds_compareGlyph_isUpper, A.renderItems_drawStat, A.TossDialog_selectItem_closure, A.LoopGameScreen_closure, A.LoopGameScreen__handleLoopInput_closure, A.LoopGameScreen__trackGameEvents_closure, A.NewHeroScreen_render_closure, A.NewHeroScreen_keyDown_closure, A.NameControl__refreshUnique_closure, A.SidebarPanel__drawStats_drawStat, A.SidebarPanel__drawHealthBar_drawCondition, A.StagePanel_update_closure, A.StagePanel_renderPanel_closure, A.Storage_remove_closure, A.Storage_replace_closure, A.Storage__load_closure, A.Storage__loadRace_closure, A.Storage__loadLog_closure, A.TargetDialog__changeMonsterTarget_closure, A.TargetDialog__changeMonsterTarget_closure0, A._SearchDialog__matchedItems_closure, A._WizardSpawnDialog__selectItem_closure, A.RetroTerminal$__closure, A.RetroTerminal_render_closure, A.main_closure, A.main_closure0, A._addFont_closure, A._addFont_closure0, A._addFont_closure1, A._refreshDebugBoxes_closure]);
     _inheritMany(A.Closure0Args, [A.Primitives_initTicker_closure, A._AsyncRun__scheduleImmediateJsOverride_internalCallback, A._AsyncRun__scheduleImmediateWithSetImmediate_internalCallback, A._TimerImpl_internalCallback, A._Future__addListener_closure, A._Future__prependListeners_closure, A._Future__chainCoreFuture_closure, A._Future__asyncCompleteWithValue_closure, A._Future__asyncCompleteErrorObject_closure, A._Future__propagateToListeners_handleWhenCompleteCallback, A._Future__propagateToListeners_handleValueCallback, A._Future__propagateToListeners_handleError, A.Stream_length_closure0, A._rootHandleError_closure, A._RootZone_bindCallbackGuarded_closure, A.DetectAction__findTiles_addTile_closure, A.ItemBuilder_food_closure, A.ItemBuilder_detection_closure, A.ItemBuilder_perception_closure, A.ItemBuilder_resistSalve_closure, A.ItemBuilder_mapping_closure, A.ItemBuilder_haste_closure, A.ItemBuilder_teleport_closure, A.ItemBuilder_heal_closure, A.ItemBuilder_ball_closure, A.ItemBuilder_flow_closure, A.ItemBuilder_lightSource_closure, A.AffixBuilder_parameter_closure, A.dungeon_closure, A.catacomb_closure, A.cavern_closure, A.lake_closure, A.river_closure, A.keep_closure, A.pit_closure, A.sandbox_closure, A.Decorator_decorate_closure, A.Decorator__spawnMonster_closure0, A.River_build_northish, A.River_build_southish, A.River_build_eastish, A.River_build_westish, A.River_build_northSouth, A.River_build_eastWest, A.Debug_monsterLog_closure, A.Debug_monsterStat_closure, A.Debug_monsterStat_closure0, A.Debug_monsterReason_closure, A.Log_wordWrap_finishLine, A.Lore_seeBreed_closure, A.Lore_slay_closure, A.Lore_findItem_closure, A.Lore_findItem_closure0, A.Lore_useItem_closure, A.Stage_addItem_closure, A.InventoryDialog_render_closure, A.InventoryDialog_render_closure0, A.InventoryDialog__drawCategory_closure0, A.LoopGameScreen__handleLoopComplete_closure, A.StagePanel__positionCamera_centerX, A.StagePanel__positionCamera_centerY, A._exposeSandboxToggle_closure, A._exposeSandboxToggle_closure0, A._exposeSandboxToggle_closure1, A._exposeSandboxToggle_closure2]);
     _inheritMany(A.Closure2Args, [A.Primitives_functionNoSuchMethod_closure, A.JsLinkedHashMap_addAll_closure, A.initHooks_closure0, A._awaitOnObject_closure0, A._wrapJsFunctionForAsync_closure, A._Future__propagateToListeners_handleWhenCompleteCallback_closure0, A.LinkedHashMap_LinkedHashMap$from_closure, A.MapBase_mapToString_closure, A._JsonStringifier_writeMap_closure, A.NoSuchMethodError_toString_closure, A.Storage_keys_closure, A._ValidatingTreeSanitizer_sanitizeTree_walk, A.GameContent__spreadPoison_neighbor, A.BarrierAction_onPerform_tryDirection, A.BarrierAction_onPerform_tryDirection_tryOffset, A.DetectAction__findTiles_closure, A.DetectAction__findTiles_closure0, A._OneOfDrop_closure, A.shop_closure, A.dragons_closure, A.Decorator__spawnMonster_spawn, A.Keep__regionContains_diagonal, A.Tiles_braziers_closure, A._MonsterLog_toString_closure, A.Lore_allSlain_closure, A.RaceStats_lerp, A.Equipment_length_closure, A.Item_strikeBonus_closure, A.Item_damageScale_closure, A.Item_damageBonus_closure, A.Item_armorModifier_closure, A.Item_quantifiableName_closure, A.Item_weight_closure, A.Item_heft_closure, A.Item_resistance_closure, A.Flow__processNext_processNeighbor, A.Lighting__process_checkNeighbor, A.Stage_forEachItem_closure, A.Draw_helpKeys_closure, A.Draw_helpKeys_closure0, A.GameScreen_activate_closure, A.HeroEquipmentDialog_render_writeLine, A.HeroEquipmentDialog_render_closure, A.HeroItemLoreDialog_render_writeLine, A.HeroItemLoreDialog__listItems_compareSort, A.HeroItemLoreDialog__listItems_compareDepth, A.HeroItemLoreDialog__listItems_comparePrice, A.HeroItemLoreDialog__listItems_closure, A.HeroMonsterLoreDialog_render_writeLine, A.HeroMonsterLoreDialog__listBreeds_compareGlyph, A.HeroMonsterLoreDialog__listBreeds_compareDepth, A.HeroMonsterLoreDialog__listBreeds_closure0, A.HeroResistancesDialog_render_writeLine, A.HeroResistancesDialog_render_closure, A.InventoryDialog__drawCategory_closure, A.InventoryDialog__drawCategory_closure1, A.MainMenuScreen__renderTile_multiply, A.MainMenuScreen__renderTile_applyLighting, A.SidebarPanel_renderPanel_closure, A.StagePanel_renderPanel_multiply, A.StagePanel_renderPanel_applyLighting, A.Popup_render_closure, A.Popup_render_closure0, A.Storage__load_closure0, A.Storage__loadLore_closure, A.Storage__loadLore_closure0, A.Storage__loadLore_closure1, A.Storage__loadLore_closure2, A.Storage__loadLore_closure3]);
     _inherit(A.NullError, A.TypeError);
@@ -43857,7 +43790,7 @@
     typeUniverse: {eC: new Map(), tR: {}, eT: {}, tPV: {}, sEA: []},
     mangledGlobalNames: {int: "int", double: "double", num: "num", String: "String", bool: "bool", Null: "Null", List: "List", Object: "Object", Map: "Map", JSObject: "JSObject"},
     mangledNames: {},
-    types: ["~()", "bool(Vec)", "int()", "bool(Item)", "Null()", "String(String)", "int(int)", "~(String,@)", "Action(Vec)", "double()", "int(int,Affix)", "~(Vec)", "~(Item)", "bool(Direction)", "int?(Item)", "Color(Color,Color)", "@(@)", "~(Event0)", "double(int)", "bool(Actor)", "~(int,Color)", "int(ItemType,ItemType)", "TeleportAction(ActionSpell,Game,int)", "~(String,String)", "OpenChestAction(Vec)", "_MonsterLog()", "int(int,String)", "Null(int)", "int(Breed,Breed)", "List<Item>()", "bool(String)", "bool(HeroSave)", "~(KeyboardEvent)", "~(~())", "~(Object?,Object?)", "~(AffixBuilder)", "bool(Node)", "~(int,int,int)", "List<Vec>()", "FlowAction(ActionSpell,Game,int)", "double(int,int)", "double(double,Affix)", "bool(Element0,String,String,_Html5NodeValidator)", "bool(Move)", "~(num)", "~(Terminal)", "~(Direction)", "int(int,int)", "~(Item?,int)", "Null(@)", "int(Item)", "bool(NodeValidator)", "~(int,int,Glyph)", "int(Monster)", "~(MouseEvent)", "~(Monster)", "ResistAction()", "HasteAction()", "TeleportAction()", "HealAction()", "RingSelfAction()", "RingFromAction(Vec)", "FlowSelfAction()", "FlowFromAction(Vec)", "IlluminateSelfAction()", "Null(Object,StackTrace)", "~(@,@)", "~(Drop,double)", "~(Node,Node?)", "~(String,double)", "~(String,List<Object>)", "Element0(Node)", "~(Element0)", "Null(~())", "DetectAction(ActionSpell,Game,int)", "BoltAction(TargetSpell,Game,int,Vec)", "RayAction(TargetSpell,Game,int,Vec)", "JsArray<@>(@)", "BarrierAction(TargetSpell,Game,int,Vec)", "Dungeon()", "Catacomb()", "Cavern()", "Lake()", "River()", "Keep()", "Pit()", "SandboxArchitecture()", "~(Breed,Vec)", "Vec()", "JsObject(@)", "~(Symbol0,@)", "~(int,int)", "OpenBarrelAction(Vec)", "TileType(TileBuilder,int)", "bool(bool,int)", "Queue<num>()", "bool(double,double)", "@(String)", "Null(Vec,Hit,num,int)", "Null(Vec)", "~(int)", "~(Skill)", "Null(double)", "bool(Skill)", "~(Element,int(int))", "~(Stat,int(int))", "int(int,Item?)", "AddItemResult(Item{wasUnequipped:bool})", "Item(Item)", "Skill(String)", "@(@,String)", "String(String,Affix)", "String(LevelArchetype)", "WeaponReward(String)", "ArmorReward(String)", "~(Item,Vec)", "~(@)", "~(Direction,bool)", "~(Vec,int)", "Tile(Vec)", "Inventory()", "~(Vec,Inventory)", "~(int,Direction,String)", "~(String,Color,int{total:int?})", "List<Vec>(int)", "Null(@,StackTrace)", "bool(double)", "~(Shop,Inventory)", "~(int,@)", "~(int,int,double)", "WindAction(int)", "BurnActorAction(int)", "bool(Breed)", "BurnFloorAction(Vec,Hit,num,int)", "bool(int)", "FreezeActorAction(int)", "int(Item,Item)", "int(int,Item)", "FreezeFloorAction(Vec,Hit,num,int)", "~(int,Object,Color,Color)", "PoisonAction(int)", "PoisonFloorAction(Vec,Hit,num,int)", "String(Race)", "String(HeroClass)", "BlindAction(int)", "int(Monster,Monster)", "~(StatBase)", "~(String,Color[Color?])", "bool(Effect)", "DazzleAction(int)", "bool(HeroClass)", "~(String,Shop)", "bool(Race)", "bool(LogType)", "LightFloorAction(Vec,Hit,num,int)", "EatAction()", "DetectAction()", "bool(Monster)", "int(@,@)", "PerceiveAction()", "~(Object?)", "Object?(Object?)", "Object?(@)", "MappingAction()", "JsFunction(@)"],
+    types: ["~()", "bool(Vec)", "int()", "bool(Item)", "Null()", "String(String)", "int(int)", "~(String,@)", "Action(Vec)", "double()", "int?(Item)", "~(Vec)", "~(Item)", "bool(Direction)", "int(int,Affix)", "Color(Color,Color)", "@(@)", "~(Event0)", "double(int)", "bool(Actor)", "~(int,Color)", "int(ItemType,ItemType)", "~(String,String)", "List<Item>()", "TeleportAction(ActionSpell,Game,int)", "OpenChestAction(Vec)", "_MonsterLog()", "int(int,String)", "Null(int)", "int(Breed,Breed)", "bool(String)", "bool(HeroSave)", "~(KeyboardEvent)", "~(~())", "bool(Node)", "~(AffixBuilder)", "~(int,int,int)", "int(int,int)", "double(int,int)", "Null(@)", "List<Vec>()", "double(double,Affix)", "bool(Element0,String,String,_Html5NodeValidator)", "bool(Move)", "~(num)", "~(Terminal)", "~(Direction)", "~(Object?,Object?)", "~(Item?,int)", "bool(NodeValidator)", "int(Item)", "~(Monster)", "bool(HeroClass)", "~(int,int,Glyph)", "int(Monster)", "~(MouseEvent)", "FlowAction(ActionSpell,Game,int)", "PerceiveAction()", "TeleportAction()", "HealAction()", "RingSelfAction()", "RingFromAction(Vec)", "FlowSelfAction()", "FlowFromAction(Vec)", "IlluminateSelfAction()", "Null(Object,StackTrace)", "~(@,@)", "~(Drop,double)", "~(Node,Node?)", "~(String,double)", "~(String,List<Object>)", "Element0(Node)", "~(Element0)", "Null(~())", "DetectAction(ActionSpell,Game,int)", "BoltAction(TargetSpell,Game,int,Vec)", "RayAction(TargetSpell,Game,int,Vec)", "JsArray<@>(@)", "BarrierAction(TargetSpell,Game,int,Vec)", "Dungeon()", "Catacomb()", "Cavern()", "Lake()", "River()", "Keep()", "Pit()", "SandboxArchitecture()", "~(Breed,Vec)", "Vec()", "JsObject(@)", "~(Symbol0,@)", "~(int,int)", "OpenBarrelAction(Vec)", "TileType(TileBuilder,int)", "bool(bool,int)", "Queue<num>()", "bool(double,double)", "@(String)", "Null(Vec,Hit,num,int)", "Null(Vec)", "~(int)", "~(Skill)", "Null(double)", "bool(Skill)", "~(Element,int(int))", "~(Stat,int(int))", "int(int,Item?)", "AddItemResult(Item{wasUnequipped:bool})", "Skill(String)", "@(@,String)", "~(Item,Vec)", "String(String,Affix)", "String(LevelArchetype)", "WeaponReward(String)", "ArmorReward(String)", "~(@)", "List<Vec>(int)", "~(Direction,bool)", "~(Vec,int)", "Tile(Vec)", "Inventory()", "~(Vec,Inventory)", "~(int,Direction,String)", "~(String,Color,int{total:int?})", "Null(@,StackTrace)", "bool(double)", "~(int,@)", "~(Shop,Inventory)", "WindAction(int)", "~(int,int,double)", "BurnActorAction(int)", "BurnFloorAction(Vec,Hit,num,int)", "bool(Breed)", "FreezeActorAction(int)", "bool(int)", "Item(Item)", "int(Item,Item)", "int(int,Item)", "FreezeFloorAction(Vec,Hit,num,int)", "~(int,Object,Color,Color)", "PoisonAction(int)", "PoisonFloorAction(Vec,Hit,num,int)", "BlindAction(int)", "DazzleAction(int)", "int(Monster,Monster)", "~(StatBase)", "~(String,Color[Color?])", "bool(Effect)", "LightFloorAction(Vec,Hit,num,int)", "~(String,Shop)", "bool(Race)", "bool(LogType)", "EatAction()", "DetectAction()", "~(Object?)", "bool(Monster)", "int(@,@)", "ResistAction()", "MappingAction()", "Object?(Object?)", "Object?(@)", "HasteAction()", "JsFunction(@)"],
     interceptorsByTag: null,
     leafTags: null,
     arrayRti: Symbol("$ti"),
@@ -44441,7 +44374,6 @@
     B.HitType_2 = new A.HitType(2, "toss");
     B.Input_cancel = new A.Input("cancel");
     B.Input_cycleQueue = new A.Input("cycleQueue");
-    B.Input_debug = new A.Input("debug");
     B.Input_drop = new A.Input("drop");
     B.Input_e = new A.Input("e");
     B.Input_editSkills = new A.Input("editSkills");
@@ -44456,8 +44388,10 @@
     B.Input_fireSW = new A.Input("fireSW");
     B.Input_fireW = new A.Input("fireW");
     B.Input_forfeit = new A.Input("forfeit");
+    B.Input_giveConsumables = new A.Input("giveConsumables");
     B.Input_heroInfo = new A.Input("heroInfo");
     B.Input_incrementLoop = new A.Input("incrementLoop");
+    B.Input_incrementMeter = new A.Input("incrementMeter");
     B.Input_inventory = new A.Input("inventory");
     B.Input_levelUp = new A.Input("levelUp");
     B.Input_metricsCapture = new A.Input("metricsCapture");
@@ -44509,7 +44443,6 @@
     B.List_5L9 = makeConstList(["hand", "hand", "ring", "necklace", "body", "cloak", "helm", "gloves", "boots"], type$.JSArray_String);
     B.List_5j0 = makeConstList(["resistance", "heat", "cold", "light", "wind", "lightning", "darkness", "earth", "water", "acid", "poison", "death", "fire", "air", "spirit"], type$.JSArray_String);
     B.List_64O = makeConstList(["Return to main menu?"], type$.JSArray_String);
-    B.List_8nZ = makeConstList(["bow", "cross", "dart", "sling", "short", "long", "javelin", "throw"], type$.JSArray_String);
     B.List_9650_94 = makeConstList([9650, 94], type$.JSArray_int);
     B.List_E8g = makeConstList(["Merek", "Carac", "Ulric", "Tybalt", "Borin", "Sadon", "Terrowin", "Rowan", "Forthwind", "Althalos", "Fendrel", "Brom", "Hadrian", "Crewe", "Bolbec", "Fenwick", "Mowbray", "Drake", "Bryce", "Leofrick", "Letholdus", "Lief", "Barda", "Rulf", "Robin", "Gavin", "Terrin", "Jarin", "Cedric", "Gavin", "Josef", "Janshai", "Doran", "Asher", "Quinn", "Xalvador", "Favian", "Destrian", "Dain", "Millicent", "Alys", "Ayleth", "Anastas", "Alianor", "Cedany", "Ellyn", "Helewys", "Malkyn", "Peronell", "Thea", "Gloriana", "Arabella", "Hildegard", "Brunhild", "Adelaide", "Beatrix", "Emeline", "Mirabelle", "Helena", "Guinevere", "Isolde", "Maerwynn", "Catrain", "Gussalen", "Enndolynn", "Krea", "Dimia", "Aleida"], type$.JSArray_String);
     B.List_EnP = makeConstList([0, 2, 5, 10, 18, 26, 38], type$.JSArray_int);
@@ -44530,7 +44463,6 @@
     B.RewardType_1 = new A.RewardType(1, "stats");
     B.RewardType_2 = new A.RewardType(2, "armor");
     B.List_OoY = makeConstList([B.RewardType_0, B.RewardType_1, B.RewardType_2, B.RewardType_1, B.RewardType_0], A.findType("JSArray<RewardType>"));
-    B.List_Stairs_Permanent = makeConstList(["Stairs", "Permanent"], type$.JSArray_String);
     B.List_VAg = makeConstList(["Stairs descend into darkness.", "How far down shall you venture?"], type$.JSArray_String);
     B.List_ZZa = makeConstList([B.LevelArchetype_COMBAT_0_combat, B.LevelArchetype_LOOT_1_loot, B.LevelArchetype_BOSS_2_boss], type$.JSArray_LevelArchetype);
     B.List_Zlh = makeConstList([B.Color_38_42_66, B.Color_63_75_115, B.Color_116_146_181, B.Color_226_223_240, B.Color_189_144_108, B.Color_142_82_55, B.Color_110_32_13, B.Color_77_29_21, B.Color_255_238_168, B.Color_222_156_33, B.Color_179_74_4, B.Color_129_217_117, B.Color_99_87_7, B.Color_131_158_13, B.Color_22_117_38, B.Color_0_64_39, B.Color_255_122_105, B.Color_204_35_57, B.Color_84_0_39, B.Color_173_88_219, B.Color_86_30_138, B.Color_56_16_125, B.Color_129_231_235, B.Color_64_163_229, B.Color_21_87_194, B.Color_26_46_150], type$.JSArray_Color);
@@ -44557,7 +44489,6 @@
     B.List_owd = makeConstList([B._Sort_tJq, B._Sort_WrN, B._Sort_AXH, B._Sort_Csn], A.findType("JSArray<_Sort>"));
     B.List_pgZ = makeConstList(["bind", "if", "ref", "repeat", "syntax"], type$.JSArray_String);
     B.List_ql7 = makeConstList(["A::href", "AREA::href", "BLOCKQUOTE::cite", "BODY::background", "COMMAND::icon", "DEL::cite", "FORM::action", "IMG::src", "INPUT::src", "INS::cite", "Q::cite", "VIDEO::poster"], type$.JSArray_String);
-    B.List_rWY = makeConstList(["When you die, you lose everything since the last time you went up or down a set of stairs (or left a shop).", "When you die, that's it. Your hero is gone forever. This is the most challenging way to play, but often the most rewarding as well."], type$.JSArray_String);
     B.List_tEi = makeConstList(["HEAD", "AREA", "BASE", "BASEFONT", "BR", "COL", "COLGROUP", "EMBED", "FRAME", "FRAMESET", "HR", "IMAGE", "IMG", "INPUT", "ISINDEX", "LINK", "META", "PARAM", "SOURCE", "STYLE", "TITLE", "WBR"], type$.JSArray_String);
     B.LogType_0 = new A.LogType(0, "message");
     B.LogType_1 = new A.LogType(1, "error");
@@ -44583,9 +44514,10 @@
     B.LoopInput_12 = new A.LoopInput(12, "cycleSpell");
     B.LoopInput_13 = new A.LoopInput(13, "cycleQueue");
     B.LoopInput_14 = new A.LoopInput(14, "equip");
-    B.LoopInput_15 = new A.LoopInput(15, "debug");
-    B.LoopInput_16 = new A.LoopInput(16, "cancel");
-    B.LoopInput_17 = new A.LoopInput(17, "info");
+    B.LoopInput_15 = new A.LoopInput(15, "cancel");
+    B.LoopInput_16 = new A.LoopInput(16, "info");
+    B.LoopInput_17 = new A.LoopInput(17, "giveConsumables");
+    B.LoopInput_18 = new A.LoopInput(18, "incrementMeter");
     B.LoopInput_2 = new A.LoopInput(2, "s");
     B.LoopInput_3 = new A.LoopInput(3, "w");
     B.LoopInput_4 = new A.LoopInput(4, "ne");
@@ -44813,9 +44745,8 @@
       this.o = o;
     });
     _lazyFinal($, "Classes_ranger", "$get$Classes_ranger", () => A._class("Ranger", A.parseDrop("item", null, null), "Rangers are skilled wilderness survivors who have learned to thrive in the untamed lands beyond civilization. Through years of experience in the wild, they have developed keen instincts, adaptability, and a deep understanding of nature's ways. Rangers are versatile fighters who can track prey, navigate treacherous terrain, and survive where others would perish.", 0.5, 0.2));
-    _lazyFinal($, "Classes_warrior", "$get$Classes_warrior", () => A._class("Warrior", A.parseDrop("weapon", null, null), "It's not that warriors are stupid. Many are, in fact, quite intelligent. It's just that they tend to apply most of that intelligence towards deciding which weapon is best suited for splitting a monster's head open.\n\nWarriors rely on the might of their bodies and the reassuring heft of their equipment. While they aren't above using a little magic here and there, they're most comfortable when those supernatural forces are safely ensconced in a piece of familiar gear.", 1, 0));
     _lazyFinal($, "Classes_mage", "$get$Classes_mage", () => A._class("Mage", A.parseDrop('Spellbook "Elemental Primer"', null, null), "Where others rightly fear the awesome power and unpredictability of magic, mages see it as a source of personal power and glory. Magic demands great sacrifices of anyone who dares to wield it directly. Mages who have devoted their lives to it have little time to master other arts and skills. But the rewards in return can be great for anyone willing to dance with the raw forces of nature (as well as some less natural forces).", 0.2, 1));
-    _lazyFinal($, "Classes_all", "$get$Classes_all", () => A._setArrayType([$.$get$Classes_ranger(), $.$get$Classes_warrior(), $.$get$Classes_mage()], A.findType("JSArray<HeroClass>")));
+    _lazyFinal($, "Classes_all", "$get$Classes_all", () => A._setArrayType([$.$get$Classes_ranger(), $.$get$Classes_mage()], A.findType("JSArray<HeroClass>")));
     _lazyFinal($, "Decor_all", "$get$Decor_all", () => A.ResourceSet$(A.findType("Decor")));
     _lazyFinal($, "Cell_uninitialized", "$get$Cell_uninitialized", () => {
       var _null = null;

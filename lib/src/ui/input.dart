@@ -88,6 +88,9 @@ class Input {
   /// L key for incrementing loop count.
   static const incrementLoop = Input("incrementLoop");
 
+  /// M key for incrementing loop meter progress (debug).
+  static const incrementMeter = Input("incrementMeter");
+
   final String name;
 
   const Input(this.name);
