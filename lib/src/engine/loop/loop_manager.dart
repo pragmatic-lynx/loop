@@ -104,7 +104,9 @@ class LoopManager {
     
     // Check if it's time for reward selection
     if (moveCount >= movesPerLoop) {
-      triggerRewardSelection();
+      // Get hero class name for reward generation
+      var heroClassName = currentPreset?.className ?? "ranger";
+      triggerRewardSelection(heroClass: heroClassName);
     }
   }
   
@@ -276,7 +278,8 @@ class LoopManager {
     
     // Check for instant Loop completion at 100%
     if (_loopMeter.progress >= 100.0 && !isRewardSelection) {
-      triggerRewardSelection();
+      var heroClassName = currentPreset?.className ?? "ranger";
+      triggerRewardSelection(heroClass: heroClassName);
     }
   }
   
@@ -288,7 +291,8 @@ class LoopManager {
     
     // Check for instant Loop completion at 100%
     if (_loopMeter.progress >= 100.0 && !isRewardSelection) {
-      triggerRewardSelection();
+      var heroClassName = currentPreset?.className ?? "ranger";
+      triggerRewardSelection(heroClass: heroClassName);
     }
   }
   
@@ -301,7 +305,8 @@ class LoopManager {
     
     // Check for instant Loop completion at 100%
     if (_loopMeter.progress >= 100.0 && !isRewardSelection) {
-      triggerRewardSelection();
+      var heroClassName = currentPreset?.className ?? "ranger";
+      triggerRewardSelection(heroClass: heroClassName);
     }
   }
 }
