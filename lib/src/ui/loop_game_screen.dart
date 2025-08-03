@@ -978,27 +978,31 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
       ' ', ' ', emptyChar, emptyChar, emptyChar, ' ', ' ',    // row 6
     ];
     
-    // 16 positions around the circle for smoother progression
-    var fillPositions = (progress * 16).round();
+    // 20 positions around the circle for smoother progression
+    var fillPositions = (progress * 20).round();
     
-    // Clockwise order starting from 12 o'clock (top center)
+    // Proper clockwise order starting from 12 o'clock (top center)
     // Map to indices in the 7x7 grid (49 total positions)
     var clockOrder = [
       3,   // 12 o'clock (top center)
-      4,   // 1 o'clock
-      5,   // 2 o'clock  
-      12,  // 3 o'clock (right)
-      19,  // 4 o'clock
-      26,  // 5 o'clock
+      4,   // 12:30
+      5,   // 1:30
+      12,  // 3 o'clock (right center)
+      19,  // 4:30
+      26,  // 6 o'clock (right bottom)
       33,  // 6 o'clock (bottom center)
-      40,  // 7 o'clock
-      41,  // 8 o'clock
+      40,  // 7:30
+      41,  // 7:30
       42,  // 9 o'clock (bottom center)
-      35,  // 10 o'clock
-      28,  // 11 o'clock
-      21,  // back to left side
-      14,  // continuing up left
-      7,   // upper left
+      43,  // 9:30
+      44,  // 10:30
+      37,  // continuing left
+      30,  // left side
+      23,  // left side
+      16,  // left side
+      9,   // left side upper
+      8,   // 10:30
+      7,   // 11 o'clock
       2,   // back toward 12 o'clock
     ];
     
@@ -1012,48 +1016,54 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   }
   
   List<Color> _getCircularProgressColors(loopMeter) {
-    var baseColor = darkWarmGray;
+    var baseColor = ash; // Much lighter base color for better contrast
     var fillColor = lightBlue;
     var fullColor = gold;
     
     if (loopMeter.isEmpty) {
-      fillColor = darkWarmGray;
+      fillColor = ash;
     } else if (loopMeter.progress >= 75.0) {
       fillColor = fullColor; // Gold for 75%+
     } else if (loopMeter.progress >= 50.0) {
       fillColor = yellow; // Yellow for 50%+
     } else if (loopMeter.progress >= 25.0) {
       fillColor = lightBlue; // Blue for 25%+
+    } else {
+      fillColor = lightWarmGray; // Light gray for low progress
     }
     
     // Pulsing effect when full
     if (loopMeter.isFull) {
       if ((DateTime.now().millisecondsSinceEpoch ~/ 300) % 2 == 0) {
-        fillColor = lightWarmGray;
+        fillColor = boneWhite; // Bright white pulse when full
       }
     }
     
     var result = List<Color>.filled(49, baseColor); // 7x7 = 49 positions
     var progress = loopMeter.progressRatio;
-    var fillPositions = (progress * 16).round();
+    var fillPositions = (progress * 20).round(); // Match the 20 positions from chars method
     
-    // Clockwise order starting from 12 o'clock (same as chars method)
+    // Same clockwise order as chars method
     var clockOrder = [
       3,   // 12 o'clock (top center)
-      4,   // 1 o'clock
-      5,   // 2 o'clock  
-      12,  // 3 o'clock (right)
-      19,  // 4 o'clock
-      26,  // 5 o'clock
+      4,   // 12:30
+      5,   // 1:30
+      12,  // 3 o'clock (right center)
+      19,  // 4:30
+      26,  // 6 o'clock (right bottom)
       33,  // 6 o'clock (bottom center)
-      40,  // 7 o'clock
-      41,  // 8 o'clock
+      40,  // 7:30
+      41,  // 7:30
       42,  // 9 o'clock (bottom center)
-      35,  // 10 o'clock
-      28,  // 11 o'clock
-      21,  // back to left side
-      14,  // continuing up left
-      7,   // upper left
+      43,  // 9:30
+      44,  // 10:30
+      37,  // continuing left
+      30,  // left side
+      23,  // left side
+      16,  // left side
+      9,   // left side upper
+      8,   // 10:30
+      7,   // 11 o'clock
       2,   // back toward 12 o'clock
     ];
     
