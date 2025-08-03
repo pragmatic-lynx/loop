@@ -112,7 +112,7 @@ class ActionQueues {
     
     return QueueItem(
       name: item.type.name,
-      count: "($currentHP/$maxHP HP)",
+      count: "",
       healAmount: healAmount,
       item: item,
     );
