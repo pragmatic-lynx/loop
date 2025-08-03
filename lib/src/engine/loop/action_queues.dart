@@ -387,6 +387,30 @@ class ActionQueues {
            name.contains('longbow') ||
            (item.attack?.isRanged ?? false); // Use the attack's range property
   }
+
+  String getEnhancedAction1Label() {
+    var heroClassName = hero.save.heroClass.name;
+
+    if (heroClassName == "Mage") {
+      var mageSpells = _getStealthSpells();
+      if (mageSpells.isEmpty) return "No Spell";
+      
+      var index = _resistanceQueueIndex % mageSpells.length;
+      var spellName = mageSpells[index];
+      return "Cast: $spellName";
+
+    } else if (heroClassName == "Ranger") {
+      var rangedItem = getRangedQueueItem();
+      if (!rangedItem.isAvailable) return "No Bow";
+
+      var target = _findNearestEnemy(); // Use existing method
+      var targetStatus = (target != null) ? "Target" : "No Target";
+      return "${rangedItem.name} ($targetStatus)";
+    }
+
+    // Fallback for other classes or situations
+    return getRangedQueueItem().displayText;
+  }
   
   /// Check if item is a magic item
   bool _isMagicItem(Item item) {

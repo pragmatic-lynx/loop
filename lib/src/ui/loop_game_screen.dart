@@ -763,6 +763,9 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
 
   @override
   void render(Terminal terminal) {
+    // Update the action mapping every frame for dynamic labels.
+    _updateActionMapping();
+
     terminal.clear();
     _stagePanel.render(terminal);
     _logPanel.render(terminal);
