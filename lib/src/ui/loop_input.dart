@@ -6,11 +6,10 @@ enum LoopInput {
   // Movement (keep these intuitive)
   n, e, s, w, ne, nw, se, sw, wait,
 
-  // Smart action buttons (1,2,3,4)
-  action1,  // 🗡️ Primary Attack/Interact
+  // Smart action buttons (1,2,3)
+  action1,  // 🗡️ Primary Attack/Interact (Bow for Rangers, Spells for Mages)
   action2,  // ⚡ Magic/Secondary Ability
   action3,  // ❤️ Heal/Consumable
-  action4,  // 🔮 Cast Spell
 
   // Spell management
   cycleSpell, // Q - cycle active spell

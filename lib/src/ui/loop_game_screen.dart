@@ -523,20 +523,6 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
           game.log.message("No healing available.");
           dirty();
         }
-        break;
-
-      case LoopInput.action4:
-        // Action4 has been consolidated into action1
-        // This case is kept for backward compatibility but matches action1 behavior
-        var portal = game.stage[game.hero.pos].portal;
-        if (portal == TilePortals.exit) {
-          if (_loopManager != null) {
-            _handleLoopExit();
-          } else {
-            ui.push(ExitPopup(_previousSave, game));
-          }
-          return true;
-        }
         
         var heroClassName = game.hero.save.heroClass.name;
         if (heroClassName == "Ranger") {
@@ -796,6 +782,9 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
 
   @override
   void render(Terminal terminal) {
+    // Update the action mapping every frame for dynamic labels.
+    _updateActionMapping();
+
     terminal.clear();
     _stagePanel.render(terminal);
     _logPanel.render(terminal);
