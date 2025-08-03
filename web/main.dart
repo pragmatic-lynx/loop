@@ -67,6 +67,7 @@ void main() async {
 
   // Set up the keyPress.
   _ui.keyPress.bind(Input.ok, KeyCode.enter);
+  _ui.keyPress.bind(Input.ok, KeyCode.space);
   _ui.keyPress.bind(Input.cancel, KeyCode.escape);
   _ui.keyPress.bind(Input.cancel, KeyCode.backtick);
   _ui.keyPress.bind(Input.forfeit, KeyCode.f, shift: true);

@@ -101,7 +101,11 @@ class MainMenuScreen extends Screen<Input> {
         return true;
 
       case Input.ok:
-        if (selectedHero < storage.heroes.length) {
+        if (storage.heroes.isEmpty) {
+          // If no heroes exist, create a new one
+          _isActive = false;
+          ui.push(NewHeroScreen(content, storage));
+        } else if (selectedHero < storage.heroes.length) {
           var save = storage.heroes[selectedHero];
           _isActive = false;
           _startLoopModeWithExistingHero(save);
