@@ -99,11 +99,16 @@ class AudioManager {
   /// Extract sound ID from file path
   /// Example: 'player/arrow_release_01.ogg' -> 'player_arrow_release'
   String _extractSoundId(String filePath) {
-    final fileName = filePath.split('/').last;
+    final parts = filePath.split('/');
+    final directory = parts.first;
+    final fileName = parts.last;
     final nameWithoutExt = fileName.split('.').first;
     
     // Remove variation numbers (_01, _02, etc.)
-    return nameWithoutExt.replaceAll(RegExp(r'_\d+$'), '');
+    final baseName = nameWithoutExt.replaceAll(RegExp(r'_\d+$'), '');
+    
+    // Combine directory and filename: 'player/magic_cast_01.ogg' -> 'player_magic_cast'
+    return '${directory}_$baseName';
   }
 
   /// Play a sound effect
