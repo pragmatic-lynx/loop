@@ -74,21 +74,25 @@ class ControlsPanel extends Panel {
   @override
   void renderPanel(Terminal terminal) {
     Draw.frame(terminal, 0, 0, terminal.width, terminal.height, label: "CONTROLS");
-    terminal.writeAt(1, 1, "Movement:", ash);
-    terminal.writeAt(1, 2, "Arrow Keys", lightWarmGray);
     
-    terminal.writeAt(1, 3, "Actions:", ash);
-    terminal.writeAt(1, 4, "1: ${actionMapping.action1Label}", lightBlue);
-    terminal.writeAt(1, 5, "2: ${actionMapping.action2Label}", lima);
-    terminal.writeAt(1, 6, "3: ${actionMapping.action3Label}", pink);
+    // Add more padding from edges - start at 3 instead of 1
+    var x = 3;
+    
+    terminal.writeAt(x, 1, "Movement:", ash);
+    terminal.writeAt(x, 2, "Arrow Keys", lightWarmGray);
+    
+    terminal.writeAt(x, 3, "Actions:", ash);
+    terminal.writeAt(x, 4, "1: ${actionMapping.action1Label}", lightBlue);
+    terminal.writeAt(x, 5, "2: ${actionMapping.action2Label}", lima);
+    terminal.writeAt(x, 6, "3: ${actionMapping.action3Label}", pink);
 
     
     // Context-aware E action
     var eAction = _getEActionDescription();
-    terminal.writeAt(1, 11, "E: ${eAction.icon} ${eAction.description}", eAction.color);
+    terminal.writeAt(x, 11, "E: ${eAction.icon} ${eAction.description}", eAction.color);
     
     // Extra keys
-    terminal.writeAt(1, 13, "I: Inventory", ash);
+    terminal.writeAt(x, 13, "I: Inventory", ash);
   }
   
   ({String icon, String description, Color color}) _getEActionDescription() {
@@ -759,13 +763,13 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   @override
   void resize(Vec size) {
     var leftWidth = 21;
-    var rightWidth = 25;
+    var rightWidth = 30; // Increased from 25 to give more space
     if (size.x > 160) {
       leftWidth = 29;
-      rightWidth = 30;
+      rightWidth = 35; // Increased from 30
     } else if (size.x > 150) {
       leftWidth = 25;
-      rightWidth = 28;
+      rightWidth = 32; // Increased from 28
     }
     var centerWidth = size.x - leftWidth - rightWidth;
     itemPanel.hide();
@@ -777,9 +781,9 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     var equipmentHeight = 12;
     _equipmentPanel.show(Rect(size.x - rightWidth, 0, rightWidth, equipmentHeight));
     
-    // Controls panel at bottom right
+    // Controls panel at bottom right - add 2 pixel margin from right edge
     var controlsHeight = 10; // Increased for 4th button
-    _controlsPanel?.show(Rect(size.x - rightWidth, size.y - controlsHeight, rightWidth, controlsHeight));
+    _controlsPanel?.show(Rect(size.x - rightWidth - 2, size.y - controlsHeight, rightWidth + 2, controlsHeight));
     
     // Log panel at top center
     var logHeight = 3 + (size.y - 30) ~/ 2;
