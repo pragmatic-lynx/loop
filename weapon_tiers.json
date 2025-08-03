@@ -15,7 +15,7 @@
       "id": 2,
       "warrior": ["Shortsword", "Morningstar", "Spear"],
       "ranger": ["Longbow", "Dagger", "Stiletto"],
-      "mage": ["Tidal Wave", "Brilliant Beam", "Fire Barrier"]
+      "mage": ["Windstorm", "Brilliant Beam", "Fire Barrier"]
     },
     {
       "id": 3,
