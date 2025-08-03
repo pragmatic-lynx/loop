@@ -121,11 +121,11 @@ class NewHeroScreen extends Screen<Input> {
         label: "Create New Hero",
         (terminal) {
       Draw.hLine(terminal, 0, 3, terminal.width);
-      Draw.hLine(terminal, 0, 13, terminal.width);
+      Draw.hLine(terminal, 0, 15, terminal.width);
 
       _renderClass(terminal.rect(0, 1, terminal.width, 2));
-      _renderRace(terminal.rect(0, 4, terminal.width, 8));
-      _renderDeath(terminal.rect(0, 14, terminal.width, 8));
+      _renderRace(terminal.rect(0, 4, terminal.width, 10));
+      _renderDeath(terminal.rect(0, 16, terminal.width, 8));
       
       for (var i = 0; i < _controls.length; i++) {
         _controls[i].render(terminal, focus: i == _focus);
@@ -159,7 +159,7 @@ class NewHeroScreen extends Screen<Input> {
   void _renderRace(Terminal terminal) {
     var selectedRace = _content.races[_race.selected];
     
-    // Show race stats in a more compact format
+    // Show all race stats in a compact format
     var y = 5;
     for (var stat in Stat.all) {
       terminal.writeAt(0, y, stat.abbreviation, UIHue.secondary);
@@ -170,14 +170,14 @@ class NewHeroScreen extends Screen<Input> {
 
   void _renderDeath(Terminal terminal) {
     // Show death mode name
-    terminal.writeAt(0, 14, "Death: ${_deaths[_deathMode]}", UIHue.text);
+    terminal.writeAt(0, 16, "Death: ${_deaths[_deathMode]}", UIHue.text);
     
     // Show death description
     _renderText(terminal, _deathDescriptions[_deathMode]);
   }
 
   void _renderText(Terminal terminal, String description) {
-    var y = 16;
+    var y = 18;
     for (var line in Log.wordWrap(59, description)) {
       terminal.writeAt(19, y, line, UIHue.text);
       y++;

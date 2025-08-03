@@ -39881,7 +39881,7 @@
     },
     _renderText$2(terminal, description) {
       var t1, t2, y, _i;
-      for (t1 = A.Log_wordWrap(59, description), t2 = t1.length, y = 16, _i = 0; _i < t1.length; t1.length === t2 || (0, A.throwConcurrentModificationError)(t1), ++_i) {
+      for (t1 = A.Log_wordWrap(59, description), t2 = t1.length, y = 18, _i = 0; _i < t1.length; t1.length === t2 || (0, A.throwConcurrentModificationError)(t1), ++_i) {
         terminal.writeAt$4(19, y, t1[_i], B.Color_132_126_135);
         ++y;
       }
@@ -39993,12 +39993,12 @@
       var t2, i,
         t1 = terminal.size.x;
       A.Draw_hLine(terminal, 0, 3, t1);
-      A.Draw_hLine(terminal, 0, 13, t1);
+      A.Draw_hLine(terminal, 0, 15, t1);
       t2 = this.$this;
       t2._renderClass$1(terminal.rect$4(0, 0, 1, t1, 2));
-      t2._renderRace$1(terminal.rect$4(0, 0, 4, t1, 8));
-      t1 = terminal.rect$4(0, 0, 14, t1, 8);
-      t1.writeAt$4(0, 14, "Death: Permanent", B.Color_132_126_135);
+      t2._renderRace$1(terminal.rect$4(0, 0, 4, t1, 10));
+      t1 = terminal.rect$4(0, 0, 16, t1, 8);
+      t1.writeAt$4(0, 16, "Death: Permanent", B.Color_132_126_135);
       t2._renderText$2(t1, "When you die, that's it. Your hero is gone forever. This is the most challenging way to play, but often the most rewarding as well.");
       for (t1 = t2._controls, i = 0; i < t1.length; ++i)
         t1[i].render$2$focus(terminal, i === t2._new_hero_screen$_focus);
