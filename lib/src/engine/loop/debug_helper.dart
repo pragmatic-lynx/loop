@@ -49,6 +49,19 @@ class DebugHelper {
     // game.log.message('Debug: Added lots of random test items!');
   }
   
+  /// Give a one-time set of all consumables in the game
+  void giveAllConsumables() {
+    // Add one of each type of consumable
+    addRandomHealItems(1);      // Healing items
+    addRandomMagicItems(1);     // Magic items
+    addRandomResistanceItems(1); // Resistance items
+    
+    // Add a few more healing items since they're commonly used
+    addRandomHealItems(3);
+    
+    game.log.gain('You receive a set of useful consumables!');
+  }
+  
   /// Add multiple random ranged weapons
   void addRandomRangedWeapons(int count) {
     var allRangedWeapons = <Item>[];

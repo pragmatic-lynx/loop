@@ -72,7 +72,8 @@ void main() {
   _ui.keyPress.bind(Input.operate, KeyCode.c); // TODO: Better key?
   _ui.keyPress.bind(Input.drop, KeyCode.d);
   _ui.keyPress.bind(Input.use, KeyCode.u);
-  _ui.keyPress.bind(Input.pickUp, KeyCode.g);
+  _ui.keyPress.bind(Input.giveConsumables, KeyCode.f);  // F key for give consumables
+  _ui.keyPress.bind(Input.pickUp, KeyCode.g, shift: true);
   _ui.keyPress.bind(Input.swap, KeyCode.x);
   _ui.keyPress.bind(Input.equip, KeyCode.e);
   _ui.keyPress.bind(Input.inventory, KeyCode.i);
