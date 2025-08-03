@@ -204,7 +204,7 @@ class NewHeroScreen extends Screen<Input> {
     print("Starting loop mode for new hero: ${hero.name}");
     
     // Give the hero some starting gold and basic equipment for loop mode
-    hero.gold = 1500;
+    // hero.gold = 1500;
     
     // Add mage starting equipment
     try {
@@ -228,10 +228,32 @@ class NewHeroScreen extends Screen<Input> {
         hero.equipment.equip(robeItem);
       }
       
-      var healingPotion = _content.tryFindItem("Healing Potion");
-      if (healingPotion != null) {
-        var potionItem = Item(healingPotion, 3);
+      // Give a powerful healing potion
+      var rejuvenationPotion = _content.tryFindItem("Potion of Rejuvenation");
+      if (rejuvenationPotion != null) {
+        var potionItem = Item(rejuvenationPotion, 1);
         hero.inventory.tryAdd(potionItem);
+      } else {
+        // Fallback to regular healing potion
+        var healingPotion = _content.tryFindItem("Healing Potion");
+        if (healingPotion != null) {
+          var potionItem = Item(healingPotion, 3);
+          hero.inventory.tryAdd(potionItem);
+        }
+      }
+      
+      // Give a scroll to detect exits
+      var detectExitScroll = _content.tryFindItem("Scroll of Find Nearby Escape");
+      if (detectExitScroll != null) {
+        var scrollItem = Item(detectExitScroll, 2);
+        hero.inventory.tryAdd(scrollItem);
+      } else {
+        // Fallback to locate escape scroll
+        var locateScroll = _content.tryFindItem("Scroll of Locate Escape");
+        if (locateScroll != null) {
+          var scrollItem = Item(locateScroll, 1);
+          hero.inventory.tryAdd(scrollItem);
+        }
       }
     } catch (e) {
       print("Error adding items: $e");

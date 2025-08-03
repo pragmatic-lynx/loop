@@ -71,6 +71,12 @@ class LoopManager {
     isLoopActive = true;
     isRewardSelection = false;
     
+    // Safety check: if somehow currentLoop becomes 0 or negative, reset to 1
+    if (currentLoop <= 0) {
+      print('Warning: currentLoop was ${currentLoop}, resetting to 1');
+      currentLoop = 1;
+    }
+    
     // Clear previous temporary rewards when starting a new loop
     activeRewards.clear();
     
@@ -107,12 +113,18 @@ class LoopManager {
     isLoopActive = false;
     isRewardSelection = true;
     
-    // Generate cycle-based reward options for this loop
+    // Generate tier-based reward options for this loop based on loop meter progress
     if (_content != null) {
       // Use provided hero class or default to ranger
       var heroClassName = heroClass ?? "ranger";
       
-      currentRewardOptions = LoopReward.generateRewardOptions(3, currentLoop, _content!, heroClassName);
+      // Get the reward tier based on loop meter progress
+      var rewardTier = _loopMeter.getRewardTier();
+      
+      // Generate tiered rewards based on loop meter performance
+      currentRewardOptions = LoopReward.generateTieredRewardOptions(3, currentLoop, _content!, heroClassName, rewardTier);
+      
+      print('Loop ${currentLoop} complete! Progress: ${_loopMeter.progress.toStringAsFixed(1)}% - Tier: ${rewardTier.displayName}');
     } else {
       currentRewardOptions = []; // Clear old options if no content available
       print('Warning: No content available for reward generation');
@@ -233,6 +245,11 @@ class LoopManager {
     activeRewards.clear();
     _loopMeter.reset();
     _metricsCollector.reset();
+  }
+  
+  /// Safety check for loop count - returns true if player should be sent to main menu
+  bool shouldReturnToMainMenu() {
+    return currentLoop <= 0;
   }
   
   /// Get status info for UI

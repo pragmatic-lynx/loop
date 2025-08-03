@@ -8,6 +8,7 @@ import '../items/item.dart';
 import '../hero/stat.dart';
 import '../hero/skill.dart';
 import '../../content/skill/skills.dart';
+import 'loop_meter.dart';
 // TODO: Re-enable when build issues are resolved
 // import 'item/loop_item_config.dart';
 // import 'item/loop_item_manager.dart';
@@ -87,7 +88,97 @@ abstract class LoopReward {
     rewards.shuffle();
     return rewards.take(count).toList();
   }
+
+  /// Generate reward options with tier-based consumables based on loop meter progress
+  static List<LoopReward> generateTieredRewardOptions(int count, int loopNumber, Content content, String heroClass, LoopMeterRewardTier tier) {
+    var rewards = <LoopReward>[];
+    
+    // Always add tier-based consumable rewards based on loop meter progress
+    rewards.addAll(_generateTieredConsumables(content, tier));
+    
+    // Also add cycle-based rewards for variety
+    var rewardType = RewardCycleManager.getRewardType(loopNumber);
+    switch (rewardType) {
+      case RewardType.weapon:
+        rewards.addAll(_generateWeaponRewards(content, heroClass, loopNumber));
+        break;
+      case RewardType.stats:
+        rewards.addAll(_generateStatRewards(loopNumber));
+        break;
+      case RewardType.armor:
+        rewards.addAll(_generateArmorRewards(content, heroClass, loopNumber));
+        break;
+    }
+    
+    rewards.shuffle();
+    return rewards.take(count).toList();
+  }
   
+  /// Generate tier-based consumable rewards based on loop meter performance
+  static List<LoopReward> _generateTieredConsumables(Content content, LoopMeterRewardTier tier) {
+    var rewards = <LoopReward>[];
+    
+    switch (tier) {
+      case LoopMeterRewardTier.legendary:
+        // Best consumables: high-tier healing, powerful scrolls, best food
+        rewards.addAll([
+          ConsumableReward("Potion of Rejuvenation", content, tier),
+          ConsumableReward("Potion of Speed", content, tier),
+          ConsumableReward("Scroll of Teleportation", content, tier),
+          ConsumableReward("Wizard's Map", content, tier),
+          ConsumableReward("Bottled Radiance", content, tier),
+          ConsumableReward("Piece of Jerky", content, tier),
+        ]);
+        break;
+        
+      case LoopMeterRewardTier.master:
+        // High-quality consumables
+        rewards.addAll([
+          ConsumableReward("Potion of Amelioration", content, tier),
+          ConsumableReward("Potion of Alacrity", content, tier),
+          ConsumableReward("Scroll of Phasing", content, tier),
+          ConsumableReward("Explorer's Map", content, tier),
+          ConsumableReward("Bottled Lightning", content, tier),
+          ConsumableReward("Chunk of Meat", content, tier),
+        ]);
+        break;
+        
+      case LoopMeterRewardTier.apprentice:
+        // Good consumables
+        rewards.addAll([
+          ConsumableReward("Healing Poultice", content, tier),
+          ConsumableReward("Potion of Quickness", content, tier),
+          ConsumableReward("Scroll of Sidestepping", content, tier),
+          ConsumableReward("Adventurer's Map", content, tier),
+          ConsumableReward("Bottled Fire", content, tier),
+          ConsumableReward("Loaf of Bread", content, tier),
+        ]);
+        break;
+        
+      case LoopMeterRewardTier.novice:
+        // Basic consumables
+        rewards.addAll([
+          ConsumableReward("Mending Salve", content, tier),
+          ConsumableReward("Scroll of Find Nearby Items", content, tier),
+          ConsumableReward("Bottled Wind", content, tier),
+          ConsumableReward("Loaf of Bread", content, tier),
+        ]);
+        break;
+        
+      case LoopMeterRewardTier.survival:
+        // Poor consumables: stale bread and basic items
+        rewards.addAll([
+          ConsumableReward("Soothing Balm", content, tier),
+          ConsumableReward("Scroll of Find Nearby Escape", content, tier),
+          ConsumableReward("Stale Biscuit", content, tier),
+          ConsumableReward("Antidote", content, tier),
+        ]);
+        break;
+    }
+    
+    return rewards;
+  }
+
   /// Generate weapon rewards for the current loop
   static List<LoopReward> _generateWeaponRewards(Content content, String heroClass, int loopNumber) {
     // Determine tier based on loop number (every 5 loops increases tier)
@@ -534,6 +625,88 @@ class ArmorReward extends LoopReward {
         break;
     }
     return ["Robe"]; // Fallback
+  }
+}
+
+/// Tier-based consumable reward that gives actual consumable items
+class ConsumableReward extends LoopReward {
+  final String itemName;
+  final Content content;
+  final LoopMeterRewardTier tier;
+  
+  ConsumableReward(this.itemName, this.content, this.tier) : super(
+    name: '${tier.displayName.split(' ').last} - $itemName',
+    description: _getDescription(itemName, tier),
+    flavorText: _getFlavorText(itemName, tier),
+  );
+  
+  static String _getDescription(String itemName, LoopMeterRewardTier tier) {
+    var quantity = _getQuantity(itemName, tier);
+    if (quantity > 1) {
+      return 'Receive ${quantity}x $itemName';
+    }
+    return 'Receive $itemName';
+  }
+  
+  static String _getFlavorText(String itemName, LoopMeterRewardTier tier) {
+    switch (tier) {
+      case LoopMeterRewardTier.legendary:
+        return "The finest provisions for a true champion!";
+      case LoopMeterRewardTier.master:
+        return "Quality supplies befitting your skill.";
+      case LoopMeterRewardTier.apprentice:
+        return "Useful resources for your journey.";
+      case LoopMeterRewardTier.novice:
+        return "Basic supplies to help you survive.";
+      case LoopMeterRewardTier.survival:
+        return "Scraps and remnants - better than nothing.";
+    }
+  }
+  
+  static int _getQuantity(String itemName, LoopMeterRewardTier tier) {
+    // Food items get more based on tier
+    if (itemName.contains('Bread') || itemName.contains('Meat') || itemName.contains('Jerky') || itemName.contains('Biscuit')) {
+      switch (tier) {
+        case LoopMeterRewardTier.legendary: return 6;
+        case LoopMeterRewardTier.master: return 4;
+        case LoopMeterRewardTier.apprentice: return 3;
+        case LoopMeterRewardTier.novice: return 2;
+        case LoopMeterRewardTier.survival: return 1;
+      }
+    }
+    
+    // Potions and scrolls get more based on tier
+    if (itemName.contains('Potion') || itemName.contains('Scroll') || itemName.contains('Bottled') || itemName.contains('Salve')) {
+      switch (tier) {
+        case LoopMeterRewardTier.legendary: return 3;
+        case LoopMeterRewardTier.master: return 2;
+        case LoopMeterRewardTier.apprentice: return 2;
+        case LoopMeterRewardTier.novice: return 1;
+        case LoopMeterRewardTier.survival: return 1;
+      }
+    }
+    
+    return 1; // Default
+  }
+  
+  @override
+  void apply(HeroSave hero) {
+    var itemType = content.tryFindItem(itemName);
+    if (itemType == null) {
+      print('Warning: Could not find consumable item type: $itemName');
+      return;
+    }
+    
+    var quantity = _getQuantity(itemName, tier);
+    var item = Item(itemType, quantity);
+    
+    // Add to inventory
+    var result = hero.inventory.tryAdd(item);
+    if (result.added > 0) {
+      print('Added ${item.clone(result.added).nounText} to ${hero.name}\'s inventory (${tier.displayName})');
+    } else {
+      print('Could not add ${item.nounText} - inventory full');
+    }
   }
 }
 

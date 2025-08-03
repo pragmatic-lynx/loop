@@ -46,6 +46,7 @@ import 'input_converter.dart';
 import 'level_up_screen.dart';
 import 'loop_input.dart';
 import 'loop_reward_screen.dart';
+import 'main_menu_screen.dart';
 import 'supply_case_screen.dart';
 import '../engine/hero/stat.dart';
 import 'panel/log_panel.dart';
@@ -740,6 +741,13 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
 
   @override
   void update() {
+    // Safety check: if loop count is zero or negative, return to main menu
+    if (_loopManager.shouldReturnToMainMenu()) {
+      print('Safety fallback: Loop count is ${_loopManager.currentLoop}, returning to main menu');
+      ui.goTo(MainMenuScreen(game.content));
+      return;
+    }
+    
     if (_pause > 0) {
       _pause--;
       dirty(); // Ensure screen refreshes during pause countdown

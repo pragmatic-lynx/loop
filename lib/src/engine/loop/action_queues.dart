@@ -79,7 +79,7 @@ class ActionQueues {
   QueueItem getMagicQueueItem() {
     var magicItems = _getMagicItems();
     if (magicItems.isEmpty) {
-      return QueueItem(name: "No Magic", isAvailable: false);
+      return QueueItem(name: "No Scrolls", isAvailable: false);
     }
     
     var index = _magicQueueIndex % magicItems.length;
@@ -98,7 +98,7 @@ class ActionQueues {
       var currentHP = hero.health;
       var maxHP = hero.maxHealth;
       return QueueItem(
-        name: "Max HP",
+        name: "No Healing",
         count: "",
         isAvailable: false,
       );

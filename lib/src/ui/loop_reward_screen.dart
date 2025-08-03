@@ -36,8 +36,9 @@ class LoopRewardScreen extends Screen<Input> {
     
     // Ensure we have at least one reward option to prevent crashes
     if (rewardOptions.isEmpty) {
-      print('Warning: No reward options available, generating cycle-based rewards');
-      rewardOptions.addAll(LoopReward.generateRewardOptions(3, loopManager.currentLoop, content, hero.heroClass.name));
+      print('Warning: No reward options available, generating tier-based rewards');
+      var rewardTier = loopManager.loopMeter.getRewardTier();
+      rewardOptions.addAll(LoopReward.generateTieredRewardOptions(3, loopManager.currentLoop, content, hero.heroClass.name, rewardTier));
     }
   }
   
@@ -155,17 +156,21 @@ class LoopRewardScreen extends Screen<Input> {
     
     // Title
     var status = loopManager.getStatus();
-    centerTerminal.writeAt(3, 2, 'LOOP ${status['currentLoop']} COMPLETE!', UIHue.primary);
-    centerTerminal.writeAt(3, 3, 'You made ${status['moveCount']} moves. Choose your reward:', UIHue.text);
+    var loopMeter = loopManager.loopMeter;
+    var rewardTier = loopMeter.getRewardTier();
     
-    Draw.hLine(centerTerminal, 3, 5, centerTerminal.width - 6);
+    centerTerminal.writeAt(3, 2, 'LOOP ${status['currentLoop']} COMPLETE!', UIHue.primary);
+    centerTerminal.writeAt(3, 3, 'Loop Progress: ${loopMeter.progress.toStringAsFixed(1)}% - ${rewardTier.displayName}', UIHue.secondary);
+    centerTerminal.writeAt(3, 4, rewardTier.description, UIHue.text);
+    
+    Draw.hLine(centerTerminal, 3, 6, centerTerminal.width - 6);
     
     // Reward options
-    centerTerminal.writeAt(3, 7, 'Select your boon for the next challenge:', UIHue.text);
+    centerTerminal.writeAt(3, 8, 'Select your boon for the next challenge:', UIHue.text);
     
     for (var i = 0; i < rewardOptions.length; i++) {
       var reward = rewardOptions[i];
-      var yStart = 9 + i * 6;
+      var yStart = 10 + i * 6;
       
       var primary = UIHue.primary;
       var secondary = UIHue.secondary;
