@@ -59,11 +59,12 @@ class MainMenuScreen extends Screen<Input> {
   /// Ensure there's always a default hero for loop mode
   void _ensureDefaultHero() {
     if (storage.heroes.isEmpty) {
-      print("Creating default Loop Mode hero...");
-      var defaultHero = content.createHero("Loop Runner");
-      defaultHero.gold = 2000; // Give extra starting gold for loop mode
-      storage.heroes.add(defaultHero);
-      storage.save();
+      return;
+      //print("Creating default Loop Mode hero...");
+      //var defaultHero = content.createHero("Loop Runner");
+      //defaultHero.gold = 2000; // Give extra starting gold for loop mode
+      //storage.heroes.add(defaultHero);
+      //storage.save();
     }
   }
 
