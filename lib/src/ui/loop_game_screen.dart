@@ -89,7 +89,7 @@ class ControlsPanel extends Panel {
     
     // Spell/Queue Management
     terminal.writeAt(x, 7, "Q: Cycle Spells", lightAqua);
-    terminal.writeAt(x, 8, "TAB: Cycle Action 2/3", lightAqua);
+    terminal.writeAt(x, 8, "TAB: Cycle Consumables", lightAqua);
     
     // Context-aware E action
     var eAction = _getEActionDescription();
@@ -100,7 +100,7 @@ class ControlsPanel extends Panel {
     }
     
     // Extra keys
-    terminal.writeAt(x, 10, "ESC/I: Inventory", ash);
+    terminal.writeAt(x, 10, "ESC: Inventory", ash);
     
     // Extra blank line for spacing
     terminal.writeAt(x, 11, "", ash);
