@@ -140,7 +140,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   TuningOverlay? _tuningOverlay;
   bool _showTuningOverlay = false;
   // DebugOverlay? _debugOverlay;
-  bool _showDebugOverlay = false;
+  // bool _showDebugOverlay = false;
   int _pause = 0;
   HeroSave _previousSave;
   int _previousEnemyCount = 0;
@@ -345,11 +345,11 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     }
     
     // Handle debug overlay toggle (Z key)
-    if (input == Input.debug) {
-      _showDebugOverlay = !_showDebugOverlay;
-      dirty();
-      return true;
-    }
+    // if (input == Input.debug) {
+    //   _showDebugOverlay = !_showDebugOverlay;
+    //   dirty();
+    //   return true;
+    // }
 
     // Handle debug overlay input when active
     // if (_showDebugOverlay && _debugOverlay != null) {
