@@ -39,11 +39,11 @@ class InputConverter {
         return LoopInput.action3;
       // Note: Input.toss (4 key) no longer mapped - action4 consolidated into action1
       
-      // Spell management
+      // Spell management - Q cycles spells
       case Input.cycleQueue:   // Mapped to 'Q' key
         return LoopInput.cycleSpell;
       
-      // Queue management
+      // Queue management - Tab cycles action2/action3
       case Input.tab:          // Mapped to 'Tab' key
         return LoopInput.cycleQueue;
       

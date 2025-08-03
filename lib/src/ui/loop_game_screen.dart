@@ -150,6 +150,9 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   int _previousEnemyCount = 0;
   final DiagonalInputHandler _diagonalInput = DiagonalInputHandler();
   
+  // Debouncing for E command to prevent double execution
+  bool _eCommandProcessed = false;
+  
   @override
   LoopManager? get loopManager => _loopManager;
   @override
@@ -202,6 +205,11 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     
     // Initialize dynamic action mapping
     _updateActionMapping();
+    
+    // Initialize mage spells if hero is a mage
+    if (game.hero.save.heroClass.name == "Mage") {
+      _initializeMageSpells();
+    }
     
     // Initialize enemy count for kill tracking
     _previousEnemyCount = game.stage.actors.where((actor) => actor != game.hero && actor.isAlive).length;
@@ -567,28 +575,32 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
         break;
         
       case LoopInput.cycleSpell:
-        // If mage spell queue is active, cycle mage spells
-        if (_actionQueues.currentQueue == 4) {
+        // Q cycles spells - works for all classes that have spells
+        if (game.hero.save.heroClass.name == "Mage") {
+          // For mages, cycle through mage spells
+          _actionQueues.setCurrentQueue(4);
           _actionQueues.cycleCurrentQueue();
           _updateActionMapping();
           var currentSpell = _actionQueues.getResistanceQueueItem();
           game.log.message("Active spell: ${currentSpell.name}");
         } else {
-          // Cycle active spell for other queues
+          // For other classes, cycle active spell
           _cycleActiveSpell();
           _updateActionMapping();
         }
         return true;
         
       case LoopInput.cycleQueue:
-        // Cycle which queue is currently active (1-4)
+        // Tab cycles between action2 and action3 specifically
         var currentQueue = _actionQueues.currentQueue;
-        var nextQueue = (currentQueue % 4) + 1;
-        _actionQueues.setCurrentQueue(nextQueue);
+        if (currentQueue == 2) {
+          _actionQueues.setCurrentQueue(3);
+          game.log.message("Switched to Heal queue");
+        } else {
+          _actionQueues.setCurrentQueue(2);
+          game.log.message("Switched to Magic queue");
+        }
         _updateActionMapping();
-        
-        var queueNames = ["", "Ranged", "Magic", "Heal", "Mage Spells"];
-        game.log.message("Active queue: ${queueNames[nextQueue]}");
         return true;
         
       case LoopInput.giveConsumables:
@@ -608,6 +620,12 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
       // No debug functionality - intentionally left blank
 
       case LoopInput.equip:
+        // Prevent double execution of E command
+        if (_eCommandProcessed) {
+          return true;
+        }
+        _eCommandProcessed = true;
+        
         // First try to interact with staircase if standing on one
         var portal = game.stage[game.hero.pos].portal;
         if (portal == TilePortals.exit) {
@@ -678,6 +696,9 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
       // Update action mapping after each action (abilities may change)
       _updateActionMapping();
     }
+    
+    // Reset E command flag after processing
+    _eCommandProcessed = false;
 
     return true;
   }
