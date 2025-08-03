@@ -273,9 +273,9 @@ class MainMenuScreen extends Screen<Input> {
 
     Draw.helpKeys(terminal, {
       "OK": "Start",
-      "↕": "Change selection",
-      "N": "Create a new hero",
-      "D": "Delete hero",
+      "↕": "Change",
+      "N": "New",
+      "D": "Delete",
     });
   }
 

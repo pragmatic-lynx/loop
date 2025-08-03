@@ -129,7 +129,7 @@ class LoopSetupScreen extends Screen<Input> {
     
     Draw.helpKeys(terminal, {
       "OK": "Start Loop",
-      "↕": "Change selection", 
+      "↕": "Change", 
       "Esc": "Back to menu",
     });
   }

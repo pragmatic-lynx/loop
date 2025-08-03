@@ -198,7 +198,7 @@ class LoopRewardScreen extends Screen<Input> {
     
     Draw.helpKeys(terminal, {
       "OK": "Select reward",
-      "↕": "Change selection",
+      "↕": "Change",
     });
   }
   
