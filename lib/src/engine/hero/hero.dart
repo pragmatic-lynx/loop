@@ -180,7 +180,7 @@ class Hero extends Actor {
   /// Discover or acquire any skills associated with [item].
   void _gainItemSkills(Game game, Item item) {
     for (var skill in item.type.skills) {
-      if (save.heroClass.proficiency(skill) != 0.0 && skills.discover(skill)) {
+      if (save.heroClass.dynamicProficiency(skill, save) != 0.0 && skills.discover(skill)) {
         // See if the hero can immediately use it.
         var level = skill.calculateLevel(save);
         if (skills.gain(skill, level)) {

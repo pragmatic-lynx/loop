@@ -4,9 +4,11 @@ import '../core/actor.dart';
 import '../core/game.dart';
 import '../hero/hero.dart';
 import '../items/item.dart';
+import '../hero/hero_class.dart';
 
 import '../../content/skill/skills.dart';
 import '../hero/skill.dart';
+import '../../content/skill/spell/spell.dart';
 import 'debug_helper.dart';
 
 /// Queue item representing a single action option
@@ -343,16 +345,34 @@ class ActionQueues {
     return items;
   }
   
-  /// Get all available mage spells (sorcery only)
+  /// Get all available mage spells that the hero can actually cast
   List<String> _getStealthSpells() {
-    // Return only the specific sorcery spells
-    return [
+    var availableSpells = <String>[];
+    
+    // Check all spells to see which ones the mage can use
+    var allSpells = [
       "Icicle",
       "Brilliant Beam", 
       "Windstorm",
       "Fire Barrier",
       "Tidal Wave"
     ];
+    
+    for (var spellName in allSpells) {
+      try {
+        var skill = Skills.find(spellName);
+        // Check if the hero has proficiency in this spell and has discovered it
+        if (hero.save.heroClass.dynamicProficiency(skill, hero.save) > 0.0 &&
+            hero.skills.isDiscovered(skill)) {
+          availableSpells.add(spellName);
+        }
+      } catch (e) {
+        // Spell not found, skip it
+        continue;
+      }
+    }
+    
+    return availableSpells;
   }
   
   /// Check if item is a ranged weapon
