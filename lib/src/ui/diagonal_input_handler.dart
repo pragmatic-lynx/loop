@@ -32,7 +32,6 @@ class DiagonalInputHandler {
         
     if (!_isShiftDown) {
       // Normal movement when Shift isn't held
-      developer.log('Shift not held - using normal movement', name: 'DiagonalInput');
       return direction;
     }
     

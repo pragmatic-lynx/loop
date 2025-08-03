@@ -483,9 +483,9 @@ class GameScreen extends Screen<Input> implements GameScreenInterface {
       if (_loopManager != null) {
         // In loop mode, just restart the loop
         _loopManager!.reset();
-        ui.goTo(GameOverScreen(_storage, game.hero.save, _previousSave));
+        ui.goTo(GameOverScreen(_storage, game.hero.save, _previousSave, game.content));
       } else {
-        ui.goTo(GameOverScreen(_storage, game.hero.save, _previousSave));
+        ui.goTo(GameOverScreen(_storage, game.hero.save, _previousSave, game.content));
       }
       return;
     }

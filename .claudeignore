@@ -75,3 +75,4 @@ web/main.dart.js.deps
 out.js.deps
 web/styles.css
 *.json
+*.ogg

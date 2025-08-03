@@ -6,6 +6,8 @@ import 'package:malison/malison_web.dart';
 import '../engine.dart';
 import '../engine/hero/stat.dart';
 import '../engine/loop/loop_meter.dart';
+import '../engine/loop/loop_reward.dart';
+import '../engine/core/content.dart';
 import '../hues.dart';
 import 'draw.dart';
 import 'input.dart';
@@ -13,31 +15,54 @@ import 'input.dart';
 /// Screen that shows the tiered supply case rewards based on loop meter performance
 class SupplyCaseScreen extends Screen<Input> {
   final Game game;
+  final Content content;
   final LoopMeterRewardTier earnedTier;
   final double meterProgress;
+  final int loopNumber;
   final Function() onComplete;
   
-  int _selectedStat = 0;
-  List<Stat> _availableStats = [Stat.strength, Stat.agility, Stat.fortitude, Stat.intellect, Stat.will];
-  bool _showingStatChoice = false;
+  int _selectedChoice = 0;
+  List<LoopReward> _availableRewards = [];
+  RewardType _currentRewardType = RewardType.weapon;
+  bool _showingChoice = false;
   
-  SupplyCaseScreen(this.game, this.earnedTier, this.meterProgress, this.onComplete);
+  SupplyCaseScreen(this.game, this.content, this.earnedTier, this.meterProgress, this.loopNumber, this.onComplete) {
+    _initializeRewards();
+  }
+  
+  void _initializeRewards() {
+    // Determine what type of reward this loop offers
+    _currentRewardType = RewardCycleManager.getRewardType(loopNumber);
+    
+    // Generate 3 reward options based on the current cycle
+    var heroClass = game.hero.save.heroClass.name;
+    _availableRewards = LoopReward.generateRewardOptions(3, loopNumber, content, heroClass);
+    
+    // For higher tier performance, allow choosing between options
+    _showingChoice = (earnedTier == LoopMeterRewardTier.legendary || 
+                     earnedTier == LoopMeterRewardTier.master ||
+                     earnedTier == LoopMeterRewardTier.apprentice);
+                     
+    // For lower tiers, just give the first option or basic rewards
+    if (!_showingChoice) {
+      if (_availableRewards.isNotEmpty && earnedTier != LoopMeterRewardTier.survival) {
+        _availableRewards = [_availableRewards.first];
+      } else {
+        _availableRewards = [];
+      }
+    }
+  }
   
   @override
   bool handleInput(Input input) {
-    if (_showingStatChoice) {
-      return _handleStatChoice(input);
+    if (_showingChoice) {
+      return _handleRewardChoice(input);
     }
     
     switch (input) {
       case Input.ok:
-        if (earnedTier == LoopMeterRewardTier.legendary || earnedTier == LoopMeterRewardTier.master) {
-          _showingStatChoice = true;
-          dirty();
-        } else {
-          _applyRewards();
-          onComplete();
-        }
+        _applyRewards();
+        onComplete();
         return true;
         
       default:
@@ -47,20 +72,20 @@ class SupplyCaseScreen extends Screen<Input> {
   
   @override
   bool keyDown(int keyCode, {required bool shift, required bool alt}) {
-    if (_showingStatChoice) {
+    if (_showingChoice) {
       switch (keyCode) {
         case 38: // Up arrow
         case 87: // W key
-          if (_selectedStat > 0) {
-            _selectedStat--;
+          if (_selectedChoice > 0) {
+            _selectedChoice--;
             dirty();
           }
           return true;
           
         case 40: // Down arrow
         case 83: // S key
-          if (_selectedStat < _availableStats.length - 1) {
-            _selectedStat++;
+          if (_selectedChoice < _availableRewards.length - 1) {
+            _selectedChoice++;
             dirty();
           }
           return true;
@@ -77,13 +102,8 @@ class SupplyCaseScreen extends Screen<Input> {
         case 13: // Enter
         case 32: // Space
         case 69: // E key
-          if (earnedTier == LoopMeterRewardTier.legendary || earnedTier == LoopMeterRewardTier.master) {
-            _showingStatChoice = true;
-            dirty();
-          } else {
-            _applyRewards();
-            onComplete();
-          }
+          _applyRewards();
+          onComplete();
           return true;
       }
     }
@@ -91,18 +111,18 @@ class SupplyCaseScreen extends Screen<Input> {
     return false;
   }
   
-  bool _handleStatChoice(Input input) {
+  bool _handleRewardChoice(Input input) {
     switch (input) {
       case Input.n:
-        if (_selectedStat > 0) {
-          _selectedStat--;
+        if (_selectedChoice > 0) {
+          _selectedChoice--;
           dirty();
         }
         return true;
         
       case Input.s:
-        if (_selectedStat < _availableStats.length - 1) {
-          _selectedStat++;
+        if (_selectedChoice < _availableRewards.length - 1) {
+          _selectedChoice++;
           dirty();
         }
         return true;
@@ -125,44 +145,35 @@ class SupplyCaseScreen extends Screen<Input> {
       return;
     }
     
+    // Apply the selected reward from the cycle (weapon/stat/armor)
+    if (_availableRewards.isNotEmpty) {
+      var selectedIndex = _showingChoice ? _selectedChoice : 0;
+      if (selectedIndex < _availableRewards.length) {
+        var selectedReward = _availableRewards[selectedIndex];
+        selectedReward.apply(hero.save);
+        game.log.gain("${selectedReward.name} - ${selectedReward.description}");
+      }
+    }
+    
+    // Apply additional supply bundle based on performance tier
     switch (earnedTier) {
       case LoopMeterRewardTier.legendary:
-        // +2 stat boost + Large bundles
-        if (_showingStatChoice && _selectedStat < _availableStats.length) {
-          var chosenStat = _availableStats[_selectedStat];
-          hero.save.addPermanentStatBonus(chosenStat, 2);
-          game.log.gain("Legendary power! Your ${chosenStat.name} increased by 2!");
-        }
         _addSupplyBundle(BundleSize.large);
         break;
         
       case LoopMeterRewardTier.master:
-        // +1 stat boost + Medium bundles
-        if (_showingStatChoice && _selectedStat < _availableStats.length) {
-          var chosenStat = _availableStats[_selectedStat];
-          hero.save.addPermanentStatBonus(chosenStat, 1);
-          game.log.gain("Mastery achieved! Your ${chosenStat.name} increased by 1!");
-        }
         _addSupplyBundle(BundleSize.medium);
         break;
         
       case LoopMeterRewardTier.apprentice:
-        // +1 random stat + Small bundles
-        var randomStat = _availableStats[game.stage.actors.length % _availableStats.length];
-        hero.save.addPermanentStatBonus(randomStat, 1);
-        game.log.gain("Your ${randomStat.name} increased by 1!");
         _addSupplyBundle(BundleSize.small);
         break;
         
       case LoopMeterRewardTier.novice:
-        // Basic survival items only
-        game.log.gain("You receive basic survival supplies.");
         _addBasicSurvival();
         break;
         
       case LoopMeterRewardTier.survival:
-        // Minimal items
-        game.log.gain("You scrape together minimal supplies.");
         _addMinimalSurvival();
         break;
     }
@@ -203,16 +214,16 @@ class SupplyCaseScreen extends Screen<Input> {
   void render(Terminal terminal) {
     terminal.clear();
     
-    if (_showingStatChoice) {
-      _renderStatChoice(terminal);
+    if (_showingChoice) {
+      _renderRewardChoice(terminal);
     } else {
       _renderSupplyCaseDisplay(terminal);
     }
   }
   
-  void _renderStatChoice(Terminal terminal) {
-    var dialogWidth = 60;
-    var dialogHeight = 18;
+  void _renderRewardChoice(Terminal terminal) {
+    var dialogWidth = 70;
+    var dialogHeight = 20;
     var x = (terminal.width - dialogWidth) ~/ 2;
     var y = (terminal.height - dialogHeight) ~/ 2;
     
@@ -226,31 +237,35 @@ class SupplyCaseScreen extends Screen<Input> {
     }
     Draw.doubleBox(dialogTerminal, 0, 0, dialogWidth, dialogHeight);
     
-    dialogTerminal.writeAt(2, 2, "Choose Your Stat Boost!", gold);
+    var cycleName = RewardCycleManager.getCycleName(loopNumber);
+    dialogTerminal.writeAt(2, 2, "Loop $loopNumber Reward: $cycleName", gold);
     
-    // Show current stats
+    // Show current hero stats for context
     dialogTerminal.writeAt(2, 4, "Current Stats:", lightBlue);
     var hero = game.hero;
     if (hero != null) {
       dialogTerminal.writeAt(4, 5, "STR: ${hero.strength.value}", ash);
       dialogTerminal.writeAt(16, 5, "AGI: ${hero.agility.value}", ash);
       dialogTerminal.writeAt(28, 5, "FOR: ${hero.fortitude.value}", ash);
-      dialogTerminal.writeAt(4, 6, "INT: ${hero.intellect.value}", ash);
-      dialogTerminal.writeAt(16, 6, "WIL: ${hero.will.value}", ash);
+      dialogTerminal.writeAt(40, 5, "INT: ${hero.intellect.value}", ash);
+      dialogTerminal.writeAt(52, 5, "WIL: ${hero.will.value}", ash);
     }
     
     Draw.hLine(dialogTerminal, 2, 7, dialogWidth - 4);
     
-    for (var i = 0; i < _availableStats.length; i++) {
-      var stat = _availableStats[i];
-      var color = i == _selectedStat ? gold : ash;
-      var prefix = i == _selectedStat ? "> " : "  ";
+    dialogTerminal.writeAt(2, 8, "Choose your reward:", lightBlue);
+    
+    for (var i = 0; i < _availableRewards.length; i++) {
+      var reward = _availableRewards[i];
+      var color = i == _selectedChoice ? gold : ash;
+      var prefix = i == _selectedChoice ? "> " : "  ";
       
-      dialogTerminal.writeAt(4, 9 + i, "${prefix}${stat.name}", color);
+      dialogTerminal.writeAt(4, 10 + i * 2, "${prefix}${reward.name}", color);
+      dialogTerminal.writeAt(6, 11 + i * 2, reward.description, i == _selectedChoice ? lightBlue : darkWarmGray);
     }
     
     Draw.helpKeys(terminal, {
-      "↕": "Choose stat",
+      "↕": "Choose reward",
       "Enter": "Confirm choice",
     });
   }
@@ -262,26 +277,54 @@ class SupplyCaseScreen extends Screen<Input> {
     centerTerminal.clear();
     Draw.doubleBox(centerTerminal, 0, 0, centerTerminal.width, centerTerminal.height);
     
-    // Title with progress
-    centerTerminal.writeAt(3, 2, 'LOOP COMPLETE!', gold);
+    // Title with progress and reward cycle info
+    centerTerminal.writeAt(3, 2, 'LOOP $loopNumber COMPLETE!', gold);
+    var cycleName = RewardCycleManager.getCycleName(loopNumber);
     centerTerminal.writeAt(3, 3, 'Ring filled to ${meterProgress.toInt()}% - ${earnedTier.displayName} earned!', ash);
+    centerTerminal.writeAt(3, 4, 'Reward Type: $cycleName', lightBlue);
     
     // Show current stats
-    centerTerminal.writeAt(3, 5, 'Current Stats:', lightBlue);
+    centerTerminal.writeAt(3, 6, 'Current Stats:', lightBlue);
     var hero = game.hero;
     if (hero != null) {
-      centerTerminal.writeAt(5, 6, 'STR: ${hero.strength.value}', ash);
-      centerTerminal.writeAt(17, 6, 'AGI: ${hero.agility.value}', ash);
-      centerTerminal.writeAt(29, 6, 'FOR: ${hero.fortitude.value}', ash);
-      centerTerminal.writeAt(41, 6, 'INT: ${hero.intellect.value}', ash);
-      centerTerminal.writeAt(53, 6, 'WIL: ${hero.will.value}', ash);
+      centerTerminal.writeAt(5, 7, 'STR: ${hero.strength.value}', ash);
+      centerTerminal.writeAt(17, 7, 'AGI: ${hero.agility.value}', ash);
+      centerTerminal.writeAt(29, 7, 'FOR: ${hero.fortitude.value}', ash);
+      centerTerminal.writeAt(41, 7, 'INT: ${hero.intellect.value}', ash);
+      centerTerminal.writeAt(53, 7, 'WIL: ${hero.will.value}', ash);
     }
     
-    Draw.hLine(centerTerminal, 3, 8, centerTerminal.width - 6);
+    Draw.hLine(centerTerminal, 3, 9, centerTerminal.width - 6);
     
-    var currentY = 10;
+    var currentY = 11;
     
-    // Show all tiers with what you got vs what you missed
+    // Show the specific reward you're getting
+    if (_availableRewards.isNotEmpty) {
+      centerTerminal.writeAt(3, currentY, 'Your Reward:', gold);
+      currentY++;
+      
+      if (_showingChoice) {
+        centerTerminal.writeAt(5, currentY, 'Choose from ${_availableRewards.length} options:', lightBlue);
+        currentY++;
+        for (var i = 0; i < _availableRewards.length; i++) {
+          var reward = _availableRewards[i];
+          centerTerminal.writeAt(7, currentY, '• ${reward.name}', ash);
+          currentY++;
+        }
+      } else {
+        var reward = _availableRewards.first;
+        centerTerminal.writeAt(5, currentY, '• ${reward.name}', gold);
+        currentY++;
+        centerTerminal.writeAt(7, currentY, reward.description, lightBlue);
+        currentY++;
+      }
+      currentY++;
+    }
+    
+    // Show performance tier rewards
+    centerTerminal.writeAt(3, currentY, 'Performance Bonuses:', lightBlue);
+    currentY++;
+    
     var allTiers = [LoopMeterRewardTier.legendary, LoopMeterRewardTier.master, 
                    LoopMeterRewardTier.apprentice, LoopMeterRewardTier.novice, LoopMeterRewardTier.survival];
     
@@ -299,19 +342,15 @@ class SupplyCaseScreen extends Screen<Input> {
       currentY += 2;
     }
     
-    // Next tier hint
-    if (earnedTier != LoopMeterRewardTier.legendary) {
-      var nextTier = _getNextTier();
-      if (nextTier != null) {
-        centerTerminal.writeAt(3, currentY, 
-            'Next time: Reach ${nextTier.threshold.toInt()}% for ${nextTier.displayName}!', yellow);
-      }
-    }
+    // Next cycle hint
+    var nextCycleName = RewardCycleManager.getCycleName(loopNumber + 1);
+    centerTerminal.writeAt(3, currentY, 
+        'Next Loop: ${nextCycleName}', yellow);
     
     // Instructions
-    if (earnedTier == LoopMeterRewardTier.legendary || earnedTier == LoopMeterRewardTier.master) {
+    if (_showingChoice) {
       Draw.helpKeys(terminal, {
-        "Enter": "Choose stat boost",
+        "Enter": "Choose reward",
       });
     } else {
       Draw.helpKeys(terminal, {
@@ -324,26 +363,14 @@ class SupplyCaseScreen extends Screen<Input> {
     return meterProgress >= tier.threshold;
   }
   
-  LoopMeterRewardTier? _getNextTier() {
-    var allTiers = [LoopMeterRewardTier.survival, LoopMeterRewardTier.novice, 
-                   LoopMeterRewardTier.apprentice, LoopMeterRewardTier.master, LoopMeterRewardTier.legendary];
-    
-    for (var tier in allTiers) {
-      if (!_tierEarned(tier)) {
-        return tier;
-      }
-    }
-    return null;
-  }
-  
   String _getTierRewards(LoopMeterRewardTier tier) {
     switch (tier) {
       case LoopMeterRewardTier.legendary:
-        return "• +2 Stat Boost (choose) + Large Combat/Resistance/Survival Bundles";
+        return "• Large Combat/Resistance/Survival Bundles";
       case LoopMeterRewardTier.master:
-        return "• +1 Stat Boost (choose) + Medium Combat/Resistance/Survival Bundles";
+        return "• Medium Combat/Resistance/Survival Bundles";
       case LoopMeterRewardTier.apprentice:
-        return "• +1 Random Stat Boost + Small Combat/Resistance/Survival Bundles";
+        return "• Small Combat/Resistance/Survival Bundles";
       case LoopMeterRewardTier.novice:
         return "• Basic Survival Bundle (1x Healing Potion)";
       case LoopMeterRewardTier.survival:

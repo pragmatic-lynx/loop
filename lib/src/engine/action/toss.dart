@@ -4,6 +4,8 @@ import '../core/actor.dart';
 import '../core/combat.dart';
 import '../core/game.dart';
 import '../items/item.dart';
+import '../audio_manager.dart';
+import '../sfx_id.dart';
 import 'action.dart';
 import 'item.dart';
 import 'los.dart';
@@ -32,6 +34,11 @@ class TossAction extends ItemAction {
       // Throwing one item from a stack.
       tossed = item.splitStack(1);
       countChanged();
+    }
+
+    // Play arrow release sound for player
+    if (actor == game.hero) {
+      AudioManager.i.play(SfxId.playerArrowRelease);
     }
 
     // Take the item and throw it.
@@ -66,6 +73,11 @@ class TossLosAction extends LosAction {
       // The item missed, so keep flying.
       _missed = true;
       return false;
+    }
+
+    // Play impact sound when projectile hits
+    if (actor == game.hero) {
+      AudioManager.i.play(SfxId.playerArrowImpactWood);
     }
 
     _endThrow(pos);

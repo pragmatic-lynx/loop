@@ -4,19 +4,22 @@ import 'package:malison/malison_web.dart';
 import '../engine.dart';
 import 'draw.dart';
 import 'input.dart';
+import 'new_hero_screen.dart';
 import 'storage.dart';
 
 class GameOverScreen extends Screen<Input> {
   final HeroSave _hero;
+  final Storage _storage;
+  final Content _content;
 
-  GameOverScreen(Storage storage, this._hero, HeroSave previousSave) {
+  GameOverScreen(this._storage, this._hero, HeroSave previousSave, this._content) {
     // If they have permadeath on, delete the hero.
     if (_hero.permadeath) {
-      storage.remove(_hero);
+      _storage.remove(_hero);
     } else {
-      storage.replace(previousSave);
+      _storage.replace(previousSave);
     }
-    storage.save();
+    _storage.save();
   }
 
   @override
@@ -24,6 +27,26 @@ class GameOverScreen extends Screen<Input> {
     switch (input) {
       case Input.cancel:
         ui.pop();
+        return true;
+    }
+
+    return false;
+  }
+
+  @override
+  bool keyDown(int keyCode, {required bool shift, required bool alt}) {
+    if (shift || alt) return false;
+
+    switch (keyCode) {
+      case 96: // Backtick key
+        if (_hero.permadeath) {
+          // Create a new hero - pop this screen and push new hero screen
+          ui.pop();
+          ui.push(NewHeroScreen(_content, _storage));
+        } else {
+          // Try again - pop back to main menu
+          ui.pop();
+        }
         return true;
     }
 

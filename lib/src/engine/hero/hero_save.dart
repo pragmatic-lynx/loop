@@ -73,6 +73,9 @@ class HeroSave {
 
   /// Permanent stat bonuses gained from loop rewards
   final Map<Stat, int> _permanentStatBonuses = {};
+  
+  /// Spells learned by mages through rewards (beyond starting spells)
+  final Set<String> _learnedSpells = {};
 
   /// Adds a permanent bonus to the specified stat
   void addPermanentStatBonus(Stat stat, int bonus) {
@@ -102,6 +105,19 @@ class HeroSave {
   int getPermanentStatBonus(Stat stat) {
     return _permanentStatBonuses[stat] ?? 0;
   }
+  
+  /// Adds a learned spell for mages
+  void learnSpell(String spellName) {
+    _learnedSpells.add(spellName);
+  }
+  
+  /// Checks if a spell has been learned
+  bool hasLearnedSpell(String spellName) {
+    return _learnedSpells.contains(spellName);
+  }
+  
+  /// Gets all learned spells
+  Set<String> get learnedSpells => Set.from(_learnedSpells);
 
   int get emanationLevel {
     var level = 5; // Default light radius (equivalent to 2 candles)
@@ -144,6 +160,11 @@ class HeroSave {
         skills = SkillSet(),
         log = Log(),
         lore = Lore() {
+    // For mages, automatically learn their starting spell
+    if (heroClass.name == "Mage") {
+      _learnedSpells.add("Icicle");
+    }
+    
     strength.refresh(this);
     agility.refresh(this);
     fortitude.refresh(this);
@@ -166,7 +187,12 @@ class HeroSave {
       this.log,
       this.lore,
       this.gold,
-      this.maxDepth) {
+      this.maxDepth,
+      [Set<String>? learnedSpells]) {
+    if (learnedSpells != null) {
+      _learnedSpells.addAll(learnedSpells);
+    }
+    
     strength.refresh(this);
     agility.refresh(this);
     fortitude.refresh(this);
@@ -194,7 +220,8 @@ class HeroSave {
       log,
       lore.clone(),
       gold,
-      maxDepth);
+      maxDepth,
+      Set.from(_learnedSpells));
 
   /// Gets the total permament resistance provided by all equipment.
   int equipmentResistance(Element element) {

@@ -17,6 +17,16 @@ class BoltAction extends LosAction {
         _range = range;
 
   @override
+  ActionResult onPerform() {
+    // Play spell cast sound when the bolt action starts
+    if (actor == game.hero) {
+      AudioManager.i.play(SfxId.playerMagicCast);
+    }
+    
+    return super.onPerform();
+  }
+
+  @override
   void onStep(Vec previous, Vec pos) {
     addEvent(EventType.bolt,
         element: _hit.element,
@@ -26,6 +36,11 @@ class BoltAction extends LosAction {
 
   @override
   bool onHitActor(Vec pos, Actor target) {
+    // Play spell hit sound when bolt hits an actor
+    if (actor == game.hero) {
+      AudioManager.i.play(SfxId.playerMagicHit, pitchVar: 0.1);
+    }
+
     // TODO: Should range increase odds of missing? If so, do that here. Also
     // need to tweak enemy AI then since they shouldn't always try to maximize
     // distance.

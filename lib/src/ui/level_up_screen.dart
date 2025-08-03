@@ -6,6 +6,8 @@ import 'package:piecemeal/piecemeal.dart';
 
 import '../engine.dart';
 import '../engine/core/option.dart';
+import '../engine/audio_manager.dart';
+import '../engine/sfx_id.dart';
 import '../hues.dart';
 import 'draw.dart';
 import 'input.dart';
@@ -18,7 +20,10 @@ class LevelUpScreen extends Screen<Input> {
   final Storage storage;
   int currentLevel = 0;
   
-  LevelUpScreen({required this.hero, required this.pendingLevels, required this.storage});
+  LevelUpScreen({required this.hero, required this.pendingLevels, required this.storage}) {
+    // Play level up sound when screen appears
+    AudioManager.i.play(SfxId.levelUp);
+  }
   
   @override
   bool handleInput(Input input) {

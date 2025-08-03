@@ -6,6 +6,8 @@ import '../hero/hero_save.dart';
 import '../core/content.dart';
 import '../items/item.dart';
 import '../hero/stat.dart';
+import '../hero/skill.dart';
+import '../../content/skill/skills.dart';
 // TODO: Re-enable when build issues are resolved
 // import 'item/loop_item_config.dart';
 // import 'item/loop_item_manager.dart';
@@ -90,6 +92,12 @@ abstract class LoopReward {
   static List<LoopReward> _generateWeaponRewards(Content content, String heroClass, int loopNumber) {
     // Determine tier based on loop number (every 5 loops increases tier)
     var tier = math.min(3, (loopNumber / 5).ceil());
+    
+    // Mages get spell rewards instead of weapon rewards
+    if (heroClass.toLowerCase() == 'mage') {
+      return SpellReward.generateOptions(content, tier);
+    }
+    
     return WeaponReward.generateOptions(content, heroClass, tier);
   }
   
@@ -397,10 +405,71 @@ class WeaponReward extends LoopReward {
         }
         break;
       case 'mage':
-        // Mages don't get weapon rewards in the JSON, so give them basic options
-        return ["Walking Stick"];
+        // Mages get spell rewards instead of weapon rewards
+        switch (tier) {
+          case 1: return ["Brilliant Beam", "Windstorm", "Fire Barrier"];
+          case 2: return ["Tidal Wave", "Brilliant Beam", "Fire Barrier"];
+          case 3: return ["Tidal Wave", "Windstorm", "Fire Barrier"];
+        }
+        break;
     }
     return ["Stick"]; // Fallback
+  }
+}
+
+/// Spell reward that discovers new spells for mages
+class SpellReward extends LoopReward {
+  final String spellName;
+  final Content content;
+  
+  SpellReward(this.spellName, this.content) : super(
+    name: spellName,
+    description: "Learn the $spellName spell",
+    flavorText: "Ancient magical knowledge becomes yours",
+  );
+  
+  @override
+  void apply(HeroSave hero) {
+    try {
+      // Find the spell skill by name using Skills.find()
+      var spell = Skills.find(spellName);
+      
+      // Mark the spell as learned for mages
+      if (hero.heroClass.name == "Mage") {
+        hero.learnSpell(spellName);
+        print("${hero.name} earned the ability to cast: $spellName");
+      }
+      
+      // Discover the spell
+      if (hero.skills.discover(spell)) {
+        print("${hero.name} discovered the spell: $spellName");
+        
+        // Immediately gain the spell (spells are always level 1 once discovered)
+        if (hero.skills.gain(spell, 1)) {
+          print("${hero.name} learned the spell: $spellName");
+        }
+      } else {
+        print("${hero.name} already knows the spell: $spellName");
+      }
+    } catch (e) {
+      print("Warning: Could not find spell: $spellName - $e");
+    }
+  }
+  
+  /// Generate spell reward options for a tier
+  static List<SpellReward> generateOptions(Content content, int tier) {
+    var spellOptions = _getSpellsForTier(tier);
+    return spellOptions.map((spell) => SpellReward(spell, content)).toList();
+  }
+  
+  static List<String> _getSpellsForTier(int tier) {
+    // From weapon_tiers.json mage entries
+    switch (tier) {
+      case 1: return ["Brilliant Beam", "Windstorm", "Fire Barrier"];
+      case 2: return ["Tidal Wave", "Brilliant Beam", "Fire Barrier"];
+      case 3: return ["Tidal Wave", "Windstorm", "Fire Barrier"];
+    }
+    return ["Brilliant Beam"]; // Fallback
   }
 }
 

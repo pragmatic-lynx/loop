@@ -1,5 +1,7 @@
 import 'package:malison/malison.dart';
 
+import '../engine/audio_manager.dart';
+import '../engine/sfx_id.dart';
 import 'input.dart';
 import 'popup.dart';
 
@@ -19,6 +21,7 @@ class ConfirmPopup extends Popup {
   @override
   bool handleInput(Input input) {
     if (input == Input.cancel) {
+      AudioManager.i.play(SfxId.uiCancel);
       ui.pop();
       return true;
     }
@@ -32,9 +35,11 @@ class ConfirmPopup extends Popup {
 
     switch (keyCode) {
       case KeyCode.n:
+        AudioManager.i.play(SfxId.uiCancel);
         ui.pop();
 
       case KeyCode.y:
+        AudioManager.i.play(SfxId.uiConfirm);
         ui.pop(_result);
     }
 

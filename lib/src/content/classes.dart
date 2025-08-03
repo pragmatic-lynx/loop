@@ -30,7 +30,8 @@ class Classes {
           "Mages who have devoted their lives to it have little time to master "
           "other arts and skills. But the rewards in return can be great for "
           "anyone willing to dance with the raw forces of nature (as well as "
-          "some less natural forces).");
+          "some less natural forces).",
+      allowedSpells: {"Icicle"});
 
   // TODO: Add these once their skill types are working.
   //  static final rogue = new HeroClass("Rogue", "TODO");
@@ -45,13 +46,21 @@ class Classes {
 HeroClass _class(String name, Drop startingItems,
     {required double masteries,
     required double spells,
-    required String description}) {
+    required String description,
+    Set<String>? allowedSpells}) {
   var proficiencies = <Skill, double>{};
 
   for (var skill in Skills.all) {
     var proficiency = 1.0;
     if (skill is MasteryDiscipline) proficiency *= masteries;
-    if (skill is Spell) proficiency *= spells;
+    if (skill is Spell) {
+      // For mages, only allow specific spells based on allowedSpells set
+      if (name == "Mage" && allowedSpells != null) {
+        proficiency = allowedSpells.contains(skill.name) ? spells : 0.0;
+      } else {
+        proficiency *= spells;
+      }
+    }
 
     proficiencies[skill] = proficiency;
   }

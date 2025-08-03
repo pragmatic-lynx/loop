@@ -94,6 +94,7 @@ class LoopManager {
     // Debug info with archetype context
     var archetypeInfo = currentArchetypeMetadata != null ? 
         '${currentArchetypeMetadata!.archetype.name}' : 'unknown';
+    // print('MOVE_RECORDED: $moveCount/$movesPerLoop (Loop $currentLoop, $archetypeInfo archetype)');
     
     // Check if it's time for reward selection
     if (moveCount >= movesPerLoop) {
