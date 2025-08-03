@@ -130,7 +130,6 @@ void main() {
   _ui.keyPress.bind(Input.tab, KeyCode.tab);
   _ui.keyPress.bind(Input.metricsCapture, KeyCode.m, shift: true);
   _ui.keyPress.bind(Input.cycleQueue, KeyCode.q);
-  _ui.keyPress.bind(Input.debug, KeyCode.z);
 
   // Loop mode simplified controls (1,2,3,4 action buttons)
   // These will be handled by a separate input handler for loop mode
