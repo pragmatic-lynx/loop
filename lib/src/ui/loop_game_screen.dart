@@ -57,8 +57,8 @@ import 'draw.dart';
 import 'storage.dart';
 import 'tuning_overlay.dart';
 import 'inventory_dialog.dart';
-import '../debug/manager/debug_overlay.dart';
-import '../debug/manager/debug_manager.dart';
+// import '../debug/manager/debug_overlay.dart';
+// import '../debug/manager/debug_manager.dart';
 
 /// Panel for displaying loop mode controls
 class ControlsPanel extends Panel {
@@ -139,7 +139,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   ControlsPanel? _controlsPanel;
   TuningOverlay? _tuningOverlay;
   bool _showTuningOverlay = false;
-  DebugOverlay? _debugOverlay;
+  // DebugOverlay? _debugOverlay;
   bool _showDebugOverlay = false;
   int _pause = 0;
   HeroSave _previousSave;
@@ -191,10 +191,10 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     _equipmentPanel = EquipmentStatusPanel(game);
     _controlsPanel = ControlsPanel(ActionMapping.fromQueues(_actionQueues), this);
     _tuningOverlay = TuningOverlay(_loopManager.scheduler);
-    _debugOverlay = DebugOverlay();
+    // _debugOverlay = DebugOverlay();
     
     // Initialize debug manager
-    DebugManager.initialize(game, game.content);
+    // DebugManager.initialize(game, game.content);
     
     // Initialize dynamic action mapping
     _updateActionMapping();
@@ -352,27 +352,27 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     }
 
     // Handle debug overlay input when active
-    if (_showDebugOverlay && _debugOverlay != null) {
-      var handled = false;
-      
-      // Arrow key handling for debug navigation
-      if (input == Input.n) {
-        handled = _debugOverlay!.handleInputString('ArrowUp');
-      } else if (input == Input.s) {
-        handled = _debugOverlay!.handleInputString('ArrowDown');
-      } else if (input == Input.w) {
-        handled = _debugOverlay!.handleInputString('ArrowLeft');
-      } else if (input == Input.e) {
-        handled = _debugOverlay!.handleInputString('ArrowRight');
-      } else if (input == Input.ok) {
-        handled = _debugOverlay!.handleInputString('Enter');
-      }
-      
-      if (handled) {
-        dirty();
-        return true;
-      }
-    }
+    // if (_showDebugOverlay && _debugOverlay != null) {
+    //   var handled = false;
+    //   
+    //   // Arrow key handling for debug navigation
+    //   if (input == Input.n) {
+    //     handled = _debugOverlay!.handleInputString('ArrowUp');
+    //   } else if (input == Input.s) {
+    //     handled = _debugOverlay!.handleInputString('ArrowDown');
+    //   } else if (input == Input.w) {
+    //     handled = _debugOverlay!.handleInputString('ArrowLeft');
+    //   } else if (input == Input.e) {
+    //     handled = _debugOverlay!.handleInputString('ArrowRight');
+    //   } else if (input == Input.ok) {
+    //     handled = _debugOverlay!.handleInputString('Enter');
+    //   }
+    //   
+    //   if (handled) {
+    //     dirty();
+    //     return true;
+    //   }
+    // }
     
     // Handle tuning overlay input when active
     if (_showTuningOverlay && _tuningOverlay != null) {
@@ -807,9 +807,9 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     _renderLoopMeter(terminal);
     
     // Render debug overlay on top if active
-    if (_showDebugOverlay && _debugOverlay != null) {
-      _debugOverlay!.renderPanel(terminal);
-    }
+    // if (_showDebugOverlay && _debugOverlay != null) {
+    //   _debugOverlay!.renderPanel(terminal);
+    // }
     
     // Render tuning overlay on top if active
     if (_showTuningOverlay && _tuningOverlay != null) {
@@ -926,64 +926,81 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     }
     var centerWidth = terminal.width - leftWidth - rightWidth;
     
-    // Position above the move-limit bar
+    // Position higher up to avoid covering movement bar
     var centerX = leftWidth + centerWidth ~/ 2;
-    var y = terminal.height - 6; // Move up to accommodate 5x5 grid
+    var y = terminal.height - 8; // Moved up more to avoid movement bar
     
     // Draw circular progress using ASCII characters
-    // Create a 5x5 circle representation
+    // Create a 7x7 circle representation for better visibility
     var chars = _getCircularProgressChars(progress);
     var colors = _getCircularProgressColors(loopMeter);
     
-    // Draw the 5x5 circular meter
-    for (var row = 0; row < 5; row++) {
-      for (var col = 0; col < 5; col++) {
-        var index = row * 5 + col;
-        terminal.writeAt(centerX - 2 + col, y + row, chars[index], colors[index], darkerCoolGray);
+    // Draw the 7x7 circular meter for better visibility
+    for (var row = 0; row < 7; row++) {
+      for (var col = 0; col < 7; col++) {
+        var index = row * 7 + col;
+        if (index < chars.length) {
+          terminal.writeAt(centerX - 3 + col, y + row, chars[index], colors[index], darkerCoolGray);
+        }
       }
     }
     
-    // Add tier name and percentage text below
-    var tierName = _loopManager.loopMeter.getRewardTier().displayName.split(' ').last; // Just the tier word
-    if (loopMeter.progress >= 10.0) {
+    // Add percentage text above the circle, no tier name
+    if (loopMeter.progress >= 1.0) {
       var percentText = "${loopMeter.progress.toInt()}%";
-      var tierText = "$percentText $tierName";
-      terminal.writeAt(centerX - tierText.length ~/ 2, y + 5, tierText, 
+      terminal.writeAt(centerX - percentText.length ~/ 2, y - 2, percentText, 
           loopMeter.progress >= 100.0 ? gold : 
           loopMeter.progress >= 75.0 ? gold :
           loopMeter.progress >= 50.0 ? yellow :
           loopMeter.progress >= 25.0 ? lightBlue : ash, darkerCoolGray);
-    } else if (loopMeter.progress >= 1.0) {
-      terminal.writeAt(centerX - tierName.length ~/ 2, y + 5, tierName, ash, darkerCoolGray);
     }
     
     // Add "RING COMPLETE!" label above when full
     if (loopMeter.progress >= 100.0) {
-      terminal.writeAt(centerX - 6, y - 1, "RING COMPLETE!", gold, darkerCoolGray);
+      terminal.writeAt(centerX - 6, y - 3, "RING COMPLETE!", gold, darkerCoolGray);
     }
   }
   
   List<String> _getCircularProgressChars(double progress) {
-    // Create a much more obvious circular meter using dots
-    // Layout as a more even 5x5 circle
+    // Create a much more visible circular meter using a 7x7 grid
     var emptyChar = '○';
     var filledChar = '●';
     var centerChar = progress >= 1.0 ? '!' : ' '; // Exclamation when full!
     
+    // 7x7 grid layout for better visibility
     var positions = [
-      ' ', emptyChar, emptyChar, emptyChar, ' ',     // top row
-      emptyChar, ' ', ' ', ' ', emptyChar,          // second row
-      emptyChar, ' ', centerChar, ' ', emptyChar,   // middle row
-      emptyChar, ' ', ' ', ' ', emptyChar,          // fourth row
-      ' ', emptyChar, emptyChar, emptyChar, ' ',    // bottom row
+      ' ', ' ', emptyChar, emptyChar, emptyChar, ' ', ' ',     // row 0
+      ' ', emptyChar, ' ', ' ', ' ', emptyChar, ' ',          // row 1
+      emptyChar, ' ', ' ', ' ', ' ', ' ', emptyChar,          // row 2
+      emptyChar, ' ', ' ', centerChar, ' ', ' ', emptyChar,   // row 3 (middle)
+      emptyChar, ' ', ' ', ' ', ' ', ' ', emptyChar,          // row 4
+      ' ', emptyChar, ' ', ' ', ' ', emptyChar, ' ',          // row 5
+      ' ', ' ', emptyChar, emptyChar, emptyChar, ' ', ' ',    // row 6
     ];
     
-    // 12 positions around the circle like a clock
-    var fillPositions = (progress * 12).round();
+    // 16 positions around the circle for smoother progression
+    var fillPositions = (progress * 16).round();
     
-    // Clock positions: 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
-    // Map to indices in the 5x5 grid (25 total positions)
-    var clockOrder = [2, 3, 4, 9, 14, 19, 18, 17, 16, 15, 10, 5];
+    // Clockwise order starting from 12 o'clock (top center)
+    // Map to indices in the 7x7 grid (49 total positions)
+    var clockOrder = [
+      3,   // 12 o'clock (top center)
+      4,   // 1 o'clock
+      5,   // 2 o'clock  
+      12,  // 3 o'clock (right)
+      19,  // 4 o'clock
+      26,  // 5 o'clock
+      33,  // 6 o'clock (bottom center)
+      40,  // 7 o'clock
+      41,  // 8 o'clock
+      42,  // 9 o'clock (bottom center)
+      35,  // 10 o'clock
+      28,  // 11 o'clock
+      21,  // back to left side
+      14,  // continuing up left
+      7,   // upper left
+      2,   // back toward 12 o'clock
+    ];
     
     for (var i = 0; i < fillPositions && i < clockOrder.length; i++) {
       if (clockOrder[i] < positions.length) {
@@ -1016,10 +1033,29 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
       }
     }
     
-    var result = List<Color>.filled(25, baseColor); // 5x5 = 25 positions
+    var result = List<Color>.filled(49, baseColor); // 7x7 = 49 positions
     var progress = loopMeter.progressRatio;
-    var fillPositions = (progress * 12).round();
-    var clockOrder = [2, 3, 4, 9, 14, 19, 18, 17, 16, 15, 10, 5];
+    var fillPositions = (progress * 16).round();
+    
+    // Clockwise order starting from 12 o'clock (same as chars method)
+    var clockOrder = [
+      3,   // 12 o'clock (top center)
+      4,   // 1 o'clock
+      5,   // 2 o'clock  
+      12,  // 3 o'clock (right)
+      19,  // 4 o'clock
+      26,  // 5 o'clock
+      33,  // 6 o'clock (bottom center)
+      40,  // 7 o'clock
+      41,  // 8 o'clock
+      42,  // 9 o'clock (bottom center)
+      35,  // 10 o'clock
+      28,  // 11 o'clock
+      21,  // back to left side
+      14,  // continuing up left
+      7,   // upper left
+      2,   // back toward 12 o'clock
+    ];
     
     for (var i = 0; i < fillPositions && i < clockOrder.length; i++) {
       if (clockOrder[i] < result.length) {
@@ -1029,7 +1065,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     
     // Special color for center when full
     if (loopMeter.isFull) {
-      result[12] = gold; // Center position in 5x5 grid
+      result[24] = gold; // Center position in 7x7 grid (3,3)
     }
     
     return result;
