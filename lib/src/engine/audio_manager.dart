@@ -12,6 +12,9 @@ class AudioManager {
   static AudioManager? _instance;
   static AudioManager get i => _instance ??= AudioManager._();
 
+  /// Set to true to disable audio file loading (useful for faster startup)
+  static bool disableAudioLoading = true;
+
   AudioManager._();
 
   web_audio.AudioContext? _audioContext;
@@ -48,6 +51,12 @@ class AudioManager {
   /// Scan the assets/audio/sfx directory for audio files
   Future<void> _scanAudioFiles() async {
     if (_audioContext == null) return;
+
+    // Skip audio loading if disabled
+    if (disableAudioLoading) {
+      print('Audio file loading disabled - skipping audio file scan');
+      return;
+    }
 
     // For web builds, we need to predefine the expected files
     // since we can't scan directories dynamically
