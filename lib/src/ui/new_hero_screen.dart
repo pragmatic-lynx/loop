@@ -117,20 +117,36 @@ class NewHeroScreen extends Screen<Input> {
 
   @override
   void render(Terminal terminal) {
-    Draw.dialog(terminal, 80, 35,
-        label: "Create New Hero",
-        (terminal) {
-      Draw.hLine(terminal, 0, 3, terminal.width);
-      Draw.hLine(terminal, 0, 15, terminal.width);
+    // Use a wider dialog and position it more to the left to prevent clipping
+    var dialogWidth = 90;
+    var dialogHeight = 35;
+    var leftOffset = 5; // Move dialog 5 characters to the left from center
+    
+    var dialogX = (terminal.width - dialogWidth) ~/ 2 - leftOffset;
+    var dialogY = (terminal.height - 2 - dialogHeight) ~/ 2;
+    
+    // Draw background
+    terminal.fill(0, 0, terminal.width, terminal.height, darkerCoolGray);
+    
+    // Draw dialog frame
+    var dialogTerminal = terminal.rect(dialogX, dialogY, dialogWidth, dialogHeight);
+    Draw.frame(dialogTerminal, 0, 0, dialogTerminal.width, dialogTerminal.height, label: "Create New Hero");
+    
+    // Draw content
+    var contentTerminal = dialogTerminal.rect(1, 1, dialogTerminal.width - 2, dialogTerminal.height - 2);
+    Draw.hLine(contentTerminal, 0, 3, contentTerminal.width);
+    Draw.hLine(contentTerminal, 0, 15, contentTerminal.width);
 
-      _renderClass(terminal.rect(0, 1, terminal.width, 2));
-      _renderRace(terminal.rect(0, 4, terminal.width, 10));
-      _renderDeath(terminal.rect(0, 16, terminal.width, 8));
-      
-      for (var i = 0; i < _controls.length; i++) {
-        _controls[i].render(terminal, focus: i == _focus);
-      }
-    }, helpKeys: {
+    _renderClass(contentTerminal.rect(0, 1, contentTerminal.width, 2));
+    _renderRace(contentTerminal.rect(0, 4, contentTerminal.width, 10));
+    _renderDeath(contentTerminal.rect(0, 16, contentTerminal.width, 8));
+    
+    for (var i = 0; i < _controls.length; i++) {
+      _controls[i].render(contentTerminal, focus: i == _focus);
+    }
+    
+    // Draw help keys
+    Draw.helpKeys(terminal, {
       "Tab": "Next field",
       ..._controls[_focus].helpKeys,
       if (_name._isUnique) "Enter": "Create hero",
@@ -227,6 +243,12 @@ class NewHeroScreen extends Screen<Input> {
         var robeItem = Item(robe, 1);
         hero.equipment.equip(robeItem);
       }
+
+      var healingPotion = _content.tryFindItem("Healing Potion");
+      if (healingPotion != null) {
+        var potionItem = Item(healingPotion, 3);
+        hero.inventory.tryAdd(potionItem);
+      }
       
       // Give a powerful healing potion
       var rejuvenationPotion = _content.tryFindItem("Potion of Rejuvenation");
@@ -235,11 +257,6 @@ class NewHeroScreen extends Screen<Input> {
         hero.inventory.tryAdd(potionItem);
       } else {
         // Fallback to regular healing potion
-        var healingPotion = _content.tryFindItem("Healing Potion");
-        if (healingPotion != null) {
-          var potionItem = Item(healingPotion, 3);
-          hero.inventory.tryAdd(potionItem);
-        }
       }
       
       // Give a scroll to detect exits
