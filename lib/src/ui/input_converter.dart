@@ -61,6 +61,10 @@ class InputConverter {
       case Input.heroInfo:
         return LoopInput.info;
       
+      // Debug controls
+      case Input.incrementMeter:
+        return LoopInput.incrementMeter;
+      
       // All other inputs are ignored in loop mode
       default:
         return null;

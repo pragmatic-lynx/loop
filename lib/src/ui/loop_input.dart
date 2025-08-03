@@ -26,4 +26,5 @@ enum LoopInput {
   
   // Debug/cheat controls
   giveConsumables,  // G - give one-time set of consumables
+  incrementMeter,   // M - increment loop meter by 20% (debug)
 }
