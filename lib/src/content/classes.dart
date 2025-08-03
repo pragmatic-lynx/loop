@@ -18,18 +18,6 @@ class Classes {
           "are versatile fighters who can track prey, navigate treacherous "
           "terrain, and survive where others would perish.");
 
-  static final warrior = _class("Warrior", parseDrop("weapon"),
-      masteries: 1.0,
-      spells: 0.0,
-      description: "It's not that warriors are "
-          "stupid. Many are, in fact, quite intelligent. It's just that they "
-          "tend to apply most of that intelligence towards deciding which "
-          "weapon is best suited for splitting a monster's head open.\n\n"
-          "Warriors rely on the might of their bodies and the reassuring heft "
-          "of their equipment. While they aren't above using a little magic "
-          "here and there, they're most comfortable when those supernatural "
-          "forces are safely ensconced in a piece of familiar gear.");
-
   // TODO: Different book for generalist mage versus sorceror?
   static final mage = _class(
       "Mage", parseDrop("Spellbook \"Elemental Primer\""),
@@ -51,7 +39,7 @@ class Classes {
   // TODO: Specialist subclasses.
 
   /// All of the known classes.
-  static final List<HeroClass> all = [ranger, warrior, mage];
+  static final List<HeroClass> all = [ranger, mage];
 }
 
 HeroClass _class(String name, Drop startingItems,
