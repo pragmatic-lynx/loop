@@ -1,5 +1,5 @@
-import 'package:hauberk/src/content.dart';
-import 'package:hauberk/src/engine.dart';
+import 'package:loop_rpg/src/content.dart';
+import 'package:loop_rpg/src/engine.dart';
 import 'package:piecemeal/piecemeal.dart';
 
 /// A benchmark that just repeatedly generates dungeons for running in a

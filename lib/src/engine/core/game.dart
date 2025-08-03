@@ -79,13 +79,6 @@ class Game {
 
     _substanceUpdateOrder.addAll(_stage.bounds.inflate(-1));
     rng.shuffle(_substanceUpdateOrder);
-    
-    // Debug logging for archetype metadata
-    if (archetypeMetadata != null) {
-            '(Loop ${archetypeMetadata!.loopNumber}, '
-            'Enemy: ${archetypeMetadata!.scalars.enemyMultiplier}x, '
-            'Item: ${archetypeMetadata!.scalars.itemMultiplier}x)');
-    }
   }
 
   Iterable<String> generate() sync* {

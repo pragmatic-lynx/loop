@@ -1,4 +1,4 @@
-import 'package:hauberk/src/engine.dart';
+import 'package:loop_rpg/src/engine.dart';
 
 void main() {
   var strength = Strength();

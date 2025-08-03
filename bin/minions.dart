@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:hauberk/src/content/monster/monsters.dart';
+import 'package:loop_rpg/src/content/monster/monsters.dart';
 
 const trials = 1000;
 

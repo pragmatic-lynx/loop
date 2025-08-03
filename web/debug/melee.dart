@@ -1,10 +1,10 @@
 import 'dart:html' as html;
 import 'dart:math' as math;
 
-import 'package:hauberk/src/content.dart';
-import 'package:hauberk/src/content/item/drops.dart';
-import 'package:hauberk/src/content/item/items.dart';
-import 'package:hauberk/src/engine.dart';
+import 'package:loop_rpg/src/content.dart';
+import 'package:loop_rpg/src/content/item/drops.dart';
+import 'package:loop_rpg/src/content/item/items.dart';
+import 'package:loop_rpg/src/engine.dart';
 
 final content = createContent();
 

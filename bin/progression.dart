@@ -1,5 +1,5 @@
-import 'package:hauberk/src/content.dart';
-import 'package:hauberk/src/engine.dart';
+import 'package:loop_rpg/src/content.dart';
+import 'package:loop_rpg/src/engine.dart';
 
 /// Tracks what level the hero reaches if they kill every monster in every
 /// generated dungeon going down.

@@ -1,6 +1,6 @@
 import 'dart:html' as html;
 
-import 'package:hauberk/src/content/stage/blob.dart';
+import 'package:loop_rpg/src/content/stage/blob.dart';
 
 const cellSize = 8;
 

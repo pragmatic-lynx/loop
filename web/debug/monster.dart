@@ -1,10 +1,10 @@
 import 'dart:html' as html;
 
-import 'package:hauberk/src/content.dart';
-import 'package:hauberk/src/content/monster/monsters.dart';
-import 'package:hauberk/src/debug/histogram.dart';
-import 'package:hauberk/src/debug/html_builder.dart';
-import 'package:hauberk/src/engine.dart';
+import 'package:loop_rpg/src/content.dart';
+import 'package:loop_rpg/src/content/monster/monsters.dart';
+import 'package:loop_rpg/src/debug/histogram.dart';
+import 'package:loop_rpg/src/debug/html_builder.dart';
+import 'package:loop_rpg/src/engine.dart';
 import 'package:malison/malison.dart';
 
 html.SelectElement get _breedSelect =>

@@ -1,8 +1,8 @@
 import 'dart:html' as html;
 
-import 'package:hauberk/src/content/item/items.dart';
-import 'package:hauberk/src/debug/table.dart';
-import 'package:hauberk/src/engine.dart';
+import 'package:loop_rpg/src/content/item/items.dart';
+import 'package:loop_rpg/src/debug/table.dart';
+import 'package:loop_rpg/src/engine.dart';
 import 'package:malison/malison.dart';
 import 'package:piecemeal/piecemeal.dart';
 

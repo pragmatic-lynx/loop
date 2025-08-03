@@ -1,6 +1,6 @@
-import 'package:hauberk/src/debug/histogram.dart';
-import 'package:hauberk/src/debug/html_builder.dart';
-import 'package:hauberk/src/engine.dart';
+import 'package:loop_rpg/src/debug/histogram.dart';
+import 'package:loop_rpg/src/debug/html_builder.dart';
+import 'package:loop_rpg/src/engine.dart';
 
 final breedDrops = <Breed, Histogram<String>>{};
 

@@ -2,13 +2,13 @@ import 'dart:html' as html;
 import 'dart:js';
 import 'dart:math' as math;
 
-import 'package:hauberk/src/content.dart';
-import 'package:hauberk/src/debug.dart';
-import 'package:hauberk/src/engine.dart';
-import 'package:hauberk/src/ui/game_screen.dart';
-import 'package:hauberk/src/ui/game_screen_interface.dart';
-import 'package:hauberk/src/ui/input.dart';
-import 'package:hauberk/src/ui/main_menu_screen.dart';
+import 'package:loop_rpg/src/content.dart';
+import 'package:loop_rpg/src/debug.dart';
+import 'package:loop_rpg/src/engine.dart';
+import 'package:loop_rpg/src/ui/game_screen.dart';
+import 'package:loop_rpg/src/ui/game_screen_interface.dart';
+import 'package:loop_rpg/src/ui/input.dart';
+import 'package:loop_rpg/src/ui/main_menu_screen.dart';
 import 'package:malison/malison.dart';
 import 'package:malison/malison_web.dart';
 import 'package:piecemeal/piecemeal.dart';
@@ -130,6 +130,7 @@ void main() {
   _ui.keyPress.bind(Input.tab, KeyCode.tab);
   _ui.keyPress.bind(Input.metricsCapture, KeyCode.m, shift: true);
   _ui.keyPress.bind(Input.incrementMeter, KeyCode.m, alt: true);
+  _ui.keyPress.bind(Input.debug, KeyCode.z);
   _ui.keyPress.bind(Input.cycleQueue, KeyCode.q);
 
   // Loop mode simplified controls (1,2,3,4 action buttons)

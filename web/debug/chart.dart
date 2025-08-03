@@ -1,14 +1,14 @@
 import 'dart:html' as html;
 import 'dart:svg' as svg;
 
-import 'package:hauberk/src/content/item/affixes.dart';
-import 'package:hauberk/src/content/item/drops.dart';
-import 'package:hauberk/src/content/item/floor_drops.dart';
-import 'package:hauberk/src/content/item/items.dart';
-import 'package:hauberk/src/content/monster/monsters.dart';
-import 'package:hauberk/src/content/stage/architectural_style.dart';
-import 'package:hauberk/src/debug/histogram.dart';
-import 'package:hauberk/src/engine.dart';
+import 'package:loop_rpg/src/content/item/affixes.dart';
+import 'package:loop_rpg/src/content/item/drops.dart';
+import 'package:loop_rpg/src/content/item/floor_drops.dart';
+import 'package:loop_rpg/src/content/item/items.dart';
+import 'package:loop_rpg/src/content/monster/monsters.dart';
+import 'package:loop_rpg/src/content/stage/architectural_style.dart';
+import 'package:loop_rpg/src/debug/histogram.dart';
+import 'package:loop_rpg/src/engine.dart';
 import 'package:malison/malison.dart';
 
 const batchSize = 1000;

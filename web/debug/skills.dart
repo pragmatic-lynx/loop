@@ -1,10 +1,10 @@
-import 'package:hauberk/src/content.dart';
-import 'package:hauberk/src/content/classes.dart';
-import 'package:hauberk/src/content/races.dart';
-import 'package:hauberk/src/content/skill/skills.dart';
-import 'package:hauberk/src/debug/histogram.dart';
-import 'package:hauberk/src/debug/html_builder.dart';
-import 'package:hauberk/src/engine.dart';
+import 'package:loop_rpg/src/content.dart';
+import 'package:loop_rpg/src/content/classes.dart';
+import 'package:loop_rpg/src/content/races.dart';
+import 'package:loop_rpg/src/content/skill/skills.dart';
+import 'package:loop_rpg/src/debug/histogram.dart';
+import 'package:loop_rpg/src/debug/html_builder.dart';
+import 'package:loop_rpg/src/engine.dart';
 
 final breedDrops = <Breed, Histogram<String>>{};
 
