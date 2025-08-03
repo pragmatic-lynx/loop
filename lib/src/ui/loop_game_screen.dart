@@ -1066,18 +1066,8 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     // Award XP bonus for descending stairs
     game.hero.gainExperience(GameConstants.stairXpBonus);
     
-    // Check if we need to show level-up screen before proceeding
-    if (game.hero.save.pendingLevels > 0) {
-      // Show level-up screen, then continue to next level
-      ui.push(LevelUpScreen(
-        hero: game.hero.save,
-        pendingLevels: game.hero.save.pendingLevels,
-        storage: _storage,
-      ));
-      
-      // Clear pending levels after showing screen
-      game.hero.save.pendingLevels = 0;
-    }
+    // Level-ups are now handled automatically in gainExperience()
+    // with visual effects shown through the event system
     
     // Continue to next level instead of ending the game
     _startNextLevel();

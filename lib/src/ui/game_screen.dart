@@ -357,18 +357,8 @@ class GameScreen extends Screen<Input> implements GameScreenInterface {
     
     print("Loop exit triggered! Completing current loop...");
     
-    // Check if we need to show level-up screen first
-    if (game.hero.save.pendingLevels > 0) {
-      // Show level-up screen before reward screen
-      ui.push(LevelUpScreen(
-        hero: game.hero.save,
-        pendingLevels: game.hero.save.pendingLevels,
-        storage: _storage,
-      ));
-      
-      // Clear pending levels after showing screen
-      game.hero.save.pendingLevels = 0;
-    }
+    // Level-ups are now handled automatically in gainExperience()
+    // with visual effects shown through the event system
     
     // Mark the loop as complete and trigger reward selection
     _loopManager!.triggerRewardSelection();

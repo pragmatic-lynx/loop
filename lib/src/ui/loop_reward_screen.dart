@@ -111,18 +111,9 @@ class LoopRewardScreen extends Screen<Input> {
   }
   
   void _startNextLoop() {
-    // Check if we need to show level-up screen after reward selection
-    if (loopManager.finishLoop(hero)) {
-      // Show level-up screen before starting next loop
-      ui.push(LevelUpScreen(
-        hero: hero,
-        pendingLevels: hero.pendingLevels,
-        storage: storage,
-      ));
-      
-      // Clear pending levels after showing screen
-      hero.pendingLevels = 0;
-    }
+    // Complete the current loop - level-ups are now handled automatically
+    // in gainExperience() with visual effects shown through the event system
+    loopManager.finishLoop(hero);
     
     // Start the next loop at increased depth
     var depth = loopManager.getCurrentDepth();

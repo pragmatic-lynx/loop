@@ -8,6 +8,7 @@ import '../content/elements.dart';
 import '../content/chest.dart';
 import '../engine.dart';
 import '../hues.dart';
+import 'package:piecemeal/piecemeal.dart';
 
 // TODO: Effects need to take background color into effect better: should be
 // black when over unexplored tiles, unlit over unlit, etc.
@@ -129,8 +130,13 @@ void addEffects(List<Effect> effects, Event event) {
 
       effects.add(FrameEffect(event.pos!, line, color));
 
-    case EventType.gold:
+    case EventType.treasure:
       effects.add(TreasureEffect(event.pos!, event.other as Item));
+      break;
+
+    case EventType.levelUp:
+      effects.add(LevelUpEffect(event.actor!.pos));
+      break;
 
     case EventType.openBarrel:
       // Check if position is available
@@ -597,6 +603,95 @@ class HowlEffect implements Effect {
       drawGlyph(pos.x + 1, pos.y + 1, backslash);
       drawGlyph(pos.x - 1, pos.y, dash);
       drawGlyph(pos.x + 1, pos.y, dash);
+    }
+  }
+}
+
+/// A particle effect that plays when the hero levels up.
+class LevelUpEffect implements Effect {
+  static const _maxParticles = 12;
+  static const _maxLife = 20;
+  final Vec _pos;
+  final List<_Particle> _particles = [];
+  int _life = _maxLife;
+  
+  // Particle class for level-up effect
+  class _Particle {
+    double x, y;
+    double dx, dy;
+    final Color color;
+    
+    _Particle(this.x, this.y, this.dx, this.dy, this.color);
+    
+    void update() {
+      x += dx;
+      y += dy;
+      // Add some gravity
+      dy += 0.05;
+    }
+  }
+
+  LevelUpEffect(this._pos) {
+    // Create particles in a circle around the hero
+    for (var i = 0; i < _maxParticles; i++) {
+      final angle = (i / _maxParticles) * math.pi * 2;
+      final speed = 0.5 + rng.float(0.5);
+      final dx = math.cos(angle) * speed;
+      final dy = math.sin(angle) * speed;
+      
+      // Choose a random sparkle color
+      final colors = [Color.gold, Color.lightYellow, Color.tan, Color.lightAqua, Color.lightBlue, Color.lightRed];
+      final color = rng.item(colors);
+      
+      _particles.add(_Particle(
+        _pos.x.toDouble() + 0.5,
+        _pos.y.toDouble() + 0.5,
+        dx,
+        dy,
+        color,
+      ));
+    }
+  }
+
+  @override
+  bool update(Game game) {
+    _life--;
+    if (_life <= 0) return true;
+
+    // Update particles
+    for (var particle in _particles) {
+      particle.update();
+    }
+
+    return false;
+  }
+
+  @override
+  void render(Game game, DrawGlyph drawGlyph) {
+    final char = rng.oneIn(3) ? '*' : '+';
+    final alpha = (_life / _maxLife).clamp(0.0, 1.0);
+    
+    for (var particle in _particles) {
+      final x = particle.x.toInt();
+      final y = particle.y.toInt();
+      final color = particle.color.withAlpha((255 * alpha).toInt());
+      
+drawGlyph(x, y, Glyph(char, color, Color.black));
+    }
+    
+    // Draw level-up text above the hero
+    if (_life > _maxLife - 10) {
+      final text = 'LEVEL UP!';
+      final x = _pos.x - text.length ~/ 2;
+      final y = _pos.y - 2;
+      final alpha = ((_life - (_maxLife - 10)) / 10).clamp(0.0, 1.0);
+      final color = Color.lerp(Color.black, Color.gold, alpha);
+      
+      for (var i = 0; i < text.length; i++) {
+        if (x + i >= 0 && x + i < game.stage.viewport.width) {
+          drawGlyph(x + i, y, Glyph(text[i], color, Color.black));
+        }
+      }
     }
   }
 }

@@ -348,6 +348,9 @@ class EventType {
   /// [Actor] has polymorphed into another breed.
   static const polymorph = EventType("polymorph");
 
+  /// The hero has gained a level.
+  static const levelUp = EventType("levelUp");
+
   /// An [Actor] howls.
   static const howl = EventType("howl");
 

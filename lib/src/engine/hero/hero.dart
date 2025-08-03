@@ -464,7 +464,7 @@ class Hero extends Actor {
   }
 
   /// Gains experience and handles immediate level-ups
-  void gainExperience(int amount) {
+  void gainExperience(int amount, {Game? game}) {
     if (amount <= 0) return;
     
     // Apply debug experience multiplier if debug mode is enabled
@@ -482,12 +482,38 @@ class Hero extends Actor {
     var newLevel = _calculateLevel(experience);
     
     if (newLevel > oldLevel) {
-      save.pendingLevels += newLevel - oldLevel;
+      final levelsGained = newLevel - oldLevel;
       
-      // Show quick toast notification for level-up
-      save.log.gain('You reached level $newLevel!');
+      // Automatically apply skill points for each level gained
+      for (var i = 0; i < levelsGained; i++) {
+        final currentLevel = oldLevel + i + 1;
+        final skillPoints = Option.skillPointsPerLevel;
+        
+        // For now, award skill points to a random discovered skill
+        var discoveredSkills = skills.discovered.toList();
+        if (discoveredSkills.isNotEmpty) {
+          var skill = rng.item(discoveredSkills);
+          skills.earnPoints(skill, skills.points(skill) + skillPoints);
+          log.gain('You reached level $currentLevel! Gained $skillPoints skill points in ${skill.name}.');
+        } else {
+          log.gain('You reached level $currentLevel! Gained $skillPoints skill points.');
+        }
+        
+        // Trigger level-up effect if we have a game reference
+        if (game != null) {
+          game.addEvent(Event(
+            EventType.levelUp,
+            this,  // actor
+            null,  // element
+            pos,   // pos
+            null,  // dir
+            null   // other
+          ));
+        }
+      }
       
-      // TODO: Play level-up sound effect (levelup.ogg)
+      // Clear pending levels since we're handling them automatically now
+      save.pendingLevels = 0;
     }
     
     refreshProperties();
