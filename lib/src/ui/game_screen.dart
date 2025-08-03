@@ -1,8 +1,8 @@
 import 'dart:html' as html;
 import 'dart:math' as math;
 
-import 'package:hauberk/src/ui/item/toss_dialog.dart';
-import 'package:hauberk/src/ui/item/use_dialog.dart';
+import 'package:loop_rpg/src/ui/item/toss_dialog.dart';
+import 'package:loop_rpg/src/ui/item/use_dialog.dart';
 import 'package:malison/malison.dart';
 import 'package:malison/malison_web.dart';
 import 'package:piecemeal/piecemeal.dart';

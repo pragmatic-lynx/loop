@@ -80,14 +80,11 @@ class LoopManager {
     // Generate archetype metadata for this loop
     _generateArchetypeMetadata();
     
-    print('Starting Loop $currentLoop with preset: ${preset.name}');
-    print('Level archetype: ${currentArchetypeMetadata?.archetype.name}');
   }
   
   /// Track a move made by the hero
   void recordMove() {
     if (!isLoopActive) {
-      print('recordMove called but loop not active. isLoopActive: $isLoopActive, isRewardSelection: $isRewardSelection');
       return;
     }
     
@@ -97,7 +94,6 @@ class LoopManager {
     // Debug info with archetype context
     var archetypeInfo = currentArchetypeMetadata != null ? 
         '${currentArchetypeMetadata!.archetype.name}' : 'unknown';
-    print('MOVE_RECORDED: $moveCount/$movesPerLoop (Loop $currentLoop, $archetypeInfo archetype)');
     
     // Check if it's time for reward selection
     if (moveCount >= movesPerLoop) {
@@ -116,7 +112,6 @@ class LoopManager {
       var heroClassName = heroClass ?? "ranger";
       
       currentRewardOptions = LoopReward.generateRewardOptions(3, currentLoop, _content!, heroClassName);
-      print('Generated ${currentRewardOptions.length} ${RewardCycleManager.getCycleName(currentLoop)} rewards for loop $currentLoop');
     } else {
       currentRewardOptions = []; // Clear old options if no content available
       print('Warning: No content available for reward generation');
@@ -125,18 +120,15 @@ class LoopManager {
     var archetypeInfo = currentArchetypeMetadata != null ? 
         '${currentArchetypeMetadata!.archetype.name}' : 'unknown';
     var meterProgress = _loopMeter.progress.toStringAsFixed(1);
-    print('LOOP_COMPLETE: Loop $currentLoop ($archetypeInfo archetype) - $moveCount moves made, ${meterProgress}% loop meter. Generated ${currentRewardOptions.length} rewards!');
   }
   
   /// Apply a selected reward and prepare for next loop
   void selectReward(LoopReward reward) {
     if (!isRewardSelection) {
-      print('Warning: selectReward called but not in reward selection phase');
       return;
     }
     
     var prevArchetype = currentArchetypeMetadata?.archetype.name ?? 'unknown';
-    print('REWARD_SELECTED: ${reward.name} (from $prevArchetype archetype)');
     activeRewards.add(reward);
     isRewardSelection = false;
     
@@ -151,8 +143,6 @@ class LoopManager {
     _generateArchetypeMetadata();
     var nextArchetype = currentArchetypeMetadata?.archetype.name ?? 'unknown';
     
-    print('LOOP_START: Loop $currentLoop - $nextArchetype archetype, Threat: $threatLevel, Depth: ${getCurrentDepth()}');
-    print('DIFFICULTY_SCALARS: Enemy=${currentArchetypeMetadata?.scalars.enemyMultiplier ?? 1.0}x, Item=${currentArchetypeMetadata?.scalars.itemMultiplier ?? 1.0}x');
   }
 
   /// Finishes the current loop and handles any pending level-ups
@@ -197,7 +187,6 @@ class LoopManager {
   void recordDeath() {
     var archetypeInfo = currentArchetypeMetadata != null ? 
         '${currentArchetypeMetadata!.archetype.name}' : 'unknown';
-    print('HERO_DEATH: Loop $currentLoop ($archetypeInfo archetype) - Move $moveCount/${movesPerLoop}');
     _metricsCollector.recordDeath();
     
     // Reset loop state after death to prevent getting stuck in reward selection
@@ -214,7 +203,6 @@ class LoopManager {
     // Clear any pending reward options since the loop was interrupted
     currentRewardOptions.clear();
     
-    print('LOOP_RESET_AFTER_DEATH: Loop $currentLoop reset, ready for restart');
   }
   
   /// Check if hero should be given temporary bonuses
@@ -267,11 +255,9 @@ class LoopManager {
     if (!isLoopActive) return;
     
     var newProgress = _loopMeter.addKillProgress();
-    print('ENEMY_KILL: Loop meter now at ${newProgress.toStringAsFixed(1)}%');
     
     // Check for instant Ring Loop completion at 100%
     if (_loopMeter.progress >= 100.0 && !isRewardSelection) {
-      print('RING_LOOP_TRIGGERED: Enemy kill completed the ring!');
       triggerRewardSelection();
     }
   }
@@ -281,11 +267,9 @@ class LoopManager {
     if (!isLoopActive) return;
     
     var newProgress = _loopMeter.addLootProgress();
-    print('LOOT_PICKUP: Loop meter now at ${newProgress.toStringAsFixed(1)}%');
     
     // Check for instant Ring Loop completion at 100%
     if (_loopMeter.progress >= 100.0 && !isRewardSelection) {
-      print('RING_LOOP_TRIGGERED: Loot pickup completed the ring!');
       triggerRewardSelection();
     }
   }
@@ -296,11 +280,9 @@ class LoopManager {
     
     var newProgress = _loopMeter.addSacrificeProgress(hpLost, maxHp);
     var progressAdded = (hpLost / maxHp) * 100.0;
-    print('SHRINE_SACRIFICE: Added ${progressAdded.toStringAsFixed(1)}% progress, meter now at ${newProgress.toStringAsFixed(1)}%');
     
     // Check for instant Ring Loop completion at 100%
     if (_loopMeter.progress >= 100.0 && !isRewardSelection) {
-      print('RING_LOOP_TRIGGERED: Shrine sacrifice completed the ring!');
       triggerRewardSelection();
     }
   }

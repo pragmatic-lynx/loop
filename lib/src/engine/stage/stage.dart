@@ -11,6 +11,7 @@ import 'flow.dart';
 import 'lighting.dart';
 import 'sound.dart';
 import 'tile.dart';
+import '../../debug/manager/debug_manager.dart';
 
 /// The game's live play area.
 class Stage {
@@ -176,8 +177,26 @@ class Stage {
 
     // Try to keep dropped items from overlapping.
     var flow = MotilityFlow(this, pos, Motility.walk, avoidActors: false);
-
-    drop.dropItem(game.hero.lore, depth, (item) {
+    
+    // Apply debug loot multiplier if enabled
+    var dropCount = 1;
+    try {
+      if (DebugManager.isEnabled && DebugManager.lootMultiplier > 1.0) {
+        // Use a probability-based approach for non-integer multipliers
+        var fullDrops = DebugManager.lootMultiplier.floor();
+        var extraChance = DebugManager.lootMultiplier - fullDrops;
+        dropCount = fullDrops;
+        if (rng.float(1.0) < extraChance) {
+          dropCount++;
+        }
+      }
+    } catch (e) {
+      // Ignore debug manager errors in production
+    }
+    
+    // Drop items multiple times based on loot multiplier
+    for (var i = 0; i < dropCount; i++) {
+      drop.dropItem(game.hero.lore, depth, (item) {
       items.add(item);
 
       // Prefer to not place under monsters or stack with other items.
@@ -203,7 +222,8 @@ class Stage {
       }
 
       addItem(item, itemPos!);
-    });
+      });
+    }
 
     return items;
   }

@@ -57,6 +57,8 @@ import 'draw.dart';
 import 'storage.dart';
 import 'tuning_overlay.dart';
 import 'inventory_dialog.dart';
+import '../debug/manager/debug_overlay.dart';
+import '../debug/manager/debug_manager.dart';
 
 /// Panel for displaying loop mode controls
 class ControlsPanel extends Panel {
@@ -137,6 +139,8 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   ControlsPanel? _controlsPanel;
   TuningOverlay? _tuningOverlay;
   bool _showTuningOverlay = false;
+  DebugOverlay? _debugOverlay;
+  bool _showDebugOverlay = false;
   int _pause = 0;
   HeroSave _previousSave;
   int _previousEnemyCount = 0;
@@ -187,6 +191,10 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     _equipmentPanel = EquipmentStatusPanel(game);
     _controlsPanel = ControlsPanel(ActionMapping.fromQueues(_actionQueues), this);
     _tuningOverlay = TuningOverlay(_loopManager.scheduler);
+    _debugOverlay = DebugOverlay();
+    
+    // Initialize debug manager
+    DebugManager.initialize(game, game.content);
     
     // Initialize dynamic action mapping
     _updateActionMapping();
@@ -335,7 +343,37 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
       dirty();
       return true;
     }
+    
+    // Handle debug overlay toggle (Z key)
+    if (input == Input.debug) {
+      _showDebugOverlay = !_showDebugOverlay;
+      dirty();
+      return true;
+    }
 
+    // Handle debug overlay input when active
+    if (_showDebugOverlay && _debugOverlay != null) {
+      var handled = false;
+      
+      // Arrow key handling for debug navigation
+      if (input == Input.n) {
+        handled = _debugOverlay!.handleInput('ArrowUp');
+      } else if (input == Input.s) {
+        handled = _debugOverlay!.handleInput('ArrowDown');
+      } else if (input == Input.w) {
+        handled = _debugOverlay!.handleInput('ArrowLeft');
+      } else if (input == Input.e) {
+        handled = _debugOverlay!.handleInput('ArrowRight');
+      } else if (input == Input.ok) {
+        handled = _debugOverlay!.handleInput('Enter');
+      }
+      
+      if (handled) {
+        dirty();
+        return true;
+      }
+    }
+    
     // Handle tuning overlay input when active
     if (_showTuningOverlay && _tuningOverlay != null) {
       var handled = false;
@@ -768,6 +806,11 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     _renderMoveCounter(terminal);
     _renderLoopProgress(terminal);
     _renderLoopMeter(terminal);
+    
+    // Render debug overlay on top if active
+    if (_showDebugOverlay && _debugOverlay != null) {
+      _debugOverlay!.renderPanel(terminal);
+    }
     
     // Render tuning overlay on top if active
     if (_showTuningOverlay && _tuningOverlay != null) {

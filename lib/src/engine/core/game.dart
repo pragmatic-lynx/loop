@@ -82,7 +82,6 @@ class Game {
     
     // Debug logging for archetype metadata
     if (archetypeMetadata != null) {
-      print('Game initialized with archetype: ${archetypeMetadata!.archetype.name} '
             '(Loop ${archetypeMetadata!.loopNumber}, '
             'Enemy: ${archetypeMetadata!.scalars.enemyMultiplier}x, '
             'Item: ${archetypeMetadata!.scalars.itemMultiplier}x)');

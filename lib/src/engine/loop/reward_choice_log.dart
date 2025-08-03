@@ -69,7 +69,6 @@ class RewardChoiceLogger {
       
       // Log header on first entry
       if (!_headerLogged) {
-        print('REWARD_LOG_HEADER: ${RewardChoiceLog.csvHeader()}');
         _headerLogged = true;
       }
       
@@ -77,7 +76,6 @@ class RewardChoiceLogger {
       print('REWARD_LOG_ENTRY: ${entry.toCsvRow()}');
       
       // Also log in JSON format for debugging
-      print('Reward choice logged: ${jsonEncode(entry.toJson())}');
     } catch (e) {
       print('Error logging reward choice: $e');
     }
@@ -131,7 +129,6 @@ class RewardChoiceLogger {
       return;
     }
 
-    print('=== Reward Choice Summary ===');
     print('Total entries: ${_logEntries.length}');
     
     // Group by archetype

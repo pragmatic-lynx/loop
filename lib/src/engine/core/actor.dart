@@ -8,6 +8,8 @@ import 'element.dart';
 import 'energy.dart';
 import 'game.dart';
 import 'log.dart';
+import '../hero/hero.dart';
+import '../../debug/manager/debug_manager.dart';
 
 /// An active entity in the game. Includes monsters and the hero.
 abstract class Actor implements Noun {
@@ -196,7 +198,17 @@ abstract class Actor implements Noun {
   /// `true` if the actor died.
   bool takeDamage(Action action, int damage, Noun attackNoun,
       [Actor? attacker]) {
-    health -= damage;
+    // Apply god mode for heroes if debug mode is enabled
+    var finalDamage = damage;
+    try {
+      if (this is Hero && DebugManager.isEnabled && DebugManager.godMode) {
+        finalDamage = 0;
+      }
+    } catch (e) {
+      // Ignore debug manager errors in production
+    }
+    
+    health -= finalDamage;
     onTakeDamage(action, attacker, damage);
 
     if (isAlive) return false;

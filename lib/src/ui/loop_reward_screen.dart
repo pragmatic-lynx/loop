@@ -70,7 +70,6 @@ class LoopRewardScreen extends Screen<Input> {
     }
     
     if (selectedReward >= rewardOptions.length) {
-      print('Error: Selected reward index $selectedReward is out of bounds (max: ${rewardOptions.length - 1})');
       selectedReward = 0; // Reset to first option
     }
     

@@ -2,6 +2,10 @@ import 'dart:collection';
 import 'dart:math' as math;
 
 import 'engine.dart';
+import 'debug/manager/debug_manager.dart';
+
+export 'debug/manager/debug_manager.dart';
+export 'debug/manager/debug_overlay.dart';
 
 /// A class for storing debugging information.
 ///
@@ -12,12 +16,15 @@ class Debug {
   static const enabled = true;
 
   /// If true, all monsters are rendered, regardless of in-game visibility.
-  static bool showAllMonsters = false;
+  static bool get showAllMonsters => DebugManager.showAllMonsters;
+  static set showAllMonsters(bool value) => DebugManager.showAllMonsters = value;
 
   /// If true, monster alertness is rendered.
-  static bool showMonsterAlertness = false;
+  static bool get showMonsterAlertness => DebugManager.showMonsterAlertness;
+  static set showMonsterAlertness(bool value) => DebugManager.showMonsterAlertness = value;
 
-  static bool showHeroVolume = false;
+  static bool get showHeroVolume => DebugManager.showHeroVolume;
+  static set showHeroVolume(bool value) => DebugManager.showHeroVolume = value;
 
   /// The current density map being used.
   ///

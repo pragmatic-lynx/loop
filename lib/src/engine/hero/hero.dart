@@ -17,6 +17,7 @@ import '../items/inventory.dart';
 import '../items/item.dart';
 import '../monster/monster.dart';
 import '../stage/tile.dart';
+import '../../debug/manager/debug_manager.dart';
 import 'behavior.dart';
 import 'hero_save.dart';
 import 'lore.dart';
@@ -466,8 +467,18 @@ class Hero extends Actor {
   void gainExperience(int amount) {
     if (amount <= 0) return;
     
+    // Apply debug experience multiplier if debug mode is enabled
+    var finalAmount = amount;
+    try {
+      if (DebugManager.isEnabled) {
+        finalAmount = (amount * DebugManager.expMultiplier).round();
+      }
+    } catch (e) {
+      // Ignore debug manager errors in production
+    }
+    
     var oldLevel = level;
-    experience += amount;
+    experience += finalAmount;
     var newLevel = _calculateLevel(experience);
     
     if (newLevel > oldLevel) {
@@ -573,21 +584,17 @@ class Hero extends Actor {
 
   /// Tries to auto-equip an item if it's better than what's currently equipped.
   void _tryAutoEquip(Game game, Item item) {
-    print('[AUTO-EQUIP] Checking item: ${item.nounText}');
     
     // Only try to auto-equip equippable items
     if (!item.canEquip) {
-      print('[AUTO-EQUIP] Item cannot be equipped, skipping');
       return;
     }
     
     if (!equipment.canEquip(item)) {
-      print('[AUTO-EQUIP] Equipment cannot equip this item type, skipping');
       return;
     }
     
     var equipSlot = item.equipSlot!;
-    print('[AUTO-EQUIP] Item equip slot: $equipSlot, item type: ${_getItemType(item)}');
     
     // Find current item in this slot
     Item? currentItem;
@@ -602,19 +609,15 @@ class Hero extends Actor {
     
     if (currentItem == null) {
       // Empty slot - always equip
-      print('[AUTO-EQUIP] Empty slot found, equipping item');
       _autoEquipItem(game, item);
       return;
     }
     
-    print('[AUTO-EQUIP] Current item in slot: ${currentItem.nounText}, type: ${_getItemType(currentItem)}');
     
     // Compare items to see if new one is better
     if (_isItemBetter(item, currentItem)) {
-      print('[AUTO-EQUIP] New item is better, auto-equipping');
       _autoEquipItem(game, item);
     } else {
-      print('[AUTO-EQUIP] Current item is better, keeping it equipped');
     }
   }
   
@@ -638,13 +641,11 @@ class Hero extends Actor {
     }
     
     // For other equipment (rings, necklaces, etc.), use price as primary comparison
-    print('[AUTO-EQUIP] Other equipment, comparing price: new=${newItem.price} vs current=${currentItem.price}');
     if (newItem.price != currentItem.price) {
       return newItem.price > currentItem.price;
     }
     
     // If price is equal, prefer lighter items
-    print('[AUTO-EQUIP] Price equal, comparing weight: new=${newItem.weight} vs current=${currentItem.weight}');
     return newItem.weight < currentItem.weight;
   }
   
@@ -654,7 +655,6 @@ class Hero extends Actor {
     var newDamage = newWeapon.attack?.damage ?? 0;
     var currentDamage = currentWeapon.attack?.damage ?? 0;
     
-    print('[AUTO-EQUIP] Comparing weapons - new damage: $newDamage, current damage: $currentDamage');
     
     if (newDamage != currentDamage) {
       return newDamage > currentDamage;
@@ -662,12 +662,10 @@ class Hero extends Actor {
     
     // If damage is equal, compare price (accounts for affixes and quality)
     if (newWeapon.price != currentWeapon.price) {
-      print('[AUTO-EQUIP] Weapon damage equal, comparing price: new=${newWeapon.price} vs current=${currentWeapon.price}');
       return newWeapon.price > currentWeapon.price;
     }
     
     // If price is equal, prefer lighter weapons
-    print('[AUTO-EQUIP] Weapon damage and price equal, comparing weight: new=${newWeapon.weight} vs current=${currentWeapon.weight}');
     return newWeapon.weight < currentWeapon.weight;
   }
   
@@ -676,7 +674,6 @@ class Hero extends Actor {
     var newArmorValue = newArmor.armor;
     var currentArmorValue = currentArmor.armor;
     
-    print('[AUTO-EQUIP] Comparing armor: new=$newArmorValue vs current=$currentArmorValue');
     
     if (newArmorValue != currentArmorValue) {
       return newArmorValue > currentArmorValue;
@@ -684,12 +681,10 @@ class Hero extends Actor {
     
     // If armor is equal, prefer lighter items
     if (newArmor.weight != currentArmor.weight) {
-      print('[AUTO-EQUIP] Armor equal, comparing weight: new=${newArmor.weight} vs current=${currentArmor.weight}');
       return newArmor.weight < currentArmor.weight;
     }
     
     // If armor and weight are equal, prefer more expensive items (better affixes)
-    print('[AUTO-EQUIP] Armor and weight equal, comparing price: new=${newArmor.price} vs current=${currentArmor.price}');
     return newArmor.price > currentArmor.price;
   }
   
@@ -699,7 +694,6 @@ class Hero extends Actor {
       // Create a single-count item for equipping if this is a stack
       Item itemToEquip;
       if (item.count > 1) {
-        print('[AUTO-EQUIP] Splitting stack to equip single item');
         itemToEquip = item.splitStack(1);
         inventory.countChanged();
       } else {
@@ -714,7 +708,6 @@ class Hero extends Actor {
         }
         
         if (!foundInInventory) {
-          print('[AUTO-EQUIP] Warning: Item not found in inventory, still attempting to equip');
         }
         
         itemToEquip = item;
@@ -736,7 +729,6 @@ class Hero extends Actor {
       }
       
       game.log.message('You auto-equipped ${itemToEquip.nounText}.');
-      print('[AUTO-EQUIP] Successfully equipped: ${itemToEquip.nounText}');
       
       // Update emanation if needed
       if (itemToEquip.emanationLevel > 0) {
@@ -744,7 +736,6 @@ class Hero extends Actor {
       }
       
     } catch (e) {
-      print('[AUTO-EQUIP] Error during auto-equip: $e');
       game.log.error('Failed to auto-equip ${item.nounText}.');
     }
   }

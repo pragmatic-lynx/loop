@@ -68,7 +68,6 @@ class ArchitecturalStyle {
     if (depth == 1) {
       var sandboxStyle = styles.tryFind("sandbox");
       if (sandboxStyle != null) {
-        print("🎮 FORCING SANDBOX at depth 1!");
         result.add(sandboxStyle);
         return result; // Return ONLY sandbox
       }

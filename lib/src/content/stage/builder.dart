@@ -137,19 +137,7 @@ void pit(String monsterGroup, {required int start, required int end}) {
 void sandbox() {
   // Check if sandbox mode is enabled
   if (!_isSandboxEnabled()) {
-    // Debug: Let developers know sandbox was skipped
-    try {
-      print('Sandbox mode is disabled. Use enableSandbox() in console to enable.');
-    } catch (e) {
-      // Ignore print errors in production
-    }
     return;
-  }
-  
-  try {
-    print('Sandbox mode is ENABLED! Adding sandbox architecture...');
-  } catch (e) {
-    // Ignore print errors in production
   }
   
   _addStyle("sandbox",

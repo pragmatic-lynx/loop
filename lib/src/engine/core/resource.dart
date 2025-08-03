@@ -393,13 +393,11 @@ class _ResourceQuery<T> {
   }
 
   void dump(_QueryKey key) {
-    print(key);
     for (var i = 0; i < resources.length; i++) {
       var chance = chances[i];
       if (i > 0) chance -= chances[i - 1];
       var percent =
           (100.0 * chance / totalChance).toStringAsFixed(5).padLeft(8);
-      print("$percent% ${resources[i].object}");
     }
   }
 }

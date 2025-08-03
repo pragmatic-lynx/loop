@@ -63,7 +63,6 @@ class DifficultyScheduler {
       itemMultiplier: itemMultiplier,
     );
     
-    print('SCALARS_UPDATED: ${archetype.name} - Enemy: ${enemyMultiplier}x, Item: ${itemMultiplier}x');
   }
 
   /// Update just the enemy multiplier for an archetype
@@ -77,7 +76,6 @@ class DifficultyScheduler {
     var current = scalars[archetype] ?? DensityScalars();
     scalars[archetype] = current.copyWith(enemyMultiplier: multiplier);
     
-    print('ENEMY_SCALAR_UPDATED: ${archetype.name} - ${multiplier}x');
   }
 
   /// Update just the item multiplier for an archetype
@@ -91,7 +89,6 @@ class DifficultyScheduler {
     var current = scalars[archetype] ?? DensityScalars();
     scalars[archetype] = current.copyWith(itemMultiplier: multiplier);
     
-    print('ITEM_SCALAR_UPDATED: ${archetype.name} - ${multiplier}x');
   }
 
   /// Get current status for debugging

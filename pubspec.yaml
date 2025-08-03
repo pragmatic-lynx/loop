@@ -1,4 +1,4 @@
-name: hauberk
+name: loop_rpg
 environment:
   sdk: '^3.0.0'
 dependencies:
