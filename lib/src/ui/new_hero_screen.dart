@@ -100,6 +100,14 @@ String _getStartingWeapon(String className) {
 }
 
 class NewHeroScreen extends Screen<Input> {
+  static const _deaths = ["Stairs", "Permanent"];
+  static const _deathDescriptions = [
+    "When you die, you lose everything since the last time you went up or "
+        "down a set of stairs (or left a shop).",
+    "When you die, that's it. Your hero is gone forever. This is the most "
+        "challenging way to play, but often the most rewarding as well."
+  ];
+
   final Content _content;
   final Storage _storage;
 
@@ -112,6 +120,9 @@ class NewHeroScreen extends Screen<Input> {
   
   /// Randomly selected race index
   late final int _randomRaceIndex;
+  
+  /// Death mode (1 = Permanent, 0 = Stairs) - default to permanent
+  final int _deathMode = 1;
 
   NewHeroScreen(this._content, this._storage)
       : _name = NameControl(0, 0, _storage),
@@ -128,12 +139,14 @@ class NewHeroScreen extends Screen<Input> {
 
   @override
   void render(Terminal terminal) {
-    Draw.dialog(terminal, 80, 25,
+    Draw.dialog(terminal, 80, 35,
         label: "Create New Hero",
         (terminal) {
       Draw.hLine(terminal, 0, 7, terminal.width);
+      Draw.hLine(terminal, 0, 17, terminal.width);
 
       _renderRace(terminal.rect(0, 1, terminal.width, 6));
+      _renderDeath(terminal.rect(0, 18, terminal.width, 8));
       
       for (var i = 0; i < _controls.length; i++) {
         _controls[i].render(terminal, focus: i == _focus);
@@ -164,6 +177,22 @@ class NewHeroScreen extends Screen<Input> {
     for (var stat in Stat.all) {
       terminal.writeAt(0, y, stat.abbreviation, UIHue.secondary);
       Draw.thinMeter(terminal, 4, y, 14, race.stats[stat]!, 45);
+      y++;
+    }
+  }
+
+  void _renderDeath(Terminal terminal) {
+    // Show death mode name
+    terminal.writeAt(0, 18, "Death: ${_deaths[_deathMode]}", UIHue.text);
+    
+    // Show death description
+    _renderText(terminal, _deathDescriptions[_deathMode]);
+  }
+
+  void _renderText(Terminal terminal, String description) {
+    var y = 20;
+    for (var line in Log.wordWrap(59, description)) {
+      terminal.writeAt(19, y, line, UIHue.text);
       y++;
     }
   }
@@ -258,7 +287,7 @@ class NewHeroScreen extends Screen<Input> {
         var hero = _content.createHero(_name._name,
             race: selectedRace,
             heroClass: heroClass,
-            permadeath: false); // Default to stairs death
+            permadeath: _deathMode == 1); // Use the fixed death mode
         _storage.add(hero);
         
         // Start loop mode immediately instead of going to town
