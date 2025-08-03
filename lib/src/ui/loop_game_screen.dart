@@ -569,22 +569,12 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
         game.log.message("Active queue: ${queueNames[nextQueue]}");
         return true;
         
-      case LoopInput.debug:
-        // Debug functionality - add random items and test loop meter
-        _debugHelper.addRandomTestItems();
-        
-        // Add some loop meter progress for testing
-        _loopManager.loopMeter.addProgress(15.0);
-        game.log.message("Debug: Added 15% loop meter progress (${_loopManager.loopMeter.progress.toStringAsFixed(1)}%)");
-        
-        // Check if this debug addition triggered completion
-        if (_loopManager.loopMeter.progress >= 100.0 && _loopManager.isLoopActive && !_loopManager.isRewardSelection) {
-          game.log.message("Debug triggered ring completion!");
-          _loopManager.triggerRewardSelection(heroClass: game.hero.save.heroClass.name);
-        }
-        
-        _updateActionMapping();
+      case LoopInput.giveConsumables:
+        _debugHelper.giveAllConsumables();
+        game.log.message("Debug: Gave one-time set of consumables");
         return true;
+        
+      // No debug functionality - intentionally left blank
 
       case LoopInput.equip:
         // First try to interact with staircase if standing on one
@@ -632,13 +622,6 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
               if (result.remaining == 0) {
                 game.stage.removeItem(item, game.hero.pos);
               }
-              
-              game.hero.pickUp(game, item);
-              _loopManager.recordLootPickup(); // Track loot pickup for loop meter
-              var meterProgress = _loopManager.loopMeter.progress.toStringAsFixed(1);
-              game.log.message("Loot collected! Loop meter: ${meterProgress}%");
-              _updateActionMapping();
-              return true;
             } else {
               game.log.message('Your inventory is full.');
               return true;
