@@ -100,15 +100,6 @@ String _getStartingWeapon(String className) {
 }
 
 class NewHeroScreen extends Screen<Input> {
-  static const _deaths = ["Stairs", "Permanent"];
-
-  static const _deathDescriptions = [
-    "When you die, you lose everything since the last time you went up or "
-        "down a set of stairs (or left a shop).",
-    "When you die, that's it. Your hero is gone forever. This is the most "
-        "challenging way to play, but often the most rewarding as well."
-  ];
-
   final Content _content;
   final Storage _storage;
 
@@ -116,37 +107,24 @@ class NewHeroScreen extends Screen<Input> {
   int _focus = 0;
 
   final NameControl _name;
-  final SelectControl _race;
   final SelectControl _class;
-  final SelectControl _death;
   final List<Control> _controls = [];
 
   NewHeroScreen(this._content, this._storage)
       : _name = NameControl(0, 0, _storage),
-        _race = SelectControl(
-            0, 4, "Race", _content.races.map((race) => race.name).toList()),
         _class = SelectControl(
-            0, 14, "Class", _content.classes.map((cls) => cls.name).toList()),
-        _death = SelectControl(0, 28, "Death", _deaths) {
-    _controls.addAll([_name, _race, _class, _death]);
+            0, 4, "Class", ["Ranger", "Mage"]) {
+    _controls.addAll([_name, _class]);
 
-    _race.selected = rng.range(_content.races.length);
-    _class.selected = rng.range(_content.classes.length);
+    // Auto-select Ranger (index 0)
+    _class.selected = 0;
   }
 
   @override
   void render(Terminal terminal) {
-    Draw.dialog(terminal, 80, 40,
-        label: "Out of the forgotten wilderness, a hero appears...",
+    Draw.dialog(terminal, 60, 20,
+        label: "Create New Hero",
         (terminal) {
-      Draw.hLine(terminal, 0, 3, terminal.width);
-      Draw.hLine(terminal, 0, 13, terminal.width);
-      Draw.hLine(terminal, 0, 27, terminal.width);
-
-      _renderRace(terminal.rect(0, 4, terminal.width, 8));
-      _renderClass(terminal.rect(0, 14, terminal.width, 15));
-      _renderDeath(terminal.rect(0, 28, terminal.width, 7));
-
       for (var i = 0; i < _controls.length; i++) {
         _controls[i].render(terminal, focus: i == _focus);
       }
@@ -156,42 +134,6 @@ class NewHeroScreen extends Screen<Input> {
       if (_name._isUnique) "Enter": "Create hero",
       "`": "Cancel"
     });
-  }
-
-  void _renderRace(Terminal terminal) {
-    var race = _content.races[_race.selected];
-    _renderText(terminal, race.description);
-
-    // Show how race affects stats.
-    var y = 3;
-    for (var stat in Stat.all) {
-      terminal.writeAt(0, y, stat.abbreviation, UIHue.secondary);
-      Draw.thinMeter(terminal, 4, y, 14, race.stats[stat]!, 45);
-      y++;
-    }
-  }
-
-  void _renderClass(Terminal terminal) {
-    var heroClass = _content.classes[_class.selected];
-    _renderText(terminal, heroClass.description);
-
-    // TODO: Should show class proficiencies in some way. That's hard right now
-    // because they are stored individually for each skill which is way too
-    // fine-grained to fit on this little UI.
-    //
-    // Maybe have some kind of category system for skills?
-  }
-
-  void _renderDeath(Terminal terminal) {
-    _renderText(terminal, _deathDescriptions[_death.selected]);
-  }
-
-  void _renderText(Terminal terminal, String description) {
-    var y = 3;
-    for (var line in Log.wordWrap(59, description)) {
-      terminal.writeAt(19, y, line, UIHue.text);
-      y++;
-    }
   }
 
   @override
@@ -274,10 +216,17 @@ class NewHeroScreen extends Screen<Input> {
       // We look for "enter" explicitly and not Input.OK, because typing "l"
       // should enter that letter, not create a hero.
       case KeyCode.enter when _name._isUnique:
+        // Get the selected class (Ranger or Mage)
+        var selectedClassName = _class._options[_class.selected];
+        var heroClass = _content.classes.firstWhere((cls) => cls.name == selectedClassName);
+        
+        // Random race selection
+        var randomRace = _content.races[rng.range(_content.races.length)];
+        
         var hero = _content.createHero(_name._name,
-            race: _content.races[_race.selected],
-            heroClass: _content.classes[_class.selected],
-            permadeath: _death.selected == 1);
+            race: randomRace,
+            heroClass: heroClass,
+            permadeath: false); // Default to stairs death
         _storage.add(hero);
         
         // Start loop mode immediately instead of going to town
