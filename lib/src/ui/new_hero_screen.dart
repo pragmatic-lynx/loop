@@ -127,7 +127,7 @@ class NewHeroScreen extends Screen<Input> {
   NewHeroScreen(this._content, this._storage)
       : _name = NameControl(0, 0, _storage),
         _class = SelectControl(
-            0, 8, "Class", ["Ranger", "Mage"]) {
+            0, 4, "Class", ["Ranger", "Mage"]) {
     _controls.addAll([_name, _class]);
 
     // Auto-select Ranger (index 0)
@@ -135,6 +135,9 @@ class NewHeroScreen extends Screen<Input> {
     
     // Randomly select a race
     _randomRaceIndex = rng.range(_content.races.length);
+    
+    // Start with class selection focused
+    _focus = 1;
   }
 
   @override
@@ -142,11 +145,12 @@ class NewHeroScreen extends Screen<Input> {
     Draw.dialog(terminal, 80, 35,
         label: "Create New Hero",
         (terminal) {
-      Draw.hLine(terminal, 0, 7, terminal.width);
-      Draw.hLine(terminal, 0, 17, terminal.width);
+      Draw.hLine(terminal, 0, 3, terminal.width);
+      Draw.hLine(terminal, 0, 13, terminal.width);
 
-      _renderRace(terminal.rect(0, 1, terminal.width, 6));
-      _renderDeath(terminal.rect(0, 18, terminal.width, 8));
+      _renderClass(terminal.rect(0, 1, terminal.width, 2));
+      _renderRace(terminal.rect(0, 4, terminal.width, 8));
+      _renderDeath(terminal.rect(0, 14, terminal.width, 8));
       
       for (var i = 0; i < _controls.length; i++) {
         _controls[i].render(terminal, focus: i == _focus);
@@ -159,21 +163,26 @@ class NewHeroScreen extends Screen<Input> {
     });
   }
 
+  void _renderClass(Terminal terminal) {
+    // Class selection is handled by the SelectControl
+    // This is just a placeholder for any additional class info if needed
+  }
+
   void _renderRace(Terminal terminal) {
     var race = _content.races[_randomRaceIndex];
     
     // Show race name
-    terminal.writeAt(0, 1, "Race: ${race.name}", UIHue.text);
+    terminal.writeAt(0, 4, "Race: ${race.name}", UIHue.text);
     
     // Show race description
-    var y = 2;
+    var y = 5;
     for (var line in Log.wordWrap(59, race.description)) {
       terminal.writeAt(19, y, line, UIHue.text);
       y++;
     }
 
     // Show how race affects stats.
-    y = 3;
+    y = 6;
     for (var stat in Stat.all) {
       terminal.writeAt(0, y, stat.abbreviation, UIHue.secondary);
       Draw.thinMeter(terminal, 4, y, 14, race.stats[stat]!, 45);
@@ -183,14 +192,14 @@ class NewHeroScreen extends Screen<Input> {
 
   void _renderDeath(Terminal terminal) {
     // Show death mode name
-    terminal.writeAt(0, 18, "Death: ${_deaths[_deathMode]}", UIHue.text);
+    terminal.writeAt(0, 14, "Death: ${_deaths[_deathMode]}", UIHue.text);
     
     // Show death description
     _renderText(terminal, _deathDescriptions[_deathMode]);
   }
 
   void _renderText(Terminal terminal, String description) {
-    var y = 20;
+    var y = 16;
     for (var line in Log.wordWrap(59, description)) {
       terminal.writeAt(19, y, line, UIHue.text);
       y++;

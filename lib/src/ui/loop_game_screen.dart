@@ -702,7 +702,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
       print("Hero died! Restarting loop.");
       _loopManager.recordDeath();
       _loopManager.reset();
-      ui.goTo(GameOverScreen(_storage, game.hero.save, game.hero.save));
+      ui.goTo(GameOverScreen(_storage, game.hero.save, game.hero.save, game.content));
       return;
     }
 
