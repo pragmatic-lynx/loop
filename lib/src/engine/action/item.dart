@@ -7,6 +7,8 @@ import '../hero/hero.dart';
 import '../items/equipment.dart';
 import '../items/inventory.dart';
 import '../items/item.dart';
+import '../audio_manager.dart';
+import '../sfx_id.dart';
 import 'action.dart';
 
 /// Base class for an [Action] that works with an existing [Item] in the game.
@@ -78,6 +80,9 @@ class PickUpAction extends Action {
     }
 
     log('{1} pick[s] up {2}.', actor, item.clone(result.added));
+
+    // Play loot pickup sound
+    AudioManager.i.play(SfxId.lootPickup);
 
     if (result.remaining == 0) {
       game.stage.removeItem(item, actor!.pos);

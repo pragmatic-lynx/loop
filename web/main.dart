@@ -30,8 +30,11 @@ class TerminalFont {
       {required this.charWidth, required this.charHeight});
 }
 
-void main() {
+void main() async {
   var content = createContent();
+
+  // Initialize audio system early
+  await AudioManager.i.initialize();
 
   _addFont("6x8", 6, 8);
   _addFont("8x8", 8);

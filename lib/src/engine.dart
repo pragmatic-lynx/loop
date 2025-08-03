@@ -49,3 +49,5 @@ export 'engine/loop/loop_meter.dart';
 export 'engine/loop/hero_preset.dart';
 export 'engine/loop/smart_combat.dart';
 export 'engine/loop/loop_item_manager.dart';
+export 'engine/audio_manager.dart';
+export 'engine/sfx_id.dart';
