@@ -1,20 +1,20 @@
 {
   "starting": {
-    "warrior": "Stick",
+    "warrior": "Flail",
     "ranger": "Short Bow",
     "mage": "Walking Stick"
   },
   "tiers": [
     {
       "id": 1,
-      "warrior": ["Stick", "Cudgel", "Hatchet"],
-      "ranger": ["Short Bow", "Knife", "Dirk"],
+      "warrior": ["Axe", "Falchion", "Hatchet"],
+      "ranger": ["Longbow", "Cudgel", "Dirk"],
       "mage": ["Brilliant Beam", "Windstorm", "Fire Barrier"]
     },
     {
       "id": 2,
       "warrior": ["Shortsword", "Morningstar", "Spear"],
-      "ranger": ["Longbow", "Dagger", "Stiletto"],
+      "ranger": ["Crossbow", "Falchion", "Stiletto"],
       "mage": ["Windstorm", "Brilliant Beam", "Fire Barrier"]
     },
     {

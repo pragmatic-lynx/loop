@@ -1247,7 +1247,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     var progress = loopMeter.progress;
     
     // Show the new supply case screen for all tiers
-    ui.push(SupplyCaseScreen(game, rewardTier, progress, () {
+    ui.push(SupplyCaseScreen(game, game.content, rewardTier, progress, _loopManager.currentLoop, () {
       // Pop the supply case screen and return to this screen
       ui.pop();
     }));
