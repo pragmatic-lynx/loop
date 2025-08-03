@@ -523,25 +523,6 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
           game.log.message("No healing available.");
           dirty();
         }
-        
-        var heroClassName = game.hero.save.heroClass.name;
-        if (heroClassName == "Ranger") {
-          _actionQueues.setCurrentQueue(1);
-          action = _handleRangedAction();
-          if (action == null) {
-            game.log.message("No ranged weapon available.");
-            dirty();
-          }
-        } else if (heroClassName == "Mage") {
-          _actionQueues.setCurrentQueue(4);
-          if (_actionQueues.castCurrentStealthSpell()) {
-            _updateActionMapping();
-            return true;
-          } else {
-            game.log.message("No spell available.");
-            dirty();
-          }
-        }
         break;
         
       case LoopInput.cycleSpell:
@@ -572,6 +553,15 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
       case LoopInput.giveConsumables:
         _debugHelper.giveAllConsumables();
         game.log.message("Debug: Gave one-time set of consumables");
+        return true;
+        
+      case LoopInput.incrementMeter:
+        if (_loopManager != null) {
+          var newProgress = _loopManager!.loopMeter.addDebugProgress();
+          game.log.message("Debug: Loop meter increased by 20% (now ${newProgress.toStringAsFixed(1)}%)");
+        } else {
+          game.log.message("Debug: Loop meter not available");
+        }
         return true;
         
       // No debug functionality - intentionally left blank

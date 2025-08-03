@@ -62,6 +62,13 @@ class LoopMeter {
     return _progress;
   }
   
+  /// Debug method to increase progress by 20%
+  /// Returns the new progress percentage
+  double addDebugProgress() {
+    _progress += 20.0;
+    return _progress;
+  }
+  
   /// Get the reward tier based on current progress
   LoopMeterRewardTier getRewardTier() {
     if (progress >= 100.0) return LoopMeterRewardTier.legendary;
