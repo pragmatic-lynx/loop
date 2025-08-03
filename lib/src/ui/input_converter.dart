@@ -37,8 +37,7 @@ class InputConverter {
         return LoopInput.action2;
       case Input.drop:         // Mapped to '3' key
         return LoopInput.action3;
-      case Input.toss:         // Mapped to '4' key  
-        return LoopInput.action4;
+      // Note: Input.toss (4 key) no longer mapped - action4 consolidated into action1
       
       // Spell management
       case Input.cycleQueue:   // Mapped to 'Q' key
