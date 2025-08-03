@@ -141,10 +141,15 @@ class NewHeroScreen extends Screen<Input> {
   void _renderClass(Terminal terminal) {
     terminal.writeAt(0, 1, "Class:", UIHue.text);
     
-    // Show greyed out classes
     var x = 19;
-    var classes = ["Ranger", "Warrior"];
-    for (var className in classes) {
+    
+    // Show Mage as the selected class
+    terminal.writeAt(x, 1, "Mage", UIHue.primary);
+    x += "Mage".length + 15;
+    
+    // Show greyed out classes
+    var comingSoonClasses = ["Ranger", "Warrior"];
+    for (var className in comingSoonClasses) {
       terminal.writeAt(x, 1, className, UIHue.disabled);
       terminal.writeAt(x, 2, "Coming soon", UIHue.disabled);
       x += className.length + 15;
@@ -201,13 +206,20 @@ class NewHeroScreen extends Screen<Input> {
     // Give the hero some starting gold and basic equipment for loop mode
     hero.gold = 1500;
     
-    // Add basic starting equipment (since classes are disabled, use generic equipment)
+    // Add mage starting equipment
     try {
-      // Give a basic starting weapon
-      var stick = _content.tryFindItem("Stick");
-      if (stick != null) {
-        var weaponItem = Item(stick, 1);
+      // Give mage starting weapon
+      var walkingStick = _content.tryFindItem("Walking Stick");
+      if (walkingStick != null) {
+        var weaponItem = Item(walkingStick, 1);
         hero.equipment.equip(weaponItem);
+      } else {
+        // Fallback to basic stick
+        var stick = _content.tryFindItem("Stick");
+        if (stick != null) {
+          var weaponItem = Item(stick, 1);
+          hero.equipment.equip(weaponItem);
+        }
       }
       
       var robe = _content.tryFindItem("Robe");
@@ -249,8 +261,8 @@ class NewHeroScreen extends Screen<Input> {
       // We look for "enter" explicitly and not Input.OK, because typing "l"
       // should enter that letter, not create a hero.
       case KeyCode.enter when _name._isUnique:
-        // Use a default class since class selection is disabled
-        var heroClass = _content.classes.first; // Use first available class as default
+        // Use Mage as the default class
+        var heroClass = _content.classes.firstWhere((cls) => cls.name == "Mage");
         
         // Use the selected race
         var selectedRace = _content.races[_race.selected];

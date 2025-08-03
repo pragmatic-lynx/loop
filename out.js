@@ -10744,6 +10744,8 @@
     NewHeroScreen_render_closure: function NewHeroScreen_render_closure(t0) {
       this.$this = t0;
     },
+    NewHeroScreen_keyDown_closure: function NewHeroScreen_keyDown_closure() {
+    },
     Control: function Control() {
     },
     NameControl: function NameControl(t0, t1, t2, t3) {
@@ -15391,7 +15393,7 @@
       B.JSArray_methods.add$1(this.$arguments, argument);
       ++t1.argumentCount;
     },
-    $signature: 8
+    $signature: 7
   };
   A.TypeErrorDecoder.prototype = {
     matchTypeError$1(message) {
@@ -15856,7 +15858,7 @@
     call$1(o) {
       return this.getTag(o);
     },
-    $signature: 15
+    $signature: 16
   };
   A.initHooks_closure0.prototype = {
     call$2(o, tag) {
@@ -16298,7 +16300,7 @@
       t1.storedCallback = null;
       f.call$0();
     },
-    $signature: 24
+    $signature: 34
   };
   A._AsyncRun__initializeScheduleImmediate_closure.prototype = {
     call$1(callback) {
@@ -16365,7 +16367,7 @@
     call$1(result) {
       return this.bodyFunction.call$2(0, result);
     },
-    $signature: 25
+    $signature: 33
   };
   A._awaitOnObject_closure0.prototype = {
     call$2(error, stackTrace) {
@@ -16805,7 +16807,7 @@
     call$1(__wc0_formal) {
       this.joinedResult._completeWithResultOf$1(this.originalSource);
     },
-    $signature: 24
+    $signature: 34
   };
   A._Future__propagateToListeners_handleWhenCompleteCallback_closure0.prototype = {
     call$2(e, s) {
@@ -18586,7 +18588,7 @@
     call$1(e) {
       return type$.Element._is(type$.Node._as(e));
     },
-    $signature: 40
+    $signature: 57
   };
   A.Event0.prototype = {$isEvent0: 1};
   A.EventTarget.prototype = {
@@ -18906,7 +18908,7 @@
     call$2(k, v) {
       return B.JSArray_methods.add$1(this.keys, k);
     },
-    $signature: 27
+    $signature: 31
   };
   A.TableElement.prototype = {
     createFragment$3$treeSanitizer$validator(receiver, html, treeSanitizer, validator) {
@@ -19005,7 +19007,7 @@
     call$1(time) {
       this.completer.complete$1(0, A._asNum(time));
     },
-    $signature: 48
+    $signature: 45
   };
   A.WorkerGlobalScope.prototype = {$isWorkerGlobalScope: 1};
   A._Attr.prototype = {$is_Attr: 1};
@@ -19178,7 +19180,7 @@
     call$1(e) {
       return this.onData.call$1(type$.Event._as(e));
     },
-    $signature: 18
+    $signature: 17
   };
   A._Html5NodeValidator.prototype = {
     _Html5NodeValidator$1$uriPolicy(uriPolicy) {
@@ -19229,13 +19231,13 @@
     call$1(v) {
       return type$.NodeValidator._as(v).allowsElement$1(this.element);
     },
-    $signature: 55
+    $signature: 36
   };
   A.NodeValidatorBuilder_allowsAttribute_closure.prototype = {
     call$1(v) {
       return type$.NodeValidator._as(v).allowsAttribute$3(this.element, this.attributeName, this.value);
     },
-    $signature: 55
+    $signature: 36
   };
   A._SimpleNodeValidator.prototype = {
     _SimpleNodeValidator$4$allowedAttributes$allowedElements$allowedUriAttributes(uriPolicy, allowedAttributes, allowedElements, allowedUriAttributes) {
@@ -19282,13 +19284,13 @@
     call$1(x) {
       return !B.JSArray_methods.contains$1(B.List_ql7, A._asString(x));
     },
-    $signature: 35
+    $signature: 24
   };
   A._SimpleNodeValidator_closure0.prototype = {
     call$1(x) {
       return B.JSArray_methods.contains$1(B.List_ql7, A._asString(x));
     },
-    $signature: 35
+    $signature: 24
   };
   A._TemplatingNodeValidator.prototype = {
     allowsAttribute$3(element, attributeName, value) {
@@ -19705,7 +19707,7 @@
     call$1(n) {
       return type$.Element._is(type$.Node._as(n));
     },
-    $signature: 40
+    $signature: 57
   };
   A.FilteredElementList__iterable_closure0.prototype = {
     call$1(n) {
@@ -19732,13 +19734,13 @@
       A._defineProperty(jsFunction, $.$get$DART_CLOSURE_PROPERTY_NAME(), o);
       return jsFunction;
     },
-    $signature: 15
+    $signature: 16
   };
   A._convertToJS_closure0.prototype = {
     call$1(o) {
       return new this.ctor(o);
     },
-    $signature: 15
+    $signature: 16
   };
   A._wrapToDart_closure.prototype = {
     call$1(o) {
@@ -19849,7 +19851,7 @@
     call$1(r) {
       return this.completer.complete$1(0, this.T._eval$1("0/?")._as(r));
     },
-    $signature: 25
+    $signature: 33
   };
   A.promiseToFuture_closure0.prototype = {
     call$1(e) {
@@ -19857,7 +19859,7 @@
         return this.completer.completeError$1(new A.NullRejectionException(e === undefined));
       return this.completer.completeError$1(e);
     },
-    $signature: 25
+    $signature: 33
   };
   A.NullRejectionException.prototype = {
     toString$0(_) {
@@ -20261,7 +20263,7 @@
       if (neighbor.element === $.$get$Elements_fire())
         this._box_0.fire += amount;
     },
-    $signature: 46
+    $signature: 40
   };
   A.GameContent__spreadPoison_neighbor.prototype = {
     call$2(x, y) {
@@ -20647,7 +20649,7 @@
     call$0() {
       return A._setArrayType([], type$.JSArray_Vec);
     },
-    $signature: 36
+    $signature: 39
   };
   A.DetectAction__findTiles_closure.prototype = {
     call$2(item, pos) {
@@ -20667,7 +20669,7 @@
       A._asInt(a);
       return B.JSInt_methods.compareTo$1(A._asInt(b), a);
     },
-    $signature: 53
+    $signature: 43
   };
   A.DetectAction__findTiles_closure1.prototype = {
     call$1(distance) {
@@ -21680,7 +21682,7 @@
       if (item.type.rarity.index <= this.$this.type.rarity.index)
         this._box_0.generatedItem = item;
     },
-    $signature: 10
+    $signature: 12
   };
   A.Decor.prototype = {};
   A.Furnishing.prototype = {
@@ -21799,13 +21801,13 @@
     },
     "call*": "call$4",
     $requiredArgCount: 4,
-    $signature: 155
+    $signature: 151
   };
   A.Elements_poison_closure.prototype = {
     call$1(damage) {
       return new A.PoisonAction(A._asInt(damage));
     },
-    $signature: 160
+    $signature: 156
   };
   A.Elements_poison_closure0.prototype = {
     call$4(pos, hit, distance, _) {
@@ -21817,19 +21819,19 @@
     },
     "call*": "call$4",
     $requiredArgCount: 4,
-    $signature: 161
+    $signature: 160
   };
   A.Elements_dark_closure.prototype = {
     call$1(damage) {
       return new A.BlindAction(A._asInt(damage));
     },
-    $signature: 162
+    $signature: 161
   };
   A.Elements_light_closure.prototype = {
     call$1(damage) {
       return new A.DazzleAction(A._asInt(damage));
     },
-    $signature: 165
+    $signature: 162
   };
   A.Elements_light_closure0.prototype = {
     call$4(pos, hit, distance, _) {
@@ -21844,7 +21846,7 @@
     },
     "call*": "call$4",
     $requiredArgCount: 4,
-    $signature: 166
+    $signature: 165
   };
   A._BaseBuilder.prototype = {
     toss$4$breakage$damage$element$range(breakage, damage, element, range) {
@@ -22008,13 +22010,13 @@
     call$0() {
       return new A.EatAction(this.amount);
     },
-    $signature: 57
+    $signature: 58
   };
   A.ItemBuilder_detection_closure.prototype = {
     call$0() {
       return A.DetectAction$(this.types, this.range);
     },
-    $signature: 58
+    $signature: 169
   };
   A.ItemBuilder_perception_closure.prototype = {
     call$0() {
@@ -22202,7 +22204,7 @@
     call$1(_) {
       return this.scale;
     },
-    $signature: 17
+    $signature: 18
   };
   A.AffixBuilder_parameter_closure.prototype = {
     call$0() {
@@ -22231,7 +22233,7 @@
       A._asInt(_);
       return this.scale;
     },
-    $signature: 17
+    $signature: 18
   };
   A.AffixBuilder_weight_closure.prototype = {
     call$1(_) {
@@ -22269,7 +22271,7 @@
     call$1(parameter) {
       return this.base + A._asInt(parameter) * this.scale;
     },
-    $signature: 17
+    $signature: 18
   };
   A.ItemQuality.prototype = {
     _enumToString$0() {
@@ -22427,7 +22429,7 @@
       affix._statBonuses.$indexSet(0, B.Stat_Intellect, type$.int_Function_int._as(A.fixed(2, type$.int)));
       return affix;
     },
-    $signature: 50
+    $signature: 54
   };
   A.shop_closure.prototype = {
     call$2($name, frequency) {
@@ -22445,7 +22447,7 @@
       affix.brand$1($.$get$Elements_dark());
       return affix;
     },
-    $signature: 50
+    $signature: 54
   };
   A._BaseBuilder0.prototype = {
     count$2(minOrMax, max) {
@@ -23000,7 +23002,7 @@
       t3 = t1._actorsByTile.$get$2(t3.x, t3.y);
       return t3 != null && t3 instanceof A.Monster && t3._breed === t2._breed;
     },
-    $signature: 12
+    $signature: 13
   };
   A.TeleportMove.prototype = {
     get$experience() {
@@ -23766,7 +23768,7 @@
     },
     "call*": "call$3",
     $requiredArgCount: 3,
-    $signature: 26
+    $signature: 22
   };
   A.conjuringSpells_closure0.prototype = {
     call$3(spell, game, level) {
@@ -23777,7 +23779,7 @@
     },
     "call*": "call$3",
     $requiredArgCount: 3,
-    $signature: 26
+    $signature: 22
   };
   A.conjuringSpells_closure1.prototype = {
     call$3(spell, game, level) {
@@ -23788,7 +23790,7 @@
     },
     "call*": "call$3",
     $requiredArgCount: 3,
-    $signature: 26
+    $signature: 22
   };
   A.divinationSpells_closure.prototype = {
     call$3(spell, game, level) {
@@ -23838,7 +23840,7 @@
     },
     "call*": "call$3",
     $requiredArgCount: 3,
-    $signature: 43
+    $signature: 46
   };
   A.sorcerySpells_closure2.prototype = {
     call$4(spell, game, level, target) {
@@ -23870,7 +23872,7 @@
     },
     "call*": "call$3",
     $requiredArgCount: 3,
-    $signature: 43
+    $signature: 46
   };
   A.Spell.prototype = {
     gainMessage$1(level) {
@@ -25844,7 +25846,7 @@
     call$0() {
       return A._setArrayType([], type$.JSArray_Vec);
     },
-    $signature: 36
+    $signature: 39
   };
   A.Decorator__spawnMonster_spawn.prototype = {
     call$2(breed, pos) {
@@ -26507,7 +26509,7 @@
       t1 = t1.stage.tiles.bounds.size;
       return A.lerpDouble(xDistance + yDistance, 0, t1.x + t1.y, 2, -3);
     },
-    $signature: 45
+    $signature: 44
   };
   A.Keep__tryAttachRoom_closure.prototype = {
     call$1(pos) {
@@ -27320,7 +27322,7 @@
       t2 = t2.stage.tiles.bounds.size.y;
       return t1.float$2(0, t2 * 0.2, t2 * 0.4);
     },
-    $signature: 7
+    $signature: 9
   };
   A.River_build_southish.prototype = {
     call$0() {
@@ -27330,7 +27332,7 @@
       t2 = t2.stage.tiles.bounds.size.y;
       return t1.float$2(0, t2 * 0.6, t2 * 0.8);
     },
-    $signature: 7
+    $signature: 9
   };
   A.River_build_eastish.prototype = {
     call$0() {
@@ -27340,7 +27342,7 @@
       t2 = t2.stage.tiles.bounds.size.x;
       return t1.float$2(0, t2 * 0.6, t2 * 0.8);
     },
-    $signature: 7
+    $signature: 9
   };
   A.River_build_westish.prototype = {
     call$0() {
@@ -27350,7 +27352,7 @@
       t2 = t2.stage.tiles.bounds.size.x;
       return t1.float$2(0, t2 * 0.2, t2 * 0.4);
     },
-    $signature: 7
+    $signature: 9
   };
   A.River_build_northSouth.prototype = {
     call$0() {
@@ -27360,7 +27362,7 @@
       t2 = t2.stage.tiles.bounds.size.y;
       return t1.float$2(0, t2 * 0.2, t2 * 0.8);
     },
-    $signature: 7
+    $signature: 9
   };
   A.River_build_eastWest.prototype = {
     call$0() {
@@ -27370,7 +27372,7 @@
       t2 = t2.stage.tiles.bounds.size.x;
       return t1.float$2(0, t2 * 0.2, t2 * 0.8);
     },
-    $signature: 7
+    $signature: 9
   };
   A._RiverPoint.prototype = {
     toString$0(_) {
@@ -27431,7 +27433,7 @@
       t2 = t1.tile;
       return !(t2 == null && t1.direction === B.Direction_0_0_0_none) && t2 !== $.$get$Tiles_solid() && t1.direction === B.Direction_0_0_0_none;
     },
-    $signature: 12
+    $signature: 13
   };
   A.RoomTile.prototype = {};
   A.RoomSize.prototype = {
@@ -27663,19 +27665,19 @@
     call$1(pos) {
       return A.OpenChestAction$(pos);
     },
-    $signature: 32
+    $signature: 27
   };
   A.Tiles_closedOrnateChest_closure.prototype = {
     call$1(pos) {
       return A.OpenChestAction$(pos);
     },
-    $signature: 32
+    $signature: 27
   };
   A.Tiles_closedMythicChest_closure.prototype = {
     call$1(pos) {
       return A.OpenChestAction$(pos);
     },
-    $signature: 32
+    $signature: 27
   };
   A.Tiles_closedBarrel_closure.prototype = {
     call$1(pos) {
@@ -27751,13 +27753,13 @@
     call$0() {
       return A._MonsterLog$(this.monster);
     },
-    $signature: 29
+    $signature: 28
   };
   A.Debug_monsterStat_closure.prototype = {
     call$0() {
       return A._MonsterLog$(this.monster);
     },
-    $signature: 29
+    $signature: 28
   };
   A.Debug_monsterStat_closure0.prototype = {
     call$0() {
@@ -27769,7 +27771,7 @@
     call$0() {
       return A._MonsterLog$(this.monster);
     },
-    $signature: 29
+    $signature: 28
   };
   A._MonsterLog.prototype = {
     toString$0(_) {
@@ -27819,7 +27821,7 @@
     call$2($length, $name) {
       return Math.max(A._asInt($length), A._asString($name).length);
     },
-    $signature: 30
+    $signature: 26
   };
   A.Action.prototype = {
     get$isImmediate() {
@@ -28303,20 +28305,20 @@
       t1 === $ && A.throwLateFieldNI("_stage");
       t1.removeItem$2(item, this.pos);
     },
-    $signature: 10
+    $signature: 12
   };
   A.DestroyActionMixin_destroyHeldItems_closure.prototype = {
     call$1(item) {
       B.JSArray_methods.remove$1(type$.Hero._as(this.$this._actor).save._inventory._items, item);
     },
-    $signature: 10
+    $signature: 12
   };
   A.DestroyActionMixin_destroyHeldItems_closure0.prototype = {
     call$1(item) {
       type$.Hero._as(this.$this._actor).save._equipment.remove$1(0, item);
       this._box_0.anyEquipmentDestroyed = true;
     },
-    $signature: 10
+    $signature: 12
   };
   A.LosAction.prototype = {
     get$_los() {
@@ -28860,7 +28862,7 @@
     call$1(e) {
       A.print("Failed to resume AudioContext: " + A.S(e));
     },
-    $signature: 24
+    $signature: 34
   };
   A.Actor.prototype = {
     get$pronoun() {
@@ -29182,7 +29184,7 @@
       A._asInt(_);
       return null;
     },
-    $signature: 31
+    $signature: 29
   };
   A.Element_closure0.prototype = {
     call$4(_, __, ___, ____) {
@@ -30091,7 +30093,7 @@
       t1 = t1.tiles;
       return t1.bounds.contains$1(0, t2) && (t1.$get$2(t2.x, t2.y).type.motility._bitMask & $.$get$Motility_doorAndWalk()._bitMask) !== 0;
     },
-    $signature: 12
+    $signature: 13
   };
   A.RunBehavior__shouldKeepRunning_actorAt.prototype = {
     call$1(pos) {
@@ -30656,7 +30658,7 @@
     call$1(previous) {
       this.$this.save.log.gain$1(0, "You have reached level " + this.level + ".");
     },
-    $signature: 31
+    $signature: 29
   };
   A.Hero_refreshProperties_closure0.prototype = {
     call$1(previous) {
@@ -30832,7 +30834,7 @@
     call$2(a, b) {
       return A._asInt(a) + A._asInt(b);
     },
-    $signature: 53
+    $signature: 43
   };
   A.Lore_seeBreed_closure.prototype = {
     call$0() {
@@ -30953,7 +30955,7 @@
       var t = this.level / 49;
       return (1 - t) * from + t * to;
     },
-    $signature: 45
+    $signature: 44
   };
   A.Skill.prototype = {
     get$useName() {
@@ -31114,7 +31116,7 @@
       else
         t2.add$5(0, B.LogType_1, "You feel " + t1.get$_loseAdjective() + "! Your " + t1.get$_stat().name + " decreased by " + -gain + ".", null, null, null);
     },
-    $signature: 31
+    $signature: 29
   };
   A.Strength.prototype = {
     get$_stat() {
@@ -31424,7 +31426,7 @@
     call$1(slot) {
       return this.item.type.equipSlot === A._asString(slot);
     },
-    $signature: 35
+    $signature: 24
   };
   A._Equipment_IterableBase_ItemCollection.prototype = {};
   A.ItemLocation.prototype = {};
@@ -31673,7 +31675,7 @@
       type$.Affix._as(affix);
       return bonus + affix.type._affix$_strikeBonus.call$1(affix.parameter);
     },
-    $signature: 13
+    $signature: 14
   };
   A.Item_damageScale_closure.prototype = {
     call$2(bonus, affix) {
@@ -31681,7 +31683,7 @@
       type$.Affix._as(affix);
       return bonus * affix.type._affix$_damageScale.call$1(affix.parameter);
     },
-    $signature: 56
+    $signature: 48
   };
   A.Item_damageBonus_closure.prototype = {
     call$2(bonus, affix) {
@@ -31689,7 +31691,7 @@
       type$.Affix._as(affix);
       return bonus + affix.type._affix$_damageBonus.call$1(affix.parameter);
     },
-    $signature: 13
+    $signature: 14
   };
   A.Item_armorModifier_closure.prototype = {
     call$2(bonus, affix) {
@@ -31697,7 +31699,7 @@
       type$.Affix._as(affix);
       return bonus + affix.type._affix$_armorBonus.call$1(affix.parameter);
     },
-    $signature: 13
+    $signature: 14
   };
   A.Item_quantifiableName_closure.prototype = {
     call$2($name, affix) {
@@ -31713,7 +31715,7 @@
       type$.Affix._as(affix);
       return weight + affix.type._weightBonus.call$1(affix.parameter);
     },
-    $signature: 13
+    $signature: 14
   };
   A.Item_heft_closure.prototype = {
     call$2(heft, affix) {
@@ -31721,13 +31723,13 @@
       type$.Affix._as(affix);
       return heft * affix.type._heftScale.call$1(affix.parameter);
     },
-    $signature: 56
+    $signature: 48
   };
   A.Item_resistance_closure.prototype = {
     call$2(resistance, affix) {
       return A._asInt(resistance) + type$.Affix._as(affix).resistance$1(this.element);
     },
-    $signature: 13
+    $signature: 14
   };
   A.ItemUse.prototype = {};
   A.Toss.prototype = {};
@@ -33102,7 +33104,7 @@
     call$1(move) {
       return type$.Move._as(move).shouldUseOnDamage$2(this.$this, this.damage);
     },
-    $signature: 39
+    $signature: 56
   };
   A.ChangeMonsterStateAction.prototype = {
     onPerform$0() {
@@ -33233,7 +33235,7 @@
       t1 = t3._actorsByTile.$get$2(here.x, here.y);
       return t1 == null || t1 === t2.hero;
     },
-    $signature: 12
+    $signature: 13
   };
   A.AsleepState.prototype = {
     getAction$1(game) {
@@ -33514,7 +33516,7 @@
       t1 === $ && A.throwLateFieldNI("_monster");
       return t1._recharges.$index(0, move) === 0 && move.shouldUse$2(this.game, t1);
     },
-    $signature: 39
+    $signature: 56
   };
   A.AwakeState__escapeSubstance_closure.prototype = {
     call$1(pos) {
@@ -33606,7 +33608,7 @@
         return false;
       return here.$sub(0, t2.hero._pos).get$kingLength() > this.heroDistance;
     },
-    $signature: 12
+    $signature: 13
   };
   A.Move.prototype = {
     get$range() {
@@ -34708,7 +34710,7 @@
       itemPos.toString;
       t2.addItem$2(item, itemPos);
     },
-    $signature: 10
+    $signature: 12
   };
   A.Stage_placeDrops__closure.prototype = {
     call$1(pos) {
@@ -35016,7 +35018,7 @@
         t2 = t1.helpTextLength = t2 + 2;
       t1.helpTextLength = t2 + (key.length + text.length + 3);
     },
-    $signature: 27
+    $signature: 31
   };
   A.Draw_helpKeys_closure0.prototype = {
     call$2(key, text) {
@@ -35040,7 +35042,7 @@
       t1.x = t1.x + text.length;
       t1.first = false;
     },
-    $signature: 27
+    $signature: 31
   };
   A.ElementEffect.prototype = {
     update$1(_, game) {
@@ -36305,7 +36307,7 @@
     call$2(y, color) {
       this.terminal.writeAt$4(2, y, "\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 \u2500\u2500 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 \u2500\u2500\u2500\u2500 \u2500\u2500\u2500\u2500\u2500 \u2500\u2500\u2500\u2500\u2500\u2500", color);
     },
-    $signature: 16
+    $signature: 20
   };
   A.HeroEquipmentDialog_render_writeScale.prototype = {
     call$3(x, y, scale) {
@@ -36339,7 +36341,7 @@
         t1.writeAt$4(x + 3 - t2, y, string, B.Color_204_35_57);
       }
     },
-    $signature: 46
+    $signature: 40
   };
   A.HeroEquipmentDialog_render_closure.prototype = {
     call$2(item, y) {
@@ -36363,7 +36365,7 @@
         _this.terminal.writeAt$4(74, y, B.JSString_methods.padLeft$1(B.JSInt_methods.toString$0(t1), 2), B.Color_226_223_240);
       t2.call$3(77, y, item.get$armorModifier());
     },
-    $signature: 44
+    $signature: 51
   };
   A.HeroInfoDialog.prototype = {
     get$extraHelp() {
@@ -36570,28 +36572,28 @@
     call$2(y, color) {
       this.terminal.writeAt$4(2, y, "\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 \u2500\u2500\u2500\u2500\u2500 \u2500\u2500\u2500\u2500\u2500\u2500\u2500 \u2500\u2500\u2500\u2500\u2500 \u2500\u2500\u2500\u2500\u2500", color);
     },
-    $signature: 16
+    $signature: 20
   };
   A.HeroItemLoreDialog__listItems_compareSort.prototype = {
     call$2(a, b) {
       var t1 = type$.ItemType;
       return B.JSInt_methods.compareTo$1(t1._as(a).sortIndex, t1._as(b).sortIndex);
     },
-    $signature: 20
+    $signature: 21
   };
   A.HeroItemLoreDialog__listItems_compareDepth.prototype = {
     call$2(a, b) {
       var t1 = type$.ItemType;
       return B.JSInt_methods.compareTo$1(t1._as(a).depth, t1._as(b).depth);
     },
-    $signature: 20
+    $signature: 21
   };
   A.HeroItemLoreDialog__listItems_comparePrice.prototype = {
     call$2(a, b) {
       var t1 = type$.ItemType;
       return B.JSInt_methods.compareTo$1(t1._as(a).price, t1._as(b).price);
     },
-    $signature: 20
+    $signature: 21
   };
   A.HeroItemLoreDialog__listItems_closure.prototype = {
     call$2(a, b) {
@@ -36606,7 +36608,7 @@
       }
       return B.JSString_methods.compareTo$1(A.Log__categorize(a.quantifiableName, false, true).toLowerCase(), A.Log__categorize(b.quantifiableName, false, true).toLowerCase());
     },
-    $signature: 20
+    $signature: 21
   };
   A._Sort.prototype = {
     get$next() {
@@ -36800,7 +36802,7 @@
     call$2(y, color) {
       this.terminal.writeAt$4(2, y, "\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 \u2500\u2500\u2500\u2500\u2500 \u2500\u2500\u2500\u2500\u2500 \u2500\u2500\u2500\u2500\u2500", color);
     },
-    $signature: 16
+    $signature: 20
   };
   A.HeroMonsterLoreDialog__describeBreed_closure.prototype = {
     call$1(group) {
@@ -36833,7 +36835,7 @@
         return -1;
       return B.JSInt_methods.compareTo$1(aChar, bChar);
     },
-    $signature: 33
+    $signature: 35
   };
   A.HeroMonsterLoreDialog__listBreeds_compareGlyph_isUpper.prototype = {
     call$1(c) {
@@ -36846,7 +36848,7 @@
       var t1 = type$.Breed;
       return B.JSInt_methods.compareTo$1(t1._as(a).depth, t1._as(b).depth);
     },
-    $signature: 33
+    $signature: 35
   };
   A.HeroMonsterLoreDialog__listBreeds_closure0.prototype = {
     call$2(a, b) {
@@ -36861,7 +36863,7 @@
       }
       return B.JSString_methods.compareTo$1(A.Log__categorize(a._breed$_name, false, true).toLowerCase(), A.Log__categorize(b._breed$_name, false, true).toLowerCase());
     },
-    $signature: 33
+    $signature: 35
   };
   A._Sort0.prototype = {
     get$next() {
@@ -36901,7 +36903,7 @@
     call$2(y, color) {
       this.terminal.writeAt$4(2, y, "\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 \u2500\u2500 \u2500\u2500 \u2500\u2500 \u2500\u2500 \u2500\u2500 \u2500\u2500 \u2500\u2500 \u2500\u2500 \u2500\u2500 \u2500\u2500 \u2500\u2500", color);
     },
-    $signature: 16
+    $signature: 20
   };
   A.HeroResistancesDialog_render_closure.prototype = {
     call$2(item, y) {
@@ -36923,7 +36925,7 @@
         ++i;
       }
     },
-    $signature: 44
+    $signature: 51
   };
   A.Input.prototype = {
     toString$0(_) {
@@ -37081,13 +37083,13 @@
     call$0() {
       return A._setArrayType([], type$.JSArray_Item);
     },
-    $signature: 23
+    $signature: 25
   };
   A.InventoryDialog_render_closure0.prototype = {
     call$0() {
       return A._setArrayType([], type$.JSArray_Item);
     },
-    $signature: 23
+    $signature: 25
   };
   A.InventoryDialog__drawCategory_closure.prototype = {
     call$2(a, b) {
@@ -37102,7 +37104,7 @@
     call$0() {
       return A._setArrayType([], type$.JSArray_Item);
     },
-    $signature: 23
+    $signature: 25
   };
   A.InventoryDialog__drawCategory_closure1.prototype = {
     call$2(sum, item) {
@@ -39819,7 +39821,7 @@
     call$2(a, b) {
       return new A.Color(B.JSInt_methods._tdivFast$1(a.r * b.r, 255), B.JSInt_methods._tdivFast$1(a.g * b.g, 255), B.JSInt_methods._tdivFast$1(a.b * b.b, 255));
     },
-    $signature: 21
+    $signature: 15
   };
   A.MainMenuScreen__renderTile_applyLighting.prototype = {
     call$2(color, shadow) {
@@ -39832,7 +39834,7 @@
       t1 = t1.actorIllumination;
       return t1 > 0 ? color.add$2(0, B.Color_200_130_0, A.lerpDouble(t1, 0, 255, 0.05, 0.1)) : color;
     },
-    $signature: 21
+    $signature: 15
   };
   A.NewHeroScreen.prototype = {
     render$1(terminal) {
@@ -39851,11 +39853,12 @@
       A.Draw_dialog(terminal, 80, 35, new A.NewHeroScreen_render_closure(_this), t1, "Create New Hero");
     },
     _renderClass$1(terminal) {
-      var classes, x, _i, className;
+      var comingSoonClasses, x, _i, className;
       terminal.writeAt$4(0, 1, "Class:", B.Color_132_126_135);
-      classes = ["Ranger", "Warrior"];
-      for (x = 19, _i = 0; _i < 2; ++_i) {
-        className = classes[_i];
+      terminal.writeAt$4(19, 1, "Mage", B.Color_226_223_240);
+      comingSoonClasses = ["Ranger", "Warrior"];
+      for (x = 38, _i = 0; _i < 2; ++_i) {
+        className = comingSoonClasses[_i];
         terminal.writeAt$4(x, 1, className, B.Color_38_42_66);
         terminal.writeAt$4(x, 2, "Coming soon", B.Color_38_42_66);
         x += className.length + 15;
@@ -39901,15 +39904,21 @@
       return false;
     },
     _startLoopMode$1(hero) {
-      var stick, weaponItem, robe, robeItem, healingPotion, potionItem, e, t1, exception, loopManager, _null = null;
+      var walkingStick, weaponItem, stick, weaponItem0, robe, robeItem, healingPotion, potionItem, e, t1, exception, loopManager, _null = null;
       A.print("Starting loop mode for new hero: " + hero.name);
       hero.gold = 1500;
       try {
         t1 = $.$get$Items_types();
-        stick = t1.tryFind$1("Stick");
-        if (stick != null) {
-          weaponItem = new A.Item(stick, _null, _null, _null, 1);
+        walkingStick = t1.tryFind$1("Walking Stick");
+        if (walkingStick != null) {
+          weaponItem = new A.Item(walkingStick, _null, _null, _null, 1);
           hero._equipment.equip$1(weaponItem);
+        } else {
+          stick = t1.tryFind$1("Stick");
+          if (stick != null) {
+            weaponItem0 = new A.Item(stick, _null, _null, _null, 1);
+            hero._equipment.equip$1(weaponItem0);
+          }
         }
         robe = t1.tryFind$1("Robe");
         if (robe != null) {
@@ -39948,7 +39957,7 @@
       if (alt)
         return false;
       if (13 === keyCode && _this._new_hero_screen$_name._isUnique) {
-        heroClass = B.JSArray_methods.get$first($.$get$Classes_all());
+        heroClass = B.JSArray_methods.firstWhere$1($.$get$Classes_all(), new A.NewHeroScreen_keyDown_closure());
         t1 = $.$get$Races_all();
         t2 = _this._new_hero_screen$_race.selected;
         if (!(t2 >= 0 && t2 < 5))
@@ -39995,6 +40004,12 @@
         t1[i].render$2$focus(terminal, i === t2._new_hero_screen$_focus);
     },
     $signature: 41
+  };
+  A.NewHeroScreen_keyDown_closure.prototype = {
+    call$1(cls) {
+      return type$.HeroClass._as(cls).name === "Mage";
+    },
+    $signature: 50
   };
   A.Control.prototype = {
     handleInput$1(input) {
@@ -40098,7 +40113,7 @@
       t1 = t2.length !== 0 ? t2 : t1._defaultName;
       return hero.name !== t1;
     },
-    $signature: 34
+    $signature: 23
   };
   A.SelectControl.prototype = {
     get$helpKeys() {
@@ -40615,7 +40630,7 @@
       t1 = this.hero;
       return B.JSInt_methods.compareTo$1(a._pos.$sub(0, t1._pos).get$lengthSquared(), b._pos.$sub(0, t1._pos).get$lengthSquared());
     },
-    $signature: 151
+    $signature: 152
   };
   A.SidebarPanel__drawStats_drawStat.prototype = {
     call$1(stat) {
@@ -40630,7 +40645,7 @@
       t1.writeAt$4(t4, t3 + 1, B.JSString_methods.padLeft$1(B.JSInt_methods.toString$0(t5), 3), B.Color_226_223_240);
       t2.x = t2.x + B.JSInt_methods._tdivFast$1(t1.size.x - 4, 4);
     },
-    $signature: 152
+    $signature: 153
   };
   A.SidebarPanel__drawHealthBar_drawCondition.prototype = {
     call$3(char, fore, $back) {
@@ -40644,7 +40659,7 @@
     call$2(char, fore) {
       return this.call$3(char, fore, null);
     },
-    $signature: 153
+    $signature: 154
   };
   A.StagePanel.prototype = {
     drawStageGlyph$4(terminal, x, y, glyph) {
@@ -40902,13 +40917,13 @@
     call$1(effect) {
       return !type$.Effect._as(effect).update$1(0, this.$this._gameScreen.get$game());
     },
-    $signature: 154
+    $signature: 155
   };
   A.StagePanel_renderPanel_multiply.prototype = {
     call$2(a, b) {
       return new A.Color(B.JSInt_methods._tdivFast$1(a.r * b.r, 255), B.JSInt_methods._tdivFast$1(a.g * b.g, 255), B.JSInt_methods._tdivFast$1(a.b * b.b, 255));
     },
-    $signature: 21
+    $signature: 15
   };
   A.StagePanel_renderPanel_applyLighting.prototype = {
     call$2(color, shadow) {
@@ -40921,13 +40936,13 @@
       t1 = t1.actorIllumination;
       return t1 > 0 ? color.add$2(0, B.Color_200_130_0, A.lerpDouble(t1, 0, 255, 0.05, 0.1)) : color;
     },
-    $signature: 21
+    $signature: 15
   };
   A.StagePanel_renderPanel_closure.prototype = {
     call$3(x, y, glyph) {
       this.$this._drawStageGlyph$4(this.terminal, x, y, glyph);
     },
-    $signature: 51
+    $signature: 52
   };
   A.StagePanel__positionCamera_centerX.prototype = {
     call$0() {
@@ -41010,13 +41025,13 @@
     call$2(width, line) {
       return Math.max(A._asInt(width), A._asString(line).length);
     },
-    $signature: 30
+    $signature: 26
   };
   A.Popup_render_closure0.prototype = {
     call$2(width, line) {
       return Math.max(A._asInt(width), A._asString(line).length);
     },
-    $signature: 30
+    $signature: 26
   };
   A.SelectDepthPopup.prototype = {
     get$width(_) {
@@ -41769,19 +41784,19 @@
     call$1(existing) {
       return type$.HeroSave._as(existing).name === this.hero.name;
     },
-    $signature: 34
+    $signature: 23
   };
   A.Storage_replace_closure.prototype = {
     call$1(existing) {
       return type$.HeroSave._as(existing).name === this.hero.name;
     },
-    $signature: 34
+    $signature: 23
   };
   A.Storage__load_closure.prototype = {
     call$1(c) {
       return type$.HeroClass._as(c).name === this.name;
     },
-    $signature: 156
+    $signature: 50
   };
   A.Storage__load_closure0.prototype = {
     call$2($name, shop) {
@@ -41819,7 +41834,7 @@
       if (breed != null)
         this.seenBreeds.$indexSet(0, breed, A._asInt(count));
     },
-    $signature: 8
+    $signature: 7
   };
   A.Storage__loadLore_closure0.prototype = {
     call$2(breedName, count) {
@@ -41829,7 +41844,7 @@
       if (breed != null)
         this.slain.$indexSet(0, breed, A._asInt(count));
     },
-    $signature: 8
+    $signature: 7
   };
   A.Storage__loadLore_closure1.prototype = {
     call$2(itemName, count) {
@@ -41839,13 +41854,13 @@
       if (itemType != null)
         this.foundItems.$indexSet(0, itemType, A._asInt(count));
     },
-    $signature: 8
+    $signature: 7
   };
   A.Storage__loadLore_closure2.prototype = {
     call$2(affixName, count) {
       this.foundAffixes.$indexSet(0, A.Affixes_find(A._asString(affixName)), A._asInt(count));
     },
-    $signature: 8
+    $signature: 7
   };
   A.Storage__loadLore_closure3.prototype = {
     call$2(itemName, count) {
@@ -41855,7 +41870,7 @@
       if (itemType != null)
         this.usedItems.$indexSet(0, itemType, A._asInt(count));
     },
-    $signature: 8
+    $signature: 7
   };
   A.SupplyCaseScreen.prototype = {
     handleInput$1(input) {
@@ -42452,13 +42467,13 @@
     call$1(monster) {
       return type$.Monster._as(monster)._pos.$sub(0, this.target).get$lengthSquared();
     },
-    $signature: 52
+    $signature: 53
   };
   A.TargetDialog__changeMonsterTarget_closure0.prototype = {
     call$1(monster) {
       return type$.Monster._as(monster)._pos.$sub(0, this.target).get$lengthSquared();
     },
-    $signature: 52
+    $signature: 53
   };
   A.TuningOverlay.prototype = {
     handleArrowKey$1(direction) {
@@ -43078,7 +43093,7 @@
       t1._imageLoaded = true;
       t1.render$0();
     },
-    $signature: 18
+    $signature: 17
   };
   A.RetroTerminal_render_closure.prototype = {
     call$3(x, y, glyph) {
@@ -43106,7 +43121,7 @@
       B.CanvasRenderingContext2D_methods.set$imageSmoothingEnabled(t6, false);
       t6.drawImage(color, t1 * t3, t4 * t5, t3, t5, t8, t9, t10, t7);
     },
-    $signature: 51
+    $signature: 52
   };
   A.Terminal.prototype = {
     fill$5(_, x, y, width, height, color) {
@@ -44061,20 +44076,20 @@
     call$1(_) {
       A._resizeTerminal();
     },
-    $signature: 18
+    $signature: 17
   };
   A.main_closure0.prototype = {
     call$1(_) {
       type$.KeyboardEvent._as(_);
       A._refreshDebugBoxes();
     },
-    $signature: 28
+    $signature: 32
   };
   A._addFont_closure.prototype = {
     call$1(_) {
       A._fullscreen();
     },
-    $signature: 18
+    $signature: 17
   };
   A._addFont_closure0.prototype = {
     call$1($event) {
@@ -44106,7 +44121,7 @@
         A._refreshDebugBoxes();
       }
     },
-    $signature: 54
+    $signature: 55
   };
   A._addFont_closure1.prototype = {
     call$1(_) {
@@ -44133,7 +44148,7 @@
       A._refreshDebugBoxes();
       window.localStorage.setItem("font", t1);
     },
-    $signature: 54
+    $signature: 55
   };
   A._refreshDebugBoxes_closure.prototype = {
     call$1(monster) {
@@ -44221,14 +44236,14 @@
       _instance_2_u = hunkHelpers._instance_2u,
       _instance_0_u = hunkHelpers._instance_0u;
     _static_2(J, "_interceptors_JSArray__compareAny$closure", "JSArray__compareAny", 164);
-    _instance_1_i(J.JSArray.prototype, "get$add", "add$1", 169);
+    _instance_1_i(J.JSArray.prototype, "get$add", "add$1", 166);
     _static_0(A, "_js_helper_Primitives_dateNow$closure", "Primitives_dateNow", 2);
-    _static_1(A, "async__AsyncRun__scheduleImmediateJsOverride$closure", "_AsyncRun__scheduleImmediateJsOverride", 22);
-    _static_1(A, "async__AsyncRun__scheduleImmediateWithSetImmediate$closure", "_AsyncRun__scheduleImmediateWithSetImmediate", 22);
-    _static_1(A, "async__AsyncRun__scheduleImmediateWithTimer$closure", "_AsyncRun__scheduleImmediateWithTimer", 22);
+    _static_1(A, "async__AsyncRun__scheduleImmediateJsOverride$closure", "_AsyncRun__scheduleImmediateJsOverride", 30);
+    _static_1(A, "async__AsyncRun__scheduleImmediateWithSetImmediate$closure", "_AsyncRun__scheduleImmediateWithSetImmediate", 30);
+    _static_1(A, "async__AsyncRun__scheduleImmediateWithTimer$closure", "_AsyncRun__scheduleImmediateWithTimer", 30);
     _static_0(A, "async___startMicrotaskLoop$closure", "_startMicrotaskLoop", 0);
     _instance(A._Completer.prototype, "get$completeError", 0, 1, null, ["call$2", "call$1"], ["completeError$2", "completeError$1"], 70, 0, 0);
-    _static_1(A, "convert___defaultToEncodable$closure", "_defaultToEncodable", 15);
+    _static_1(A, "convert___defaultToEncodable$closure", "_defaultToEncodable", 16);
     _static(A, "html__Html5NodeValidator__standardAttributeValidator$closure", 4, null, ["call$4"], ["_Html5NodeValidator__standardAttributeValidator"], 37, 0);
     _static(A, "html__Html5NodeValidator__uriAttributeValidator$closure", 4, null, ["call$4"], ["_Html5NodeValidator__uriAttributeValidator"], 37, 0);
     _static_1(A, "js___convertToJS$closure", "_convertToJS", 167);
@@ -44237,15 +44252,15 @@
     _static_1(A, "furnishing_builder___mirrorCharHorizontal$closure", "_mirrorCharHorizontal", 5);
     _static_1(A, "furnishing_builder___mirrorCharVertical$closure", "_mirrorCharVertical", 5);
     _static_1(A, "builder___intIdentity$closure", "_intIdentity", 6);
-    _static_1(A, "tiles___closeDoor$closure", "_closeDoor", 9);
-    _static_1(A, "tiles___openDoor$closure", "_openDoor", 9);
-    _static_1(A, "tiles___closeSquareDoor$closure", "_closeSquareDoor", 9);
-    _static_1(A, "tiles___openSquareDoor$closure", "_openSquareDoor", 9);
-    _static_1(A, "tiles___closeBarredDoor$closure", "_closeBarredDoor", 9);
-    _static_1(A, "tiles___openBarredDoor$closure", "_openBarredDoor", 9);
+    _static_1(A, "tiles___closeDoor$closure", "_closeDoor", 8);
+    _static_1(A, "tiles___openDoor$closure", "_openDoor", 8);
+    _static_1(A, "tiles___closeSquareDoor$closure", "_closeSquareDoor", 8);
+    _static_1(A, "tiles___openSquareDoor$closure", "_openSquareDoor", 8);
+    _static_1(A, "tiles___closeBarredDoor$closure", "_closeBarredDoor", 8);
+    _static_1(A, "tiles___openBarredDoor$closure", "_openBarredDoor", 8);
     _instance_1_i(A.ResourceSet.prototype, "get$find", "find$1", "1(String)");
     _instance_1_u(A.Hero.prototype, "get$refreshSkill", "refreshSkill$1", 107);
-    _static_1(A, "affix___noScale$closure", "_noScale", 17);
+    _static_1(A, "affix___noScale$closure", "_noScale", 18);
     _static_1(A, "affix___noBonus$closure", "_noBonus", 6);
     var _;
     _instance_2_u(_ = A.AffixType.prototype, "get$setResist", "setResist$2", 110);
@@ -44255,14 +44270,14 @@
     _instance_1_u(_ = A.ItemDialog.prototype, "get$getPrice", "getPrice$1", 47);
     _instance_1_u(_, "get$_item_dialog$_canSelect", "_item_dialog$_canSelect$1", 3);
     _static_1(A, "item_renderer___defaultCanSelect$closure", "_defaultCanSelect", 3);
-    _static_1(A, "item_renderer___defaultGetPrice$closure", "_defaultGetPrice", 14);
+    _static_1(A, "item_renderer___defaultGetPrice$closure", "_defaultGetPrice", 10);
     _instance_1_u(A.SellDialog.prototype, "get$getPrice", "getPrice$1", 47);
     _instance_1_u(_ = A.TownScreen.prototype, "get$_canSelect", "_canSelect$1", 3);
-    _instance_1_u(_, "get$_itemPrice", "_itemPrice$1", 14);
+    _instance_1_u(_, "get$_itemPrice", "_itemPrice$1", 10);
     _instance_0_u(A._CrucibleScreen.prototype, "get$_refreshRecipe", "_refreshRecipe$0", 0);
-    _instance_1_u(A._ShopScreen.prototype, "get$_itemPrice", "_itemPrice$1", 14);
-    _instance_1_u(A._ShopBuyScreen.prototype, "get$_itemPrice", "_itemPrice$1", 14);
-    _instance_1_u(A._CountScreen.prototype, "get$_itemPrice", "_itemPrice$1", 14);
+    _instance_1_u(A._ShopScreen.prototype, "get$_itemPrice", "_itemPrice$1", 10);
+    _instance_1_u(A._ShopBuyScreen.prototype, "get$_itemPrice", "_itemPrice$1", 10);
+    _instance_1_u(A._CountScreen.prototype, "get$_itemPrice", "_itemPrice$1", 10);
     _instance_0_u(_ = A.WizardDialog.prototype, "get$_mapDungeon", "_mapDungeon$0", 0);
     _instance_0_u(_, "get$_illuminateDungeon", "_illuminateDungeon$0", 0);
     _instance_0_u(_, "get$_dropItem", "_dropItem$0", 0);
@@ -44273,9 +44288,9 @@
     _instance_0_u(_, "get$_toggleShowAllMonsters", "_toggleShowAllMonsters$0", 0);
     _instance_0_u(_, "get$_toggleAlertness", "_toggleAlertness$0", 0);
     _instance_0_u(_, "get$_toggleShowHeroVolume", "_toggleShowHeroVolume$0", 0);
-    _instance_1_u(_ = A.UserInterface.prototype, "get$_keyDown", "_keyDown$1", 28);
-    _instance_1_u(_, "get$_keyUp", "_keyUp$1", 28);
-    _instance_1_u(_, "get$_tick", "_tick$1", 48);
+    _instance_1_u(_ = A.UserInterface.prototype, "get$_keyDown", "_keyDown$1", 32);
+    _instance_1_u(_, "get$_keyUp", "_keyUp$1", 32);
+    _instance_1_u(_, "get$_tick", "_tick$1", 45);
     _static_1(A, "skills_Skills_find$closure", "Skills_find", 113);
   })();
   (function inheritance() {
@@ -44307,7 +44322,7 @@
     _inherit(A.UnmodifiableMapView, A._UnmodifiableMapView_MapView__UnmodifiableMapMixin);
     _inherit(A.ConstantMapView, A.UnmodifiableMapView);
     _inheritMany(A.ConstantMap, [A.ConstantStringMap, A.GeneralConstantMap]);
-    _inheritMany(A.Closure, [A.Closure0Args, A.Closure2Args, A.TearOffClosure, A.initHooks_closure, A.initHooks_closure1, A._AsyncRun__initializeScheduleImmediate_internalCallback, A._AsyncRun__initializeScheduleImmediate_closure, A._awaitOnObject_closure, A._Future__propagateToListeners_handleWhenCompleteCallback_closure, A.Stream_length_closure, A._RootZone_bindUnaryCallbackGuarded_closure, A.Element_Element$html_closure, A.HttpRequest_request_closure, A.Window_animationFrame_closure, A._EventStreamSubscription_closure, A.NodeValidatorBuilder_allowsElement_closure, A.NodeValidatorBuilder_allowsAttribute_closure, A._SimpleNodeValidator_closure, A._SimpleNodeValidator_closure0, A._TemplatingNodeValidator_closure, A.FilteredElementList__iterable_closure, A.FilteredElementList__iterable_closure0, A.FilteredElementList_removeRange_closure, A._convertToJS_closure, A._convertToJS_closure0, A._wrapToDart_closure, A._wrapToDart_closure0, A._wrapToDart_closure1, A.promiseToFuture_closure, A.promiseToFuture_closure0, A.AudioContext_decodeAudioData_closure, A.AudioContext_decodeAudioData_closure0, A.GameContent__tryToIgniteTile_neighbor, A.DetectAction__findTiles_addTile, A.DetectAction__findTiles_closure1, A.WindAction_onPerform_closure, A.FlowAction_onPerform_closure, A.RayActionBase_onPerform_closure, A.Chest__generateItemForCategory_closure, A.furnishing_closure, A.Elements_air_closure, A.Elements_fire_closure, A.Elements_fire_closure0, A.Elements_cold_closure, A.Elements_cold_closure0, A.Elements_poison_closure, A.Elements_poison_closure0, A.Elements_dark_closure, A.Elements_light_closure, A.Elements_light_closure0, A.ItemBuilder_ball_closure0, A.ItemBuilder_flow_closure0, A.AffixBuilder_price_closure, A.AffixBuilder_price_closure0, A.AffixBuilder_heft_closure, A.AffixBuilder_weight_closure, A.AffixBuilder_brand_closure, A.AffixBuilder_resist_closure, A.fixed_closure, A.scaleParam_closure, A.rings_closure, A.weapons_closure, A.SpawnMove_onGetAction_checkNeighbor, A.Archery__hasBow_closure, A.MasteryDiscipline__hasWeapon_closure, A.Swordfighting_getDefense_closure, A.conjuringSpells_closure, A.conjuringSpells_closure0, A.conjuringSpells_closure1, A.divinationSpells_closure, A.sorcerySpells_closure, A.sorcerySpells_closure0, A.sorcerySpells_closure1, A.sorcerySpells_closure2, A.sorcerySpells_closure3, A.Decorator__spawnMonster_closure, A.Keep_spawnMonsters_closure, A.Keep__tryAttachRoom_closure, A.Room__calculateEdges_isFloor, A.Tiles_closedChest_closure, A.Tiles_closedOrnateChest_closure, A.Tiles_closedMythicChest_closure, A.Tiles_closedBarrel_closure, A.DestroyActionMixin_destroyFloorItems_closure, A.DestroyActionMixin_destroyHeldItems_closure, A.DestroyActionMixin_destroyHeldItems_closure0, A.AudioManager__resumeAudioContext_closure, A.Element_closure, A.Element_closure0, A.Game_generate_closure, A.Log_wordWrap_finishWord, A.hashPoint_hashInt, A.ResourceSet_all_closure, A.ResourceSet_hasTag_closure, A.ResourceSet_getTags_closure, A.ResourceSet_tryChoose_closure, A.ResourceSet_tryChoose_closure0, A.ResourceSet_tryChooseMatching_closure, A.ResourceSet_tryChooseMatching_closure0, A.ResourceSet_tryChooseMatching__closure, A.RunBehavior_canPerform_closure, A.RunBehavior__shouldKeepRunning_actorAt, A.Hero_createRangedHit_closure, A.Hero_refreshProperties_closure, A.Hero_refreshProperties_closure0, A.SkillSet_acquired_closure, A.StatBase_refresh_closure, A.Equipment_weapons_closure, A.Equipment_canEquip_closure, A.Inventory_clone_closure, A.DifficultyScheduler_toString_closure, A.WeaponReward_generateOptions_closure, A.SpellReward_generateOptions_closure, A.ArmorReward_generateOptions_closure, A.Monster_onGiveDamage_closure, A.Monster_onTakeDamage_closure, A.Monster_onTakeDamage_closure0, A.MonsterState__meander_closure, A.AwakeState_getAction_closure, A.AwakeState__escapeSubstance_closure, A.AwakeState__findRangedPath_isValidRangedPosition, A.AfraidState_getAction_closure, A.AfraidState_getAction_closure0, A.Flow__directionsTo_walkBack, A.Lighting__lightWalls_checkNeighbor, A.Stage_closure, A.Stage_placeDrops_closure, A.Stage_placeDrops__closure, A.DirectionDialog_render_draw, A.ExitPopup_add, A.ExitPopup_closure, A.GameOverScreen_render_closure, A.GameScreen_activate_closure0, A.GameScreen__pickUp_closure, A.GameScreen__openTargetDialog_closure, A.HeroEquipmentDialog_render_writeScale, A.HeroEquipmentDialog_render_writeBonus, A.HeroMonsterLoreDialog__describeBreed_closure, A.HeroMonsterLoreDialog__describeBreed_closure0, A.HeroMonsterLoreDialog__listBreeds_closure, A.HeroMonsterLoreDialog__listBreeds_compareGlyph_isUpper, A.renderItems_drawStat, A.TossDialog_selectItem_closure, A.LoopGameScreen_closure, A.LoopGameScreen__handleLoopInput_closure, A.LoopGameScreen__trackGameEvents_closure, A.NewHeroScreen_closure, A.NewHeroScreen_render_closure, A.NameControl__refreshUnique_closure, A.SidebarPanel__drawStats_drawStat, A.SidebarPanel__drawHealthBar_drawCondition, A.StagePanel_update_closure, A.StagePanel_renderPanel_closure, A.Storage_remove_closure, A.Storage_replace_closure, A.Storage__load_closure, A.Storage__loadRace_closure, A.Storage__loadLog_closure, A.TargetDialog__changeMonsterTarget_closure, A.TargetDialog__changeMonsterTarget_closure0, A._SearchDialog__matchedItems_closure, A._WizardSpawnDialog__selectItem_closure, A.RetroTerminal$__closure, A.RetroTerminal_render_closure, A.main_closure, A.main_closure0, A._addFont_closure, A._addFont_closure0, A._addFont_closure1, A._refreshDebugBoxes_closure]);
+    _inheritMany(A.Closure, [A.Closure0Args, A.Closure2Args, A.TearOffClosure, A.initHooks_closure, A.initHooks_closure1, A._AsyncRun__initializeScheduleImmediate_internalCallback, A._AsyncRun__initializeScheduleImmediate_closure, A._awaitOnObject_closure, A._Future__propagateToListeners_handleWhenCompleteCallback_closure, A.Stream_length_closure, A._RootZone_bindUnaryCallbackGuarded_closure, A.Element_Element$html_closure, A.HttpRequest_request_closure, A.Window_animationFrame_closure, A._EventStreamSubscription_closure, A.NodeValidatorBuilder_allowsElement_closure, A.NodeValidatorBuilder_allowsAttribute_closure, A._SimpleNodeValidator_closure, A._SimpleNodeValidator_closure0, A._TemplatingNodeValidator_closure, A.FilteredElementList__iterable_closure, A.FilteredElementList__iterable_closure0, A.FilteredElementList_removeRange_closure, A._convertToJS_closure, A._convertToJS_closure0, A._wrapToDart_closure, A._wrapToDart_closure0, A._wrapToDart_closure1, A.promiseToFuture_closure, A.promiseToFuture_closure0, A.AudioContext_decodeAudioData_closure, A.AudioContext_decodeAudioData_closure0, A.GameContent__tryToIgniteTile_neighbor, A.DetectAction__findTiles_addTile, A.DetectAction__findTiles_closure1, A.WindAction_onPerform_closure, A.FlowAction_onPerform_closure, A.RayActionBase_onPerform_closure, A.Chest__generateItemForCategory_closure, A.furnishing_closure, A.Elements_air_closure, A.Elements_fire_closure, A.Elements_fire_closure0, A.Elements_cold_closure, A.Elements_cold_closure0, A.Elements_poison_closure, A.Elements_poison_closure0, A.Elements_dark_closure, A.Elements_light_closure, A.Elements_light_closure0, A.ItemBuilder_ball_closure0, A.ItemBuilder_flow_closure0, A.AffixBuilder_price_closure, A.AffixBuilder_price_closure0, A.AffixBuilder_heft_closure, A.AffixBuilder_weight_closure, A.AffixBuilder_brand_closure, A.AffixBuilder_resist_closure, A.fixed_closure, A.scaleParam_closure, A.rings_closure, A.weapons_closure, A.SpawnMove_onGetAction_checkNeighbor, A.Archery__hasBow_closure, A.MasteryDiscipline__hasWeapon_closure, A.Swordfighting_getDefense_closure, A.conjuringSpells_closure, A.conjuringSpells_closure0, A.conjuringSpells_closure1, A.divinationSpells_closure, A.sorcerySpells_closure, A.sorcerySpells_closure0, A.sorcerySpells_closure1, A.sorcerySpells_closure2, A.sorcerySpells_closure3, A.Decorator__spawnMonster_closure, A.Keep_spawnMonsters_closure, A.Keep__tryAttachRoom_closure, A.Room__calculateEdges_isFloor, A.Tiles_closedChest_closure, A.Tiles_closedOrnateChest_closure, A.Tiles_closedMythicChest_closure, A.Tiles_closedBarrel_closure, A.DestroyActionMixin_destroyFloorItems_closure, A.DestroyActionMixin_destroyHeldItems_closure, A.DestroyActionMixin_destroyHeldItems_closure0, A.AudioManager__resumeAudioContext_closure, A.Element_closure, A.Element_closure0, A.Game_generate_closure, A.Log_wordWrap_finishWord, A.hashPoint_hashInt, A.ResourceSet_all_closure, A.ResourceSet_hasTag_closure, A.ResourceSet_getTags_closure, A.ResourceSet_tryChoose_closure, A.ResourceSet_tryChoose_closure0, A.ResourceSet_tryChooseMatching_closure, A.ResourceSet_tryChooseMatching_closure0, A.ResourceSet_tryChooseMatching__closure, A.RunBehavior_canPerform_closure, A.RunBehavior__shouldKeepRunning_actorAt, A.Hero_createRangedHit_closure, A.Hero_refreshProperties_closure, A.Hero_refreshProperties_closure0, A.SkillSet_acquired_closure, A.StatBase_refresh_closure, A.Equipment_weapons_closure, A.Equipment_canEquip_closure, A.Inventory_clone_closure, A.DifficultyScheduler_toString_closure, A.WeaponReward_generateOptions_closure, A.SpellReward_generateOptions_closure, A.ArmorReward_generateOptions_closure, A.Monster_onGiveDamage_closure, A.Monster_onTakeDamage_closure, A.Monster_onTakeDamage_closure0, A.MonsterState__meander_closure, A.AwakeState_getAction_closure, A.AwakeState__escapeSubstance_closure, A.AwakeState__findRangedPath_isValidRangedPosition, A.AfraidState_getAction_closure, A.AfraidState_getAction_closure0, A.Flow__directionsTo_walkBack, A.Lighting__lightWalls_checkNeighbor, A.Stage_closure, A.Stage_placeDrops_closure, A.Stage_placeDrops__closure, A.DirectionDialog_render_draw, A.ExitPopup_add, A.ExitPopup_closure, A.GameOverScreen_render_closure, A.GameScreen_activate_closure0, A.GameScreen__pickUp_closure, A.GameScreen__openTargetDialog_closure, A.HeroEquipmentDialog_render_writeScale, A.HeroEquipmentDialog_render_writeBonus, A.HeroMonsterLoreDialog__describeBreed_closure, A.HeroMonsterLoreDialog__describeBreed_closure0, A.HeroMonsterLoreDialog__listBreeds_closure, A.HeroMonsterLoreDialog__listBreeds_compareGlyph_isUpper, A.renderItems_drawStat, A.TossDialog_selectItem_closure, A.LoopGameScreen_closure, A.LoopGameScreen__handleLoopInput_closure, A.LoopGameScreen__trackGameEvents_closure, A.NewHeroScreen_closure, A.NewHeroScreen_render_closure, A.NewHeroScreen_keyDown_closure, A.NameControl__refreshUnique_closure, A.SidebarPanel__drawStats_drawStat, A.SidebarPanel__drawHealthBar_drawCondition, A.StagePanel_update_closure, A.StagePanel_renderPanel_closure, A.Storage_remove_closure, A.Storage_replace_closure, A.Storage__load_closure, A.Storage__loadRace_closure, A.Storage__loadLog_closure, A.TargetDialog__changeMonsterTarget_closure, A.TargetDialog__changeMonsterTarget_closure0, A._SearchDialog__matchedItems_closure, A._WizardSpawnDialog__selectItem_closure, A.RetroTerminal$__closure, A.RetroTerminal_render_closure, A.main_closure, A.main_closure0, A._addFont_closure, A._addFont_closure0, A._addFont_closure1, A._refreshDebugBoxes_closure]);
     _inheritMany(A.Closure0Args, [A.Primitives_initTicker_closure, A._AsyncRun__scheduleImmediateJsOverride_internalCallback, A._AsyncRun__scheduleImmediateWithSetImmediate_internalCallback, A._TimerImpl_internalCallback, A._Future__addListener_closure, A._Future__prependListeners_closure, A._Future__chainCoreFuture_closure, A._Future__asyncCompleteWithValue_closure, A._Future__asyncCompleteErrorObject_closure, A._Future__propagateToListeners_handleWhenCompleteCallback, A._Future__propagateToListeners_handleValueCallback, A._Future__propagateToListeners_handleError, A.Stream_length_closure0, A._rootHandleError_closure, A._RootZone_bindCallbackGuarded_closure, A.DetectAction__findTiles_addTile_closure, A.ItemBuilder_food_closure, A.ItemBuilder_detection_closure, A.ItemBuilder_perception_closure, A.ItemBuilder_resistSalve_closure, A.ItemBuilder_mapping_closure, A.ItemBuilder_haste_closure, A.ItemBuilder_teleport_closure, A.ItemBuilder_heal_closure, A.ItemBuilder_ball_closure, A.ItemBuilder_flow_closure, A.ItemBuilder_lightSource_closure, A.AffixBuilder_parameter_closure, A.dungeon_closure, A.catacomb_closure, A.cavern_closure, A.lake_closure, A.river_closure, A.keep_closure, A.pit_closure, A.sandbox_closure, A.Decorator_decorate_closure, A.Decorator__spawnMonster_closure0, A.River_build_northish, A.River_build_southish, A.River_build_eastish, A.River_build_westish, A.River_build_northSouth, A.River_build_eastWest, A.Debug_monsterLog_closure, A.Debug_monsterStat_closure, A.Debug_monsterStat_closure0, A.Debug_monsterReason_closure, A.AudioManager__tryLoadAudioFile_closure, A.Log_wordWrap_finishLine, A.Lore_seeBreed_closure, A.Lore_slay_closure, A.Lore_findItem_closure, A.Lore_findItem_closure0, A.Lore_useItem_closure, A.Stage_addItem_closure, A.InventoryDialog_render_closure, A.InventoryDialog_render_closure0, A.InventoryDialog__drawCategory_closure0, A.LoopGameScreen__handleLoopComplete_closure, A.StagePanel__positionCamera_centerX, A.StagePanel__positionCamera_centerY, A._exposeSandboxToggle_closure, A._exposeSandboxToggle_closure0, A._exposeSandboxToggle_closure1, A._exposeSandboxToggle_closure2]);
     _inheritMany(A.Closure2Args, [A.Primitives_functionNoSuchMethod_closure, A.JsLinkedHashMap_addAll_closure, A.initHooks_closure0, A._awaitOnObject_closure0, A._wrapJsFunctionForAsync_closure, A._Future__propagateToListeners_handleWhenCompleteCallback_closure0, A.LinkedHashMap_LinkedHashMap$from_closure, A.MapBase_mapToString_closure, A._JsonStringifier_writeMap_closure, A.NoSuchMethodError_toString_closure, A.Storage_keys_closure, A._ValidatingTreeSanitizer_sanitizeTree_walk, A._AcceptStructuredClone_walk_closure, A.GameContent__spreadPoison_neighbor, A.BarrierAction_onPerform_tryDirection, A.BarrierAction_onPerform_tryDirection_tryOffset, A.DetectAction__findTiles_closure, A.DetectAction__findTiles_closure0, A._OneOfDrop_closure, A.shop_closure, A.dragons_closure, A.Decorator__spawnMonster_spawn, A.Keep__regionContains_diagonal, A.Tiles_braziers_closure, A._MonsterLog_toString_closure, A.Lore_allSlain_closure, A.RaceStats_lerp, A.Equipment_length_closure, A.Item_strikeBonus_closure, A.Item_damageScale_closure, A.Item_damageBonus_closure, A.Item_armorModifier_closure, A.Item_quantifiableName_closure, A.Item_weight_closure, A.Item_heft_closure, A.Item_resistance_closure, A.Flow__processNext_processNeighbor, A.Lighting__process_checkNeighbor, A.Stage_forEachItem_closure, A.Draw_helpKeys_closure, A.Draw_helpKeys_closure0, A.GameScreen_activate_closure, A.HeroEquipmentDialog_render_writeLine, A.HeroEquipmentDialog_render_closure, A.HeroItemLoreDialog_render_writeLine, A.HeroItemLoreDialog__listItems_compareSort, A.HeroItemLoreDialog__listItems_compareDepth, A.HeroItemLoreDialog__listItems_comparePrice, A.HeroItemLoreDialog__listItems_closure, A.HeroMonsterLoreDialog_render_writeLine, A.HeroMonsterLoreDialog__listBreeds_compareGlyph, A.HeroMonsterLoreDialog__listBreeds_compareDepth, A.HeroMonsterLoreDialog__listBreeds_closure0, A.HeroResistancesDialog_render_writeLine, A.HeroResistancesDialog_render_closure, A.InventoryDialog__drawCategory_closure, A.InventoryDialog__drawCategory_closure1, A.MainMenuScreen__renderTile_multiply, A.MainMenuScreen__renderTile_applyLighting, A.SidebarPanel_renderPanel_closure, A.StagePanel_renderPanel_multiply, A.StagePanel_renderPanel_applyLighting, A.Popup_render_closure, A.Popup_render_closure0, A.Storage__load_closure0, A.Storage__loadLore_closure, A.Storage__loadLore_closure0, A.Storage__loadLore_closure1, A.Storage__loadLore_closure2, A.Storage__loadLore_closure3]);
     _inherit(A.NullError, A.TypeError);
@@ -44482,7 +44497,7 @@
     typeUniverse: {eC: new Map(), tR: {}, eT: {}, tPV: {}, sEA: []},
     mangledGlobalNames: {int: "int", double: "double", num: "num", String: "String", bool: "bool", Null: "Null", List: "List", Object: "Object", Map: "Map"},
     mangledNames: {},
-    types: ["~()", "bool(Vec)", "int()", "bool(Item)", "Null()", "String(String)", "int(int)", "double()", "~(String,@)", "Action(Vec)", "~(Item)", "~(Vec)", "bool(Direction)", "int(int,Affix)", "int?(Item)", "@(@)", "~(int,Color)", "double(int)", "~(Event0)", "bool(Actor)", "int(ItemType,ItemType)", "Color(Color,Color)", "~(~())", "List<Item>()", "Null(@)", "~(@)", "TeleportAction(ActionSpell,Game,int)", "~(String,String)", "~(KeyboardEvent)", "_MonsterLog()", "int(int,String)", "Null(int)", "OpenChestAction(Vec)", "int(Breed,Breed)", "bool(HeroSave)", "bool(String)", "List<Vec>()", "bool(Element0,String,String,_Html5NodeValidator)", "~(Monster)", "bool(Move)", "bool(Node)", "~(Terminal)", "~(Direction)", "FlowAction(ActionSpell,Game,int)", "~(Item?,int)", "double(int,int)", "~(int,int,int)", "int(Item)", "~(num)", "~(Object?,Object?)", "~(AffixBuilder)", "~(int,int,Glyph)", "int(Monster)", "int(int,int)", "~(MouseEvent)", "bool(NodeValidator)", "double(double,Affix)", "EatAction()", "DetectAction()", "PerceiveAction()", "ResistAction()", "MappingAction()", "HasteAction()", "TeleportAction()", "HealAction()", "RingSelfAction()", "RingFromAction(Vec)", "FlowSelfAction()", "FlowFromAction(Vec)", "IlluminateSelfAction()", "~(Object[StackTrace?])", "Null(Object,StackTrace)", "~(Drop,double)", "~(@,@)", "~(String,double)", "~(String,List<Object>)", "~(Node,Node?)", "@(@,@)", "@(String)", "DetectAction(ActionSpell,Game,int)", "BoltAction(TargetSpell,Game,int,Vec)", "RayAction(TargetSpell,Game,int,Vec)", "~(Element0)", "BarrierAction(TargetSpell,Game,int,Vec)", "Dungeon()", "Catacomb()", "Cavern()", "Lake()", "River()", "Keep()", "Pit()", "SandboxArchitecture()", "~(Breed,Vec)", "Vec()", "JsFunction(@)", "JsArray<@>(@)", "JsObject(@)", "OpenBarrelAction(Vec)", "TileType(TileBuilder,int)", "0&(@)", "Queue<num>()", "AudioBuffer(Object)", "List<AudioBuffer>()", "~(Symbol0,@)", "Null(Vec,Hit,num,int)", "Null(Vec)", "~(int)", "~(Skill)", "Null(double)", "bool(Skill)", "~(Element,int(int))", "~(Stat,int(int))", "int(int,Item?)", "Skill(String)", "Item(Item)", "~(int,int)", "bool(bool,int)", "String(String,Affix)", "String(LevelArchetype)", "WeaponReward(String)", "SpellReward(String)", "ArmorReward(String)", "bool(double,double)", "@(@,String)", "~(Direction,bool)", "~(Vec,int)", "Tile(Vec)", "Inventory()", "~(Vec,Inventory)", "~(int,Direction,String)", "~(String,Color,int{total:int?})", "~(ProgressEvent)", "~(Item,Vec)", "Null(~())", "~(Shop,Inventory)", "List<Vec>(int)", "~(int,int,double)", "Null(@,StackTrace)", "bool(double)", "bool(Breed)", "~(int,@)", "bool(int)", "AddItemResult(Item{wasUnequipped:bool})", "int(Item,Item)", "int(int,Item)", "WindAction(int)", "~(int,Object,Color,Color)", "BurnActorAction(int)", "BurnFloorAction(Vec,Hit,num,int)", "String(Race)", "FreezeActorAction(int)", "int(Monster,Monster)", "~(StatBase)", "~(String,Color[Color?])", "bool(Effect)", "FreezeFloorAction(Vec,Hit,num,int)", "bool(HeroClass)", "~(String,Shop)", "bool(Race)", "bool(LogType)", "PoisonAction(int)", "PoisonFloorAction(Vec,Hit,num,int)", "BlindAction(int)", "bool(Monster)", "int(@,@)", "DazzleAction(int)", "LightFloorAction(Vec,Hit,num,int)", "Object?(Object?)", "Object?(@)", "~(Object?)", "Element0(Node)"],
+    types: ["~()", "bool(Vec)", "int()", "bool(Item)", "Null()", "String(String)", "int(int)", "~(String,@)", "Action(Vec)", "double()", "int?(Item)", "~(Vec)", "~(Item)", "bool(Direction)", "int(int,Affix)", "Color(Color,Color)", "@(@)", "~(Event0)", "double(int)", "bool(Actor)", "~(int,Color)", "int(ItemType,ItemType)", "TeleportAction(ActionSpell,Game,int)", "bool(HeroSave)", "bool(String)", "List<Item>()", "int(int,String)", "OpenChestAction(Vec)", "_MonsterLog()", "Null(int)", "~(~())", "~(String,String)", "~(KeyboardEvent)", "~(@)", "Null(@)", "int(Breed,Breed)", "bool(NodeValidator)", "bool(Element0,String,String,_Html5NodeValidator)", "~(Monster)", "List<Vec>()", "~(int,int,int)", "~(Terminal)", "~(Direction)", "int(int,int)", "double(int,int)", "~(num)", "FlowAction(ActionSpell,Game,int)", "int(Item)", "double(double,Affix)", "~(Object?,Object?)", "bool(HeroClass)", "~(Item?,int)", "~(int,int,Glyph)", "int(Monster)", "~(AffixBuilder)", "~(MouseEvent)", "bool(Move)", "bool(Node)", "EatAction()", "PerceiveAction()", "ResistAction()", "MappingAction()", "HasteAction()", "TeleportAction()", "HealAction()", "RingSelfAction()", "RingFromAction(Vec)", "FlowSelfAction()", "FlowFromAction(Vec)", "IlluminateSelfAction()", "~(Object[StackTrace?])", "Null(Object,StackTrace)", "~(Drop,double)", "~(@,@)", "~(String,double)", "~(String,List<Object>)", "~(Node,Node?)", "@(@,@)", "@(String)", "DetectAction(ActionSpell,Game,int)", "BoltAction(TargetSpell,Game,int,Vec)", "RayAction(TargetSpell,Game,int,Vec)", "~(Element0)", "BarrierAction(TargetSpell,Game,int,Vec)", "Dungeon()", "Catacomb()", "Cavern()", "Lake()", "River()", "Keep()", "Pit()", "SandboxArchitecture()", "~(Breed,Vec)", "Vec()", "JsFunction(@)", "JsArray<@>(@)", "JsObject(@)", "OpenBarrelAction(Vec)", "TileType(TileBuilder,int)", "0&(@)", "Queue<num>()", "AudioBuffer(Object)", "List<AudioBuffer>()", "~(Symbol0,@)", "Null(Vec,Hit,num,int)", "Null(Vec)", "~(int)", "~(Skill)", "Null(double)", "bool(Skill)", "~(Element,int(int))", "~(Stat,int(int))", "int(int,Item?)", "Skill(String)", "Item(Item)", "~(int,int)", "bool(bool,int)", "String(String,Affix)", "String(LevelArchetype)", "WeaponReward(String)", "SpellReward(String)", "ArmorReward(String)", "bool(double,double)", "@(@,String)", "~(Direction,bool)", "~(Vec,int)", "Tile(Vec)", "Inventory()", "~(Vec,Inventory)", "~(int,Direction,String)", "~(String,Color,int{total:int?})", "~(ProgressEvent)", "~(Item,Vec)", "Null(~())", "~(Shop,Inventory)", "List<Vec>(int)", "~(int,int,double)", "Null(@,StackTrace)", "bool(double)", "bool(Breed)", "~(int,@)", "bool(int)", "AddItemResult(Item{wasUnequipped:bool})", "int(Item,Item)", "int(int,Item)", "WindAction(int)", "~(int,Object,Color,Color)", "BurnActorAction(int)", "BurnFloorAction(Vec,Hit,num,int)", "String(Race)", "FreezeActorAction(int)", "FreezeFloorAction(Vec,Hit,num,int)", "int(Monster,Monster)", "~(StatBase)", "~(String,Color[Color?])", "bool(Effect)", "PoisonAction(int)", "~(String,Shop)", "bool(Race)", "bool(LogType)", "PoisonFloorAction(Vec,Hit,num,int)", "BlindAction(int)", "DazzleAction(int)", "bool(Monster)", "int(@,@)", "LightFloorAction(Vec,Hit,num,int)", "~(Object?)", "Object?(Object?)", "Object?(@)", "DetectAction()", "Element0(Node)"],
     interceptorsByTag: null,
     leafTags: null,
     arrayRti: Symbol("$ti"),
