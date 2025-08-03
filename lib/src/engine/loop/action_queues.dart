@@ -209,23 +209,8 @@ class ActionQueues {
   
   /// Replace used item with a new random one
   void replaceUsedItem(Item usedItem) {
-    // Find and add a replacement item
-    if (_isMagicItem(usedItem)) {
-      _addRandomMagicItem();
-    } else if (_isHealItem(usedItem)) {
-      _addRandomHealItem();
-    }
-    // Note: Stealth spells don't need replacement as they're skills
-  }
-  
-  /// Add a random magic item as replacement
-  void _addRandomMagicItem() {
-    _debugHelper.addRandomMagicItems(1);
-  }
-  
-  /// Add a random heal item as replacement
-  void _addRandomHealItem() {
-    _debugHelper.addRandomHealItems(1);
+    // Debug functionality removed - items are no longer automatically replaced
+    // This prevents infinite item generation when using consumables
   }
   
   /// Cast the current mage spell

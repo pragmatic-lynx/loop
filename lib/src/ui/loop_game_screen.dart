@@ -1108,9 +1108,6 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     
     var action = UseAction(ItemLocation.inventory, magicItem.item!);
     
-    // Replace the used item with a new one after use
-    _actionQueues.replaceUsedItem(magicItem.item!);
-    
     return action;
   }
   
@@ -1148,9 +1145,6 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     
     // Always allow healing - even if it will overfill
     var action = UseAction(ItemLocation.inventory, healItem.item!);
-    
-    // Replace the used item with a new one after use
-    _actionQueues.replaceUsedItem(healItem.item!);
     
     return action;
   }
