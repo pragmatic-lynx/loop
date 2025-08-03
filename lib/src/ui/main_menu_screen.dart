@@ -15,6 +15,28 @@ import 'storage.dart';
 
 
 
+const _devilChars = [
+  r"  (\_/)   ",
+  r"  >, ,<   ",
+  r"  | o |   ",
+  r"  \\_//   ",
+  r"   \^/    ",
+  r"   /|\    ",
+  r" _/   \_  ",
+  r"/       \ ",
+];
+
+const _devilColors = [
+  r"  RRRRR   ",
+  r"  RR RR   ",
+  r"  R O R   ",
+  r"  RRRRR   ",
+  r"   RRR    ",
+  r"   RRR    ",
+  r" RR   RR  ",
+  r"RR     RR ",
+];
+
 const _colors = {
   "L": hues.lightWarmGray,
   "E": hues.warmGray,
@@ -231,23 +253,40 @@ class MainMenuScreen extends Screen<Input> {
 
     centerTerminal.clear();
 
-    centerTerminal.writeAt(3, 18, "Devil's Coil", hues.UIHue.text);
+    // Draw multiple devils across the top
+    var devilPositions = [8, 23, 38, 53];
+    for (var i = 0; i < devilPositions.length; i++) {
+      var xOffset = devilPositions[i];
+      for (var y = 0; y < _devilChars.length; y++) {
+        var charLine = _devilChars[y];
+        var colorLine = _devilColors[y];
+        for (var x = 0; x < charLine.length && x < colorLine.length; x++) {
+          if (charLine[x] != ' ') {
+            var colorKey = colorLine[x];
+            var color = _colors[colorKey] ?? hues.UIHue.text;
+            centerTerminal.writeAt(x + xOffset, y + 3, charLine[x], color);
+          }
+        }
+      }
+    }
 
-    Draw.hLine(centerTerminal, 3, 20, centerTerminal.width - 6);
-    Draw.hLine(centerTerminal, 3, 29, centerTerminal.width - 6);
+    centerTerminal.writeAt(3, 16, "Devil's Coil", hues.UIHue.text);
+
+    Draw.hLine(centerTerminal, 3, 18, centerTerminal.width - 6);
+    Draw.hLine(centerTerminal, 3, 27, centerTerminal.width - 6);
 
     if (storage.heroes.isEmpty) {
       centerTerminal.writeAt(
-          3, 21, '(No heroes. Please create a new one.)', hues.UIHue.disabled);
+          3, 19, '(No heroes. Please create a new one.)', hues.UIHue.disabled);
     } else {
       if (_scroll > 0) {
         centerTerminal.writeAt(
-            centerTerminal.width ~/ 2, 20, "▲", hues.UIHue.selection);
+            centerTerminal.width ~/ 2, 18, "▲", hues.UIHue.selection);
       }
 
       if (_scroll < storage.heroes.length - _listHeight) {
         centerTerminal.writeAt(
-            centerTerminal.width ~/ 2, 29, "▼", hues.UIHue.selection);
+            centerTerminal.width ~/ 2, 27, "▼", hues.UIHue.selection);
       }
 
       for (var i = 0; i < _listHeight; i++) {
@@ -263,15 +302,15 @@ class MainMenuScreen extends Screen<Input> {
           secondary = hues.UIHue.selection;
 
           centerTerminal.drawChar(
-              2, 21 + i, CharCode.blackRightPointingPointer, hues.UIHue.selection);
+              2, 19 + i, CharCode.blackRightPointingPointer, hues.UIHue.selection);
         }
 
-        centerTerminal.writeAt(3, 21 + i, hero.name, primary);
-        centerTerminal.writeAt(25, 21 + i, "Level ${hero.level}", secondary);
-        centerTerminal.writeAt(34, 21 + i, hero.race.name, secondary);
-        centerTerminal.writeAt(42, 21 + i, hero.heroClass.name, secondary);
+        centerTerminal.writeAt(3, 19 + i, hero.name, primary);
+        centerTerminal.writeAt(25, 19 + i, "Level ${hero.level}", secondary);
+        centerTerminal.writeAt(34, 19 + i, hero.race.name, secondary);
+        centerTerminal.writeAt(42, 19 + i, hero.heroClass.name, secondary);
         if (hero.permadeath) {
-          centerTerminal.writeAt(55, 21 + i, "Permadeath", secondary);
+          centerTerminal.writeAt(55, 19 + i, "Permadeath", secondary);
         }
       }
     }
