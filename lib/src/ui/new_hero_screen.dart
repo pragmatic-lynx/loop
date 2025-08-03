@@ -109,22 +109,32 @@ class NewHeroScreen extends Screen<Input> {
   final NameControl _name;
   final SelectControl _class;
   final List<Control> _controls = [];
+  
+  /// Randomly selected race index
+  late final int _randomRaceIndex;
 
   NewHeroScreen(this._content, this._storage)
       : _name = NameControl(0, 0, _storage),
         _class = SelectControl(
-            0, 4, "Class", ["Ranger", "Mage"]) {
+            0, 8, "Class", ["Ranger", "Mage"]) {
     _controls.addAll([_name, _class]);
 
     // Auto-select Ranger (index 0)
     _class.selected = 0;
+    
+    // Randomly select a race
+    _randomRaceIndex = rng.range(_content.races.length);
   }
 
   @override
   void render(Terminal terminal) {
-    Draw.dialog(terminal, 60, 20,
+    Draw.dialog(terminal, 80, 25,
         label: "Create New Hero",
         (terminal) {
+      Draw.hLine(terminal, 0, 7, terminal.width);
+
+      _renderRace(terminal.rect(0, 1, terminal.width, 6));
+      
       for (var i = 0; i < _controls.length; i++) {
         _controls[i].render(terminal, focus: i == _focus);
       }
@@ -134,6 +144,28 @@ class NewHeroScreen extends Screen<Input> {
       if (_name._isUnique) "Enter": "Create hero",
       "`": "Cancel"
     });
+  }
+
+  void _renderRace(Terminal terminal) {
+    var race = _content.races[_randomRaceIndex];
+    
+    // Show race name
+    terminal.writeAt(0, 1, "Race: ${race.name}", UIHue.text);
+    
+    // Show race description
+    var y = 2;
+    for (var line in Log.wordWrap(59, race.description)) {
+      terminal.writeAt(19, y, line, UIHue.text);
+      y++;
+    }
+
+    // Show how race affects stats.
+    y = 3;
+    for (var stat in Stat.all) {
+      terminal.writeAt(0, y, stat.abbreviation, UIHue.secondary);
+      Draw.thinMeter(terminal, 4, y, 14, race.stats[stat]!, 45);
+      y++;
+    }
   }
 
   @override
@@ -220,11 +252,11 @@ class NewHeroScreen extends Screen<Input> {
         var selectedClassName = _class._options[_class.selected];
         var heroClass = _content.classes.firstWhere((cls) => cls.name == selectedClassName);
         
-        // Random race selection
-        var randomRace = _content.races[rng.range(_content.races.length)];
+        // Use the randomly selected race
+        var selectedRace = _content.races[_randomRaceIndex];
         
         var hero = _content.createHero(_name._name,
-            race: randomRace,
+            race: selectedRace,
             heroClass: heroClass,
             permadeath: false); // Default to stairs death
         _storage.add(hero);
