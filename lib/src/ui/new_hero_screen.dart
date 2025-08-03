@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:malison/malison.dart';
 import 'package:malison/malison_web.dart';
 import 'package:piecemeal/piecemeal.dart';
@@ -6,8 +5,8 @@ import 'package:piecemeal/piecemeal.dart';
 import '../engine.dart';
 import '../hues.dart';
 import 'draw.dart';
-import 'loop_game_screen.dart';
 import 'input.dart';
+import 'loop_game_screen.dart';
 import 'storage.dart';
 
 // From: http://medieval.stormthecastle.com/medieval-names.htm.
@@ -84,21 +83,6 @@ const _defaultNames = [
 
 // TODO: Update to handle resizable UI.
 
-/// Gets the starting weapon for a given class name
-String _getStartingWeapon(String className) {
-  // From weapon_tiers.json starting weapons
-  switch (className.toLowerCase()) {
-    case 'warrior':
-      return 'Stick';
-    case 'ranger':
-      return 'Short Bow';
-    case 'mage':
-      return 'Walking Stick';
-    default:
-      return 'Stick'; // Default fallback
-  }
-}
-
 class NewHeroScreen extends Screen<Input> {
   static const _deaths = ["Stairs", "Permanent"];
   static const _deathDescriptions = [
@@ -115,28 +99,19 @@ class NewHeroScreen extends Screen<Input> {
   int _focus = 0;
 
   final NameControl _name;
-  final SelectControl _class;
+  final SelectControl _race;
   final List<Control> _controls = [];
-  
-  /// Randomly selected race index
-  late final int _randomRaceIndex;
   
   /// Death mode (1 = Permanent, 0 = Stairs) - default to permanent
   final int _deathMode = 1;
 
   NewHeroScreen(this._content, this._storage)
       : _name = NameControl(0, 0, _storage),
-        _class = SelectControl(
-            0, 4, "Class", ["Ranger", "Mage"]) {
-    _controls.addAll([_name, _class]);
-
-    // Auto-select Ranger (index 0)
-    _class.selected = 0;
+        _race = SelectControl(
+            0, 4, "Race", _content.races.map((r) => r.name).toList()) {
+    _controls.addAll([_name, _race]);
     
-    // Randomly select a race
-    _randomRaceIndex = rng.range(_content.races.length);
-    
-    // Start with class selection focused
+    // Start with race selection focused
     _focus = 1;
   }
 
@@ -164,28 +139,26 @@ class NewHeroScreen extends Screen<Input> {
   }
 
   void _renderClass(Terminal terminal) {
-    // Class selection is handled by the SelectControl
-    // This is just a placeholder for any additional class info if needed
+    terminal.writeAt(0, 1, "Class:", UIHue.text);
+    
+    // Show greyed out classes
+    var x = 19;
+    var classes = ["Ranger", "Warrior"];
+    for (var className in classes) {
+      terminal.writeAt(x, 1, className, UIHue.disabled);
+      terminal.writeAt(x, 2, "Coming soon", UIHue.disabled);
+      x += className.length + 15;
+    }
   }
 
   void _renderRace(Terminal terminal) {
-    var race = _content.races[_randomRaceIndex];
+    var selectedRace = _content.races[_race.selected];
     
-    // Show race name
-    terminal.writeAt(0, 4, "Race: ${race.name}", UIHue.text);
-    
-    // Show race description
+    // Show race stats in a more compact format
     var y = 5;
-    for (var line in Log.wordWrap(59, race.description)) {
-      terminal.writeAt(19, y, line, UIHue.text);
-      y++;
-    }
-
-    // Show how race affects stats.
-    y = 6;
     for (var stat in Stat.all) {
       terminal.writeAt(0, y, stat.abbreviation, UIHue.secondary);
-      Draw.thinMeter(terminal, 4, y, 14, race.stats[stat]!, 45);
+      Draw.thinMeter(terminal, 4, y, 20, selectedRace.stats[stat]!, 45);
       y++;
     }
   }
@@ -228,23 +201,13 @@ class NewHeroScreen extends Screen<Input> {
     // Give the hero some starting gold and basic equipment for loop mode
     hero.gold = 1500;
     
-    // Add class-specific starting equipment based on weapon_tiers.json
+    // Add basic starting equipment (since classes are disabled, use generic equipment)
     try {
-      // Get the appropriate starting weapon for this class
-      var startingWeaponName = _getStartingWeapon(hero.heroClass.name);
-      var startingWeapon = _content.tryFindItem(startingWeaponName);
-      if (startingWeapon != null) {
-        var weaponItem = Item(startingWeapon, 1);
+      // Give a basic starting weapon
+      var stick = _content.tryFindItem("Stick");
+      if (stick != null) {
+        var weaponItem = Item(stick, 1);
         hero.equipment.equip(weaponItem);
-        print("Equipped ${hero.heroClass.name} with starting weapon: $startingWeaponName");
-      } else {
-        print("Warning: Could not find starting weapon '$startingWeaponName' for ${hero.heroClass.name}");
-        // Fallback to Club
-        var club = _content.tryFindItem("Club");
-        if (club != null) {
-          var clubItem = Item(club, 1);
-          hero.equipment.equip(clubItem);
-        }
       }
       
       var robe = _content.tryFindItem("Robe");
@@ -286,12 +249,11 @@ class NewHeroScreen extends Screen<Input> {
       // We look for "enter" explicitly and not Input.OK, because typing "l"
       // should enter that letter, not create a hero.
       case KeyCode.enter when _name._isUnique:
-        // Get the selected class (Ranger or Mage)
-        var selectedClassName = _class._options[_class.selected];
-        var heroClass = _content.classes.firstWhere((cls) => cls.name == selectedClassName);
+        // Use a default class since class selection is disabled
+        var heroClass = _content.classes.first; // Use first available class as default
         
-        // Use the randomly selected race
-        var selectedRace = _content.races[_randomRaceIndex];
+        // Use the selected race
+        var selectedRace = _content.races[_race.selected];
         
         var hero = _content.createHero(_name._name,
             race: selectedRace,
