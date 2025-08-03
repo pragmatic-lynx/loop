@@ -79,7 +79,7 @@ class ControlsPanel extends Panel {
     terminal.writeAt(1, 4, "1: ${actionMapping.action1Label}", lightBlue);
     terminal.writeAt(1, 5, "2: ${actionMapping.action2Label}", lima);
     terminal.writeAt(1, 6, "3: ${actionMapping.action3Label}", pink);
-    terminal.writeAt(1, 7, "4: ${actionMapping.action4Label}", aqua);
+
     
     // Context-aware E action
     var eAction = _getEActionDescription();
@@ -483,12 +483,27 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
           return true;
         }
         
-        // Ranged attack - set queue context and handle
-        _actionQueues.setCurrentQueue(1);
-        action = _handleRangedAction();
-        if (action == null) {
-          game.log.message("No ranged weapon available.");
-          dirty();
+        // Class-specific action: Rangers use bow, Mages use spells
+        var heroClassName = game.hero.save.heroClass.name;
+        if (heroClassName == "Ranger") {
+          // Ranged attack - set queue context and handle
+          _actionQueues.setCurrentQueue(1);
+          action = _handleRangedAction();
+          if (action == null) {
+            game.log.message("No ranged weapon available.");
+            dirty();
+          }
+        } else if (heroClassName == "Mage") {
+          // Cast mage spell
+          _actionQueues.setCurrentQueue(4);
+          if (_actionQueues.castCurrentStealthSpell()) {
+            // Spell was cast successfully, no action needed
+            _updateActionMapping();
+            return true;
+          } else {
+            game.log.message("No spell available.");
+            dirty();
+          }
         }
 
       case LoopInput.action2:
@@ -508,17 +523,40 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
           game.log.message("No healing available.");
           dirty();
         }
+        break;
+
       case LoopInput.action4:
-        // Cast mage spell
-        _actionQueues.setCurrentQueue(4);
-        if (_actionQueues.castCurrentStealthSpell()) {
-          // Spell was cast successfully, no action needed
-          _updateActionMapping();
+        // Action4 has been consolidated into action1
+        // This case is kept for backward compatibility but matches action1 behavior
+        var portal = game.stage[game.hero.pos].portal;
+        if (portal == TilePortals.exit) {
+          if (_loopManager != null) {
+            _handleLoopExit();
+          } else {
+            ui.push(ExitPopup(_previousSave, game));
+          }
           return true;
-        } else {
-          game.log.message("No spell available.");
-          dirty();
         }
+        
+        var heroClassName = game.hero.save.heroClass.name;
+        if (heroClassName == "Ranger") {
+          _actionQueues.setCurrentQueue(1);
+          action = _handleRangedAction();
+          if (action == null) {
+            game.log.message("No ranged weapon available.");
+            dirty();
+          }
+        } else if (heroClassName == "Mage") {
+          _actionQueues.setCurrentQueue(4);
+          if (_actionQueues.castCurrentStealthSpell()) {
+            _updateActionMapping();
+            return true;
+          } else {
+            game.log.message("No spell available.");
+            dirty();
+          }
+        }
+        break;
         
       case LoopInput.cycleSpell:
         // If mage spell queue is active, cycle mage spells
@@ -1082,11 +1120,14 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
         return null;
       }
       
-      // Use archery skill if we have it
+      // Use archery skill - even at level 0 for rangers with bows
       var level = game.hero.skills.level(archerySkill);
-      if (level > 0) {
-        // game.log.message("Debug: Using archery skill level $level");
-        return archerySkill.onGetTargetAction(game, level, target.pos);
+      var heroClassName = game.hero.save.heroClass.name;
+      if (level > 0 || (heroClassName == "Ranger" && rangedItem.item!.type.name.toLowerCase().contains("bow"))) {
+        // For rangers with bows, use archery skill even at level 0
+        var effectiveLevel = level > 0 ? level : 1;
+        // game.log.message("Debug: Using archery skill level $effectiveLevel");
+        return archerySkill.onGetTargetAction(game, effectiveLevel, target.pos);
       }
     }
     
