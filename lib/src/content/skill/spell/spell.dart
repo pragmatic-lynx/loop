@@ -32,7 +32,7 @@ abstract class Spell extends Skill with UsableSkill {
 
   @override
   int onCalculateLevel(HeroSave hero, int points) {
-    if (hero.heroClass.proficiency(this) == 0.0) return 0;
+    if (hero.heroClass.dynamicProficiency(this, hero) == 0.0) return 0;
 
     // Spells are always available once discovered.
     return 1;
@@ -43,17 +43,25 @@ abstract class Spell extends Skill with UsableSkill {
     var cost = baseFocusCost.toDouble();
 
     // Intellect makes spells cheaper, relative to their complexity.
-    cost *= hero.intellect.spellFocusScale(complexity(hero.heroClass));
+    cost *= hero.intellect.spellFocusScale(complexity(hero.heroClass, hero: hero));
 
     // Spell proficiency lowers cost.
-    cost /= hero.heroClass.proficiency(this);
+    var proficiency = hero.heroClass.dynamicProficiency(this, hero);
+    if (proficiency > 0.0) {
+      cost /= proficiency;
+    }
 
     // Round up so that it always costs at least 1.
     return cost.ceil();
   }
 
-  int complexity(HeroClass heroClass) =>
-      ((baseComplexity - 9) / heroClass.proficiency(this)).round() + 9;
+  int complexity(HeroClass heroClass, {HeroSave? hero}) {
+    var proficiency = hero != null 
+        ? heroClass.dynamicProficiency(this, hero)
+        : heroClass.proficiency(this);
+    if (proficiency <= 0.0) proficiency = 1.0; // Prevent division by zero
+    return ((baseComplexity - 9) / proficiency).round() + 9;
+  }
 
   int getRange(Game game) => range;
 }

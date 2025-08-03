@@ -22,6 +22,7 @@ import 'hero_save.dart';
 import 'lore.dart';
 import 'skill.dart';
 import 'stat.dart';
+import '../../content/skill/spell/spell.dart';
 
 /// The main player-controlled [Actor]. The player's avatar in the game world.
 class Hero extends Actor {
@@ -128,6 +129,9 @@ class Hero extends Actor {
 
     // Try to load XP curve from assets
     _loadXpCurve();
+
+    // Ensure mages have their starting spells discovered
+    _initializeStartingSpells();
 
     refreshProperties();
 
@@ -757,7 +761,7 @@ class Hero extends Actor {
   /// Ensures the hero has discovered [skill] and logs if it is the first time
   /// it's been seen.
   void discoverSkill(Skill skill) {
-    if (save.heroClass.proficiency(skill) == 0.0) return;
+    if (save.heroClass.dynamicProficiency(skill, save) == 0.0) return;
 
     if (!skills.discover(skill)) return;
 
@@ -768,6 +772,23 @@ class Hero extends Actor {
     var level = skill.calculateLevel(save);
     if (skills.gain(skill, level)) {
       save.log.gain(skill.gainMessage(level), this);
+    }
+  }
+  
+  /// Initializes starting spells for mages
+  void _initializeStartingSpells() {
+    if (save.heroClass.name == "Mage") {
+      // Find and discover the Icicle spell for new mages
+      for (var skill in _allSkills) {
+        if (skill.name == "Icicle" && skill is Spell) {
+          if (skills.discover(skill)) {
+            // Immediately gain the spell since it's the starting spell
+            skills.gain(skill, 1);
+            save.log.message("You begin your journey knowing the ${skill.name} spell.");
+          }
+          break;
+        }
+      }
     }
   }
 }

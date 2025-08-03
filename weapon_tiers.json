@@ -2,26 +2,26 @@
   "starting": {
     "warrior": "Stick",
     "ranger": "Short Bow",
-    "mage": "Walking Stick"
+    "mage": "Icicle"
   },
   "tiers": [
     {
       "id": 1,
       "warrior": ["Stick", "Cudgel", "Hatchet"],
       "ranger": ["Short Bow", "Knife", "Dirk"],
-      "mage": []
+      "mage": ["Brilliant Beam", "Windstorm", "Fire Barrier"]
     },
     {
       "id": 2,
       "warrior": ["Shortsword", "Morningstar", "Spear"],
       "ranger": ["Longbow", "Dagger", "Stiletto"],
-      "mage": []
+      "mage": ["Tidal Wave", "Brilliant Beam", "Fire Barrier"]
     },
     {
       "id": 3,
       "warrior": ["Mattock", "Battleaxe", "War Hammer"],
       "ranger": ["Crossbow", "Rondel", "Baselard"],
-      "mage": []
+      "mage": ["Tidal Wave", "Windstorm", "Fire Barrier"]
     }
   ],
   "armorTiers": [
@@ -47,6 +47,6 @@
   "legendary": {
     "warrior": ["Phoenix Edge"],
     "ranger": ["Void Repeater"],
-    "mage": []
+    "mage": ["Tidal Wave"]
   }
 }
