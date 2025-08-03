@@ -39,6 +39,7 @@ class AudioManager {
       await _scanAudioFiles();
       _initialized = true;
       print('AudioManager initialized successfully');
+      print('Available sounds: ${_loadedSounds.keys.toList()}');
     } catch (e) {
       print('AudioManager failed to initialize: $e');
       // Continue without audio - fail-safe behavior
@@ -76,6 +77,7 @@ class AudioManager {
     if (_audioContext == null) return;
 
     try {
+      print('Attempting to load: assets/audio/sfx/$filePath');
       final response = await html.HttpRequest.request(
         'assets/audio/sfx/$filePath',
         responseType: 'arraybuffer',
@@ -89,10 +91,12 @@ class AudioManager {
         final id = _extractSoundId(filePath);
         
         _loadedSounds.putIfAbsent(id, () => []).add(audioBuffer);
-        print('Loaded audio: $filePath -> $id');
+        print('✓ Loaded audio: $filePath -> $id');
+      } else {
+        print('✗ Failed to load $filePath: HTTP ${response.status}');
       }
     } catch (e) {
-      // Silently ignore missing files - this is expected fail-safe behavior
+      print('✗ Error loading $filePath: $e');
     }
   }
 
@@ -108,7 +112,9 @@ class AudioManager {
     final baseName = nameWithoutExt.replaceAll(RegExp(r'_\d+$'), '');
     
     // Combine directory and filename: 'player/magic_cast_01.ogg' -> 'player_magic_cast'
-    return '${directory}_$baseName';
+    final result = '${directory}_$baseName';
+    print('Extracting ID: $filePath -> $result');
+    return result;
   }
 
   /// Play a sound effect
