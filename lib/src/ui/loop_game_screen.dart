@@ -357,15 +357,15 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
       
       // Arrow key handling for debug navigation
       if (input == Input.n) {
-        handled = _debugOverlay!.handleInput('ArrowUp');
+        handled = _debugOverlay!.handleInputString('ArrowUp');
       } else if (input == Input.s) {
-        handled = _debugOverlay!.handleInput('ArrowDown');
+        handled = _debugOverlay!.handleInputString('ArrowDown');
       } else if (input == Input.w) {
-        handled = _debugOverlay!.handleInput('ArrowLeft');
+        handled = _debugOverlay!.handleInputString('ArrowLeft');
       } else if (input == Input.e) {
-        handled = _debugOverlay!.handleInput('ArrowRight');
+        handled = _debugOverlay!.handleInputString('ArrowRight');
       } else if (input == Input.ok) {
-        handled = _debugOverlay!.handleInput('Enter');
+        handled = _debugOverlay!.handleInputString('Enter');
       }
       
       if (handled) {
