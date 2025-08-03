@@ -32,6 +32,7 @@ import '../engine/loop/loop_meter.dart';
 import '../engine/loop/smart_combat.dart';
 import '../engine/stage/tile.dart';
 import '../content/tiles.dart';
+import '../content/skill/skills.dart';
 import '../hues.dart';
 import '../debug.dart';
 import 'exit_popup.dart';
@@ -85,14 +86,24 @@ class ControlsPanel extends Panel {
     terminal.writeAt(x, 4, "1: ${actionMapping.action1Label}", lightBlue);
     terminal.writeAt(x, 5, "2: ${actionMapping.action2Label}", lima);
     terminal.writeAt(x, 6, "3: ${actionMapping.action3Label}", pink);
-
+    
+    // Spell/Queue Management
+    terminal.writeAt(x, 7, "Q: Cycle Spells", lightAqua);
+    terminal.writeAt(x, 8, "TAB: Cycle Action 2/3", lightAqua);
     
     // Context-aware E action
     var eAction = _getEActionDescription();
-    terminal.writeAt(x, 11, "E: ${eAction.icon} ${eAction.description}", eAction.color);
+    if (eAction.description.isNotEmpty) {
+      terminal.writeAt(x, 9, "E: ${eAction.icon} ${eAction.description}", eAction.color);
+    } else {
+      terminal.writeAt(x, 9, "E: ${eAction.icon} Interact", eAction.color);
+    }
     
     // Extra keys
-    terminal.writeAt(x, 13, "I: Inventory", ash);
+    terminal.writeAt(x, 10, "ESC/I: Inventory", ash);
+    
+    // Extra blank line for spacing
+    terminal.writeAt(x, 11, "", ash);
   }
   
   ({String icon, String description, Color color}) _getEActionDescription() {
@@ -102,9 +113,9 @@ class ControlsPanel extends Panel {
     var portal = game.stage[game.hero.pos].portal;
     if (portal == TilePortals.exit) {
       if (_gameScreen._loopManager != null) {
-        return (icon: "", description: "Exit Floor", color: gold);
+        return (icon: "🚪", description: "Exit Floor", color: gold);
       } else {
-        return (icon: "", description: "Exit Dungeon", color: gold);
+        return (icon: "🚪", description: "Exit Dungeon", color: gold);
       }
     }
     
@@ -113,14 +124,19 @@ class ControlsPanel extends Panel {
     if (items.isNotEmpty) {
       var item = items.first;
       if (item.canEquip && (item.equipSlot == 'hand')) {
-        return (icon: "", description: "Equip ${item.type.name}", color: lightBlue);
+        return (icon: "⚔️", description: "Equip ${item.type.name}", color: lightBlue);
       } else {
-        return (icon: "", description: "Pick up ${item.type.name}", color: tan);
+        return (icon: "📦", description: "Pick up ${item.type.name}", color: tan);
       }
     }
     
+    // Check if there are multiple items
+    if (items.length > 1) {
+      return (icon: "📦", description: "Pick up items (${items.length})", color: tan);
+    }
+    
     // Default action when nothing special is available
-    return (icon: "", description: "", color: ash);
+    return (icon: "🔧", description: "Interact", color: ash);
   }
 }
 
@@ -151,7 +167,8 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
   final DiagonalInputHandler _diagonalInput = DiagonalInputHandler();
   
   // Debouncing for E command to prevent double execution
-  bool _eCommandProcessed = false;
+  // Uses time-based debouncing (200ms) instead of boolean flag for more reliable prevention
+  DateTime? _lastECommandTime;
   
   @override
   LoopManager? get loopManager => _loopManager;
@@ -591,14 +608,15 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
         return true;
         
       case LoopInput.cycleQueue:
-        // Tab cycles between action2 and action3 specifically
+        // Tab cycles between action2 and action3 specifically (silently)
         var currentQueue = _actionQueues.currentQueue;
         if (currentQueue == 2) {
           _actionQueues.setCurrentQueue(3);
-          game.log.message("Switched to Heal queue");
-        } else {
+        } else if (currentQueue == 3) {
           _actionQueues.setCurrentQueue(2);
-          game.log.message("Switched to Magic queue");
+        } else {
+          // If we're on queue 1 or 4, default to queue 2 (Magic)
+          _actionQueues.setCurrentQueue(2);
         }
         _updateActionMapping();
         return true;
@@ -620,11 +638,13 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
       // No debug functionality - intentionally left blank
 
       case LoopInput.equip:
-        // Prevent double execution of E command
-        if (_eCommandProcessed) {
+        // Prevent double execution of E command with time-based debouncing
+        var now = DateTime.now();
+        if (_lastECommandTime != null && 
+            now.difference(_lastECommandTime!).inMilliseconds < 200) {
           return true;
         }
-        _eCommandProcessed = true;
+        _lastECommandTime = now;
         
         // First try to interact with staircase if standing on one
         var portal = game.stage[game.hero.pos].portal;
@@ -660,7 +680,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
             _loopManager.recordLootPickup(); // Track loot pickup for loop meter
             var meterProgress = _loopManager.loopMeter.progress.toStringAsFixed(1);
             game.log.message("Loot collected! Loop meter: ${meterProgress}%");
-            _updateActionMapping();
+            _updateActionMapping(); // Refresh controls when equipment changes
             return true;
           } else {
             // Regular item pickup
@@ -671,6 +691,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
               if (result.remaining == 0) {
                 game.stage.removeItem(item, game.hero.pos);
               }
+              _updateActionMapping(); // Refresh controls when inventory changes
             } else {
               game.log.message('Your inventory is full.');
               return true;
@@ -696,9 +717,6 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
       // Update action mapping after each action (abilities may change)
       _updateActionMapping();
     }
-    
-    // Reset E command flag after processing
-    _eCommandProcessed = false;
 
     return true;
   }
@@ -761,10 +779,12 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
 
     // Check if hero died
     if (!game.hero.isAlive) {
-      print("Hero died! Restarting loop.");
+      print("Hero died! Returning to main menu.");
       _loopManager.recordDeath();
       _loopManager.reset();
-      ui.goTo(GameOverScreen(_storage, game.hero.save, game.hero.save, game.content));
+      
+      // Go to game over screen, which should then return to main menu
+      ui.goTo(GameOverScreen(_storage, game.hero.save, _previousSave, game.content));
       return;
     }
 
@@ -773,7 +793,16 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     
     // Update panels - exactly like the regular GameScreen
     if (_stagePanel.update(result.events)) dirty();
-    if (result.needsRefresh) dirty();
+    if (result.needsRefresh) {
+      dirty();
+      // Also refresh action mapping when game state changes significantly
+      _updateActionMapping();
+    }
+    
+    // Update action mapping periodically to catch inventory changes
+    if (result.madeProgress) {
+      _updateActionMapping();
+    }
     
     // Force animation updates when loop meter is full (for pulsing effect)
     if (_loopManager.loopMeter.isFull) {
@@ -803,7 +832,7 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     _equipmentPanel.show(Rect(size.x - rightWidth, 0, rightWidth, equipmentHeight));
     
     // Controls panel at bottom right - add 2 pixel margin from right edge
-    var controlsHeight = 10; // Increased for 4th button
+    var controlsHeight = 12; // Increased from 10 to give more space
     _controlsPanel?.show(Rect(size.x - rightWidth - 2, size.y - controlsHeight, rightWidth + 2, controlsHeight));
     
     // Log panel at top center
@@ -1267,6 +1296,34 @@ class LoopGameScreen extends Screen<Input> implements GameScreenInterface {
     } else {
       game.log.message("No spells available.");
     }
+  }
+  
+  /// Initialize mage spells to ensure they can be cycled from the start
+  void _initializeMageSpells() {
+    var mageSpells = [
+      "Icicle",
+      "Brilliant Beam", 
+      "Windstorm",
+      "Fire Barrier",
+      "Tidal Wave"
+    ];
+    
+    for (var spellName in mageSpells) {
+      try {
+        var skill = Skills.find(spellName);
+        // Ensure the spell is discovered for the mage
+        if (!game.hero.skills.isDiscovered(skill)) {
+          game.hero.skills.discover(skill);
+        }
+      } catch (e) {
+        // Spell not found, skip it
+        continue;
+      }
+    }
+    
+    // Set initial queue to mage spells
+    _actionQueues.setCurrentQueue(4);
+    _updateActionMapping();
   }
   
   /// Handle heal item action

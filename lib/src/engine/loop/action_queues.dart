@@ -213,6 +213,7 @@ class ActionQueues {
   void replaceUsedItem(Item usedItem) {
     // Debug functionality removed - items are no longer automatically replaced
     // This prevents infinite item generation when using consumables
+    // However, we can notify the UI that the inventory has changed
   }
   
   /// Cast the current mage spell
