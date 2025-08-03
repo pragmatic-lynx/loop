@@ -1,3 +1,4 @@
+import 'dart:html' as html;
 import 'dart:math' as math;
 
 import 'package:hauberk/src/ui/item/toss_dialog.dart';
@@ -341,6 +342,9 @@ class GameScreen extends Screen<Input> implements GameScreenInterface {
 
       case Input.levelUp:
         _quickLevelUp();
+
+      case Input.giveConsumables:
+        _giveAllConsumables();
     }
 
     if (action != null) game.hero.setNextAction(action);
@@ -705,5 +709,41 @@ class GameScreen extends Screen<Input> implements GameScreenInterface {
       game.log.message("Level up! You are now level ${game.hero.level}.");
     }
     dirty();
+  }
+
+  void _giveAllConsumables() {
+    // Track if consumables have already been given this session using localStorage
+    var consumablesGiven = html.window.localStorage['consumables_given'] == 'true';
+    if (consumablesGiven) {
+      game.log.message("Consumables have already been given.");
+      dirty();
+      return;
+    }
+
+    var itemsGiven = 0;
+    var content = game.content;
+
+    // Give one of each consumable item type
+    for (var itemType in content.items) {
+      // Check if it's a consumable (has a use action)
+      if (_isConsumableItem(itemType)) {
+        var item = Item(itemType, 1);
+        game.hero.inventory.tryAdd(item);
+        game.hero.pickUp(game, item);
+        itemsGiven++;
+      }
+    }
+
+    // Mark consumables as given
+    html.window.localStorage['consumables_given'] = 'true';
+    _storage.save();
+
+    game.log.message("Received $itemsGiven consumable items!");
+    dirty();
+  }
+
+  bool _isConsumableItem(ItemType itemType) {
+    // Check if the item has a use action (consumable) and is not equipment
+    return itemType.use != null && itemType.equipSlot == null;
   }
 }
