@@ -4,6 +4,8 @@ inclusion: always
 
 ## Non-Interactive Command Execution
 
+This is a pure Dart web project
+
 Do not EVER run this command:
 dart run build_runner serve web:8080
 
